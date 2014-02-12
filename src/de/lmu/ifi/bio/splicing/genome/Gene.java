@@ -1,45 +1,77 @@
 package de.lmu.ifi.bio.splicing.genome;
+
 import java.util.HashMap;
-import de.lmu.ifi.bio.splicing.interfaces.AbstractGene;
 
-public class Gene extends AbstractGene{
-	private HashMap<String, Transcript> transcripts;
-	private HashMap<String, Transcript> protIdTranscripts;
-	private String geneId, seqName;
-	private boolean strand;
-	
+public class Gene {
+    HashMap<String, Transcript> hashmap_transcriptid; //transcript_id
+    HashMap<String, Transcript> hashmap_proteinid; //protein_id als key
+    String geneId, chromosome;
+    boolean strand;
 
-	
-	public Gene(String geneId,
-			String seqName, boolean strand) {
-        super(geneId, strand, seqName);
+    public Gene(String geneId, String chromosome, boolean strand) {
+        this.geneId = geneId;
+        this.strand = strand;
+        this.chromosome = chromosome;
+        hashmap_proteinid = new HashMap<String, Transcript>();
+        hashmap_transcriptid = new HashMap<String, Transcript>();
     }
 
-	public Transcript getTranscript(String transcriptId){
-		if(transcripts.containsKey(transcriptId))
-			return transcripts.get(transcriptId);
-		else
-			return protIdTranscripts.get(transcriptId);
-	}
-	
-	public String getGeneId(){
-		return geneId;
-	}
-	
-	public void addTranscript(Transcript t){
-		transcripts.put(t.getTranscriptId(), t);
-		protIdTranscripts.put(t.getProteinId(), t);
-	}
-	
-	public String getSeqName(){
-		return seqName;
-	}
-	
-	public boolean getStrand(){
-		return strand;
-	}
-	
-	public HashMap<String, Transcript> getTranscripts(){
-		return transcripts;
-	}
+
+    public void addTranscript(Transcript Transcript) {
+        hashmap_transcriptid.put(Transcript.getTranscriptId(), Transcript);
+        hashmap_proteinid.put(Transcript.getProteinId(), Transcript);
+    }
+
+    public Transcript getTranscriptByTranscriptId(String transcript_id) {
+        return hashmap_transcriptid.get(transcript_id);
+    }
+
+    public Transcript getTranscriptByProteinId(String protein_id) {
+        return hashmap_proteinid.get(protein_id);
+    }
+    public String getGeneId() {
+        return geneId;
+    }
+
+    public boolean getStrand() {
+        return strand;
+    }
+
+    public String getChromosome() {
+        return chromosome;
+    }
+
+    public HashMap<String, Transcript> getHashmap_proteinid() {
+        return hashmap_proteinid;
+    }
+
+    public HashMap<String, Transcript> getHashmap_transcriptid() {
+        return hashmap_transcriptid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Gene)) return false;
+
+        Gene that = (Gene) o;
+
+        if (strand != that.strand) return false;
+        if (!chromosome.equals(that.chromosome)) return false;
+        if (!geneId.equals(that.geneId)) return false;
+        if (!hashmap_proteinid.equals(that.hashmap_proteinid)) return false;
+        if (!hashmap_transcriptid.equals(that.hashmap_transcriptid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = hashmap_transcriptid.hashCode();
+        result = 31 * result + hashmap_proteinid.hashCode();
+        result = 31 * result + geneId.hashCode();
+        result = 31 * result + chromosome.hashCode();
+        result = 31 * result + (strand ? 1 : 0);
+        return result;
+    }
 }

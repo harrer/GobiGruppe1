@@ -13,7 +13,7 @@ public class DBQuery implements DatabaseQuery{
 	}
 
 	@Override
-	public AbstractExon getExon() {
+	public Exon getExon() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -44,10 +44,6 @@ interface Genes {
 
 	public void addGene(Gene gene);
 
-	// public List<AbstractExon> getIsoform(String transcript_id);
-	// public List<AbstractTranscript> getTranscriptsByGeneId(String gene_id);
-	// public List<AbstractGene> getGenesFromList(List<String> gene_ids);
-
 	public Gene getGeneById(String gene_id);
 	public List<Gene> getGeneByList(List<String> gene_ids);
 	public List<Gene> getGeneByPartId(String gene_id); //z.b. nur "ENSG00023*"

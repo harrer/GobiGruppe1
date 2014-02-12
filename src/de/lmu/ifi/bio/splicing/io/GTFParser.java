@@ -38,11 +38,11 @@ public class GTFParser {
         }
 
         if (curTranscript == null || !curTranscript.getTranscriptId().equals(transcriptid)) {
-            if (curGene.getTranscript(transcriptid) == null) {
+            if (curGene.getTranscriptByTranscriptId(transcriptid) == null) {
                 curTranscript = new Transcript(transcriptid, proteinid);
                 curGene.addTranscript(curTranscript);
             } else {
-                curTranscript = curGene.getTranscript(transcriptid);
+                curTranscript = (Transcript) curGene.getTranscriptByTranscriptId(transcriptid);
             }
         }
 
@@ -97,15 +97,9 @@ public class GTFParser {
                 feature = pieces[2];
                 start = Integer.parseInt(pieces[3]);
                 stop = Integer.parseInt(pieces[4]);
-                // TODO check for available strand inputs -> evtl als Character oder
-                // Integer oder boolean
                 strand = pieces[6];
                 strandb = strand.equals("+");
-
-                // TODO check for available strand inputs -> evtl als Character oder
-                // Integer oder boolean
                 strand = pieces[6];
-
                 frame = Integer.parseInt(pieces[7]);
 
                 for (int i = 8; i < pieces.length; i += 2) {
