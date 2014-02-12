@@ -36,7 +36,7 @@ public class DBUpdate implements DatabaseUpdate {
 
 
     @Override
-    public void insertEvent(Event event) {// acc, sec ??
+    public void insertEvent(Event event) {// acc, sec  ??
     	DB_Backend db = new DB_Backend();
     	String insert = "insert into Event(start,stop,acc,sec) values(" + event.getStart() +"," + event.getStop() +"," + "acc" +"," + "sec" + "," +")";
     	try {
