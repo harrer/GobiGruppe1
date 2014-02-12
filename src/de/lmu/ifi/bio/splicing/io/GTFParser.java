@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Map;
 
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Exon;
@@ -22,7 +20,7 @@ import de.lmu.ifi.bio.splicing.jsqlDatabase.DBUpdate;
 public class GTFParser {
 
     public static final FileSystem FS = Setting.FS;
-    public static final HashMap<String, Gene> genes = new HashMap<>();
+    private HashMap<String, Gene> genes = new HashMap<>();
     private Gene curGene;
     private Transcript curTranscript;
 
@@ -83,9 +81,10 @@ public class GTFParser {
                 // split
                 pieces = line.split(regexdelimit);
                 //falls nicht chromosome enthält.. egal
-                if (!pieces[0].matches(regexchromosome)) {
-                    continue;
-                }
+                //TODO Kannst anmachen um nur 1-22 oder x oder y chromosome zu catchen
+//                if (!pieces[0].matches(regexchromosome)) {
+//                    continue;
+//                }
 
                 if (!pieces[2].equals("CDS")) {
                     continue;
@@ -134,5 +133,13 @@ public class GTFParser {
         for (Gene gene : genes.values()) {
             dbu.insertGene(gene);
         }
+    }
+
+    public void printString() {
+        System.out.println(genes.toString());
+    }
+
+    public int countGenes() {
+        return genes.size();
     }
 }
