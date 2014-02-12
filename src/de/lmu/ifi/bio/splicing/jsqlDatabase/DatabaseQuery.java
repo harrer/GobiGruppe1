@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
