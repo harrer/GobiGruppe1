@@ -7,3 +7,4 @@
 *.class
 *.jar
 /lib
+/nbproject/private/
