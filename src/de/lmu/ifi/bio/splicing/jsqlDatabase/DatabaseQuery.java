@@ -8,7 +8,10 @@ public interface DatabaseQuery {
 	
 	public AbstractExon getExon();
 	
-	public AbstractGene getGene();
+	public AbstractGene getGene(String geneID);
 	
-	public AbstractTranscript  getTranscript();
+	/**
+	 * @param proteinID may be null, transcriptID must be valid
+	*/
+	public AbstractTranscript  getTranscript(String transcriptID, String proteinID);
 }
