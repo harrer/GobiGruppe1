@@ -1,16 +1,14 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.Event;
-import de.lmu.ifi.bio.splicing.genome.Exon;
-import de.lmu.ifi.bio.splicing.genome.Gene;
-import de.lmu.ifi.bio.splicing.genome.Transcript;
 
 public interface DatabaseQuery {
 	public Event getEvent();
 	
-	public Exon getExon();
+	public AbstractExon getExon();
 	
-	public Gene getGene();
+	public AbstractGene getGene();
 	
-	public Transcript getTranscript();
+	public AbstractTranscript  getTranscript();
 }
