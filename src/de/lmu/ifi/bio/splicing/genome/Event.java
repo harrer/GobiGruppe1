@@ -1,26 +1,39 @@
 package de.lmu.ifi.bio.splicing.genome;
 
-import de.lmu.ifi.bio.splicing.interfaces.AbstractEvent;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.DB_Backend;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.DatabaseQuery;
-
 /**
  * Created by uhligc on 12.02.14.
  */
-public class Event extends AbstractEvent {
+public class Event {
+    //i1 und i2 sind transcript ids (keine protein ids)
+    String i1, i2;
+    long start, stop;
+    boolean replace;
+
     public Event(String i1, String i2, long start, long stop, boolean replace) {
-        super(i1, i2, start, stop, replace);
+        this.i1 = i1;
+        this.i2 = i2;
+        this.start = start;
+        this.stop = stop;
+        this.replace = replace;
     }
 
-    @Override
-    public Transcript getTranscriptI1() {
-
-        return null;
+    public String getI1() {
+        return i1;
     }
 
-    @Override
-    public Transcript getTranscriptI2() {
-        //TODO
-        return null;
+    public String getI2() {
+        return i2;
+    }
+
+    public long getStart() {
+        return start;
+    }
+
+    public long getStop() {
+        return stop;
+    }
+
+    public boolean isReplace() {
+        return replace;
     }
 }

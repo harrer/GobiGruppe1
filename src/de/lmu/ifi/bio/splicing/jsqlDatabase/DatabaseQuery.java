@@ -6,12 +6,12 @@ import de.lmu.ifi.bio.splicing.genome.*;
 public interface DatabaseQuery {
 	public Event getEvent();
 	
-	public AbstractExon getExon();
+	public Exon getExon();
 	
 	public Gene getGene(String geneID);
 	
 	/**
 	 * @param proteinID may be null, transcriptID must be valid
 	*/
-	public AbstractTranscript  getTranscript(String transcriptID, String proteinID);
+	public Transcript getTranscript(String transcriptID, String proteinID);
 }

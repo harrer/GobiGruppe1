@@ -7,7 +7,7 @@ import de.lmu.ifi.bio.splicing.config.Setting;
 /**
  * Created by uhligc on 12.02.14.
  */
-public class AbstractPDB {
+public abstract class AbstractPDB {
     String pdbid;
     File file;
     Path filepath;
