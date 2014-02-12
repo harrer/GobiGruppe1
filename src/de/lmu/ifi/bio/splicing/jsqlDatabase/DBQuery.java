@@ -47,7 +47,6 @@ public class DBQuery implements DatabaseQuery{
 	@Override
 	public Transcript getTranscript(String transcriptID, String proteinID) {
 		DB_Backend db = new DB_Backend();
-        String q = "Select proteinId from Transcript where transcriptID = '" + transcriptID + "'";
 		String query = "Select start, stop, frame from Exon where transcriptId = '"+transcriptID+"'";
 		Object[][] result = null;
 		try {

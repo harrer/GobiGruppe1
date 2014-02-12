@@ -254,7 +254,7 @@ public class EventAnotation {
 					shortAreasP.add(new long[] { 2, cur, cur + ins });
 					cur += ins + 1;
 					ins = 0;
-				}
+                }
 				if (dels != 0) {
 					shortAreasP.add(new long[] { 1, cur, cur + dels });
 					cur += dels + 1;
