@@ -9,16 +9,16 @@ interface Exon {
 }
 
 interface Transcript {
-	List<Exon> list;
-	String transcript_id, protein_id;
+	abstract List<Exon> list;
+	abstract String transcript_id, protein_id;
 
-	Transcript(String transcript_id, String protein_id);
+	Transcript abstract(String transcript_id, String protein_id);
 
-	public void addExon(Exon exon);
+	abstract public void addExon(Exon exon);
 
-	public List<Exon> getExons();
-	public String getTranscriptId();
-	public String getProteinId();
+	abstract public List<Exon> getExons();
+	abstract public String getTranscriptId();
+	abstract public String getProteinId();
 }
 
 interface Gene {
