@@ -37,7 +37,13 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertEvent(Event event) {
-    	
+    	DB_Backend db = new DB_Backend();
+    	String insert = "insert into Exon(start,stop,frame,transcriptId,proteinId) values(" + exon.getStart() +"," + exon.getStop() +"," + exon.getFrame() +"," +transcript.getTranscriptId()+"," +transcript.getProteinId()+")";
+    	try {
+			db.executeUpdate(insert);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 
 	@Override
