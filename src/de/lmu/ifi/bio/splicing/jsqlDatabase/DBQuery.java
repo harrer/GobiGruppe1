@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.interfaces.*;
 
 public class DBQuery implements DatabaseQuery{
