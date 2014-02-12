@@ -2,49 +2,18 @@ package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-/**
- * This class demonstrates how to connect to MySQL and run some basic commands.
- * 
- * In order to use this, you have to download the Connector/J driver and add
- * its .jar file to your build path.  You can find it here:
- * 
- * http://dev.mysql.com/downloads/connector/j/
- * 
- * You will see the following exception if it's not in your class path:
- * 
- * java.sql.SQLException: No suitable driver found for jdbc:mysql://localhost:3306/
- * 
- * To add it to your class path:
- * 1. Right click on your project
- * 2. Go to Build Path -> Add External Archives...
- * 3. Select the file mysql-connector-java-5.1.24-bin.jar
- *    NOTE: If you have a different version of the .jar file, the name may be
- *    a little different.
- *    
- * The user name and password are both "root", which should be correct if you followed
- * the advice in the MySQL tutorial. If you want to use different credentials, you can
- * change them below. 
- * 
- * You will get the following exception if the credentials are wrong:
- * 
- * java.sql.SQLException: Access denied for user 'userName'@'localhost' (using password: YES)
- * 
- * You will instead get the following exception if MySQL isn't installed, isn't
- * running, or if your serverName or portNumber are wrong:
- * 
- * java.net.ConnectException: Connection refused
- */
 public class DBDemo {
 
 	/** The name of the MySQL account to use (or empty for anonymous) */
 	private final String userName = "gobi1";//"root";
 
 	/** The password for the MySQL account (or empty for anonymous) */
-	private final String password = "Ege7FkiRSmuBM";//"root";
+	private final String password = new String(new char[]{69,103,101,55,70,107,105,82,83,109,117,66,77});//"root";
 
 	/** The name of the computer running MySQL */
 	private final String serverName = "mysql2-ext.bio.ifi.lmu.de";//"localhost";
@@ -98,8 +67,9 @@ public class DBDemo {
 	
 	/**
 	 * Connect to MySQL and do some stuff.
+	 * @throws SQLException 
 	 */
-	public void run() {
+	public void run() throws SQLException {
 
 		// Connect to MySQL
 		Connection conn = null;
@@ -131,6 +101,38 @@ public class DBDemo {
 			return;
 		}
 		
+		//insert
+		String insert = "insert into "+tableName+" values(1,'john','main','LA','CA','90705')";
+		try {
+			this.executeUpdate(conn, insert);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("Inserted into table");
+		
+		//select
+		String select = "SELECT *from "+tableName;
+		Statement stmt = null;
+		try {
+	        stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(select);
+	        while (rs.next()) {
+	            String coffeeName = rs.getString("COF_NAME");
+	            int supplierID = rs.getInt("SUP_ID");
+	            float price = rs.getFloat("PRICE");
+	            int sales = rs.getInt("SALES");
+	            int total = rs.getInt("TOTAL");
+	            System.out.println(coffeeName + "\t" + supplierID +
+	                               "\t" + price + "\t" + sales +
+	                               "\t" + total);
+	        }
+	    } catch (SQLException e ) {
+	        e.printStackTrace();;
+	    } finally {
+	        if (stmt != null) { stmt.close(); }
+	    }
+		
 		// Drop the table
 		try {
 		    String dropString = "DROP TABLE " + this.tableName;
@@ -145,8 +147,9 @@ public class DBDemo {
 	
 	/**
 	 * Connect to the DB and do some stuff
+	 * @throws SQLException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		DBDemo app = new DBDemo();
 		app.run();
 	}

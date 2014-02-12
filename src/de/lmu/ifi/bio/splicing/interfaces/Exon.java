@@ -18,7 +18,7 @@ public abstract class Exon {
     }
 
     public long getStop() {
-        return stop
+        return stop;
     }
 
     public long getFrame() {
