@@ -123,7 +123,7 @@ public class GTFParser {
                 protein_id = null;
             }
             reader.close();
-//            saveToDatabase(dbu);
+            saveToDatabase(dbu);
         } catch (IOException e) {
             e.printStackTrace();
         }

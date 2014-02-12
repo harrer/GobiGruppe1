@@ -24,7 +24,7 @@ public class DBQuery implements DatabaseQuery{
 		String query = "select chromosome, strand from Gene where geneId = '"+geneID+"'";
 		Object[][] result = null;
 		try {
-			result = db.select(query, 2);
+			result = db.select(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -32,7 +32,7 @@ public class DBQuery implements DatabaseQuery{
 		Gene gene = new Gene(geneID, (String)result[0][0], (boolean)result[0][1]);
 		query = "Select transcriptId, proteinId from Transcript where geneId = '"+geneID+"'";
 		try {
-			result = db.select(query, 2);
+			result = db.select(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -47,10 +47,11 @@ public class DBQuery implements DatabaseQuery{
 	@Override
 	public Transcript getTranscript(String transcriptID, String proteinID) {
 		DB_Backend db = new DB_Backend();
+        String q = "Select proteinId from Transcript where transcriptID = '" + transcriptID + "'";
 		String query = "Select start, stop, frame from Exon where transcriptId = '"+transcriptID+"'";
 		Object[][] result = null;
 		try {
-			result = db.select(query, 3);
+			result = db.select(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -66,6 +67,6 @@ public class DBQuery implements DatabaseQuery{
 	public static void main(String[] args) {
 		DatabaseQuery dbq = new DBQuery();
 		Gene g = dbq.getGene("ENSG1");
-		System.out.println();
+		System.out.println(g);
 	}
 }

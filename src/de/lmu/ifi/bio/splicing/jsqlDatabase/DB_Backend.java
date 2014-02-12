@@ -114,7 +114,7 @@ public class DB_Backend {
 		}
 	}
 	
-	public Object[][] select(String select, int length) throws SQLException {
+	public Object[][] select(String select) throws SQLException {
 		Connection conn = null;
 		try {
 			conn = getConnection();
@@ -123,13 +123,13 @@ public class DB_Backend {
 			return null;
 		}
 		Statement stmt = null;
-		ArrayList<Object> row = new ArrayList<>(length);
+		ArrayList<Object> row = new ArrayList<>();
 		ArrayList<Object[]> list = new ArrayList<>();
 		try {
 	        stmt = conn.createStatement();
 	        ResultSet rs = stmt.executeQuery(select);
 	        while (rs.next()) {
-	        	for (int i = 1; i <= length; i++) {
+	        	for (int i = 1; i <= rs.getFetchSize(); i++) {
 	        		Object o = rs.getObject(i);
 					row.add(o);
 				}
