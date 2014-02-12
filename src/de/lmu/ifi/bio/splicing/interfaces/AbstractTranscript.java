@@ -30,4 +30,26 @@ public abstract class AbstractTranscript {
     public String getProteinId() {
         return protein_id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractTranscript)) return false;
+
+        AbstractTranscript that = (AbstractTranscript) o;
+
+        if (list != null ? !list.equals(that.list) : that.list != null) return false;
+        if (!protein_id.equals(that.protein_id)) return false;
+        if (!transcript_id.equals(that.transcript_id)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = list != null ? list.hashCode() : 0;
+        result = 31 * result + transcript_id.hashCode();
+        result = 31 * result + protein_id.hashCode();
+        return result;
+    }
 }

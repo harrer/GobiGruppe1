@@ -8,6 +8,7 @@ import de.lmu.ifi.bio.splicing.genome.Transcript;
  * Created by uhligc on 12.02.14.
  */
 public class DBUpdate implements DatabaseUpdate {
+
     @Override
     public void insertGene(Gene gene) {
 

@@ -24,4 +24,26 @@ public abstract class AbstractExon {
     public long getFrame() {
         return frame;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractExon)) return false;
+
+        AbstractExon that = (AbstractExon) o;
+
+        if (frame != that.frame) return false;
+        if (start != that.start) return false;
+        if (stop != that.stop) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (start ^ (start >>> 32));
+        result = 31 * result + (int) (stop ^ (stop >>> 32));
+        result = 31 * result + frame;
+        return result;
+    }
 }
