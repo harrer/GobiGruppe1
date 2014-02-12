@@ -21,25 +21,26 @@ public class DBQuery implements DatabaseQuery{
 	@Override
 	public Gene getGene(String geneID) {
 		DB_Backend db = new DB_Backend();
-		String query = "select strand, transcript from Gene where geneId '= "+geneID+"'";
+		String query = "select chromosome, strand from Gene where geneId = '"+geneID+"'";
 		Object[][] result = null;
 		try {
-			result = db.select(query, new boolean[]{false,true,true});
+			result = db.select(query, 2);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
 		Gene gene = new Gene(geneID, (String)result[0][0], (boolean)result[0][1]);
-		query = "Select transcriptid, proteinid from Exon where geneid = '"+geneID+"'";
+		query = "Select transcriptId, proteinId from Transcript where geneId = '"+geneID+"'";
 		try {
-			result = db.select(query, new boolean[]{true,true});
+			result = db.select(query, 2);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
 		for (int i = 0; i < result.length; i++) {
-			gene.addTranscript(getTranscript((String)result[i][0], (String)result[i][0]));
+			gene.addTranscript(getTranscript((String)result[i][0], (String)result[i][1]));
 		}
+		
 		return gene;
 	}
 
@@ -49,7 +50,7 @@ public class DBQuery implements DatabaseQuery{
 		String query = "Select start, stop, frame from Exon where transcriptId = '"+transcriptID+"'";
 		Object[][] result = null;
 		try {
-			result = db.select(query, new boolean[]{false,true,true,true});
+			result = db.select(query, 3);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
