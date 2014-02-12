@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.interfaces;
 
+import de.lmu.ifi.bio.splicing.genome.*;
 import java.util.HashMap;
 
 /**
@@ -19,7 +20,7 @@ public abstract class AbstractGene {
         hashmap_transcriptid = new HashMap<String, AbstractTranscript>();
     }
 
-    public void addTranscript(AbstractTranscript abstractTranscript) {
+    public void addTranscript(Transcript abstractTranscript) {
         hashmap_transcriptid.put(abstractTranscript.getTranscriptId(), abstractTranscript);
         hashmap_proteinid.put(abstractTranscript.getProteinId(), abstractTranscript);
     }

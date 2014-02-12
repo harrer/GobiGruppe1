@@ -1,8 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
-import java.io.ObjectInputStream.GetField;
 import java.sql.SQLException;
-
 import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
@@ -21,7 +19,7 @@ public class DBQuery implements DatabaseQuery{
 	}
 
 	@Override
-	public AbstractGene getGene(String geneID) {
+	public Gene getGene(String geneID) {
 		DB_Backend db = new DB_Backend();
 		String query = "select strand, transcript from Gene where geneId '= "+geneID+"'";
 		Object[][] result = null;
@@ -31,7 +29,7 @@ public class DBQuery implements DatabaseQuery{
 			e.printStackTrace();
 			return null;
 		}
-		AbstractGene gene = new Gene(geneID, (String)result[0][0], (boolean)result[0][1]);
+		Gene gene = new Gene(geneID, (String)result[0][0], (boolean)result[0][1]);
 		query = "Select transcriptid, proteinid from Exon where geneid = '"+geneID+"'";
 		try {
 			result = db.select(query, new boolean[]{true,true});
@@ -46,7 +44,7 @@ public class DBQuery implements DatabaseQuery{
 	}
 
 	@Override
-	public AbstractTranscript getTranscript(String transcriptID, String proteinID) {
+	public Transcript getTranscript(String transcriptID, String proteinID) {
 		DB_Backend db = new DB_Backend();
 		String query = "Select start, stop, frame from Exon where transcriptId = '"+transcriptID+"'";
 		Object[][] result = null;
@@ -56,7 +54,7 @@ public class DBQuery implements DatabaseQuery{
 			e.printStackTrace();
 			return null;
 		}
-		AbstractTranscript transcript = new Transcript(transcriptID, proteinID);
+		Transcript transcript = new Transcript(transcriptID, proteinID);
 		for (int i = 0; i < result.length; i++) {
 			Exon ex = new Exon((long)result[i][0],(long)result[i][1],(int)result[i][2]);
 			transcript.addExon(ex);
@@ -66,7 +64,7 @@ public class DBQuery implements DatabaseQuery{
 	
 	public static void main(String[] args) {
 		DatabaseQuery dbq = new DBQuery();
-		AbstractTranscript t = dbq.getTranscript("ENST1", "");
+		Gene g = dbq.getGene("ENSG1");
 		System.out.println();
 	}
 }
