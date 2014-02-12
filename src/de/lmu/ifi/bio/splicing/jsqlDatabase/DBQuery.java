@@ -38,8 +38,9 @@ public class DBQuery implements DatabaseQuery{
 			return null;
 		}
 		for (int i = 0; i < result.length; i++) {
-			gene.a
+			gene.addTranscript(getTranscript((String)result[i][0], (String)result[i][0]));
 		}
+		return gene;
 	}
 
 	@Override
