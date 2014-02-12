@@ -13,10 +13,6 @@ public class Transcript extends AbstractTranscript {
         super(transcriptId, proteinId);
     }
 
-    public void addCds(Exon e) {
-        cds.add(e);
-    }
-
     public String getTranscriptId() {
         return transcriptId;
     }
