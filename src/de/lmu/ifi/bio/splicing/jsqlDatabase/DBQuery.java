@@ -1,6 +1,8 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import java.io.ObjectInputStream.GetField;
 import java.sql.SQLException;
+
 import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
@@ -21,7 +23,7 @@ public class DBQuery implements DatabaseQuery{
 	@Override
 	public AbstractGene getGene(String geneID) {
 		DB_Backend db = new DB_Backend();
-		String query = "select strand, transcript from Gene where geneId = "+geneID;
+		String query = "select strand, transcript from Gene where geneId '= "+geneID+"'";
 		Object[][] result = null;
 		try {
 			result = db.select(query, new boolean[]{false,true,true});
@@ -30,7 +32,7 @@ public class DBQuery implements DatabaseQuery{
 			return null;
 		}
 		AbstractGene gene = new Gene(geneID, (String)result[0][0], (boolean)result[0][1]);
-		query = "Select transcriptid, proteinid from Exon where geneid = "+geneID;
+		query = "Select transcriptid, proteinid from Exon where geneid = '"+geneID+"'";
 		try {
 			result = db.select(query, new boolean[]{true,true});
 		} catch (SQLException e) {
@@ -46,7 +48,7 @@ public class DBQuery implements DatabaseQuery{
 	@Override
 	public AbstractTranscript getTranscript(String transcriptID, String proteinID) {
 		DB_Backend db = new DB_Backend();
-		String query = "Select start, stop, frame from Exon where transcriptId = "+transcriptID;
+		String query = "Select start, stop, frame from Exon where transcriptId = '"+transcriptID+"'";
 		Object[][] result = null;
 		try {
 			result = db.select(query, new boolean[]{false,true,true,true});
@@ -56,10 +58,15 @@ public class DBQuery implements DatabaseQuery{
 		}
 		AbstractTranscript transcript = new Transcript(transcriptID, proteinID);
 		for (int i = 0; i < result.length; i++) {
-			AbstractExon ex = new Exon((long)result[i][0],(long)result[i][1],(int)result[i][2]);
+			Exon ex = new Exon((long)result[i][0],(long)result[i][1],(int)result[i][2]);
 			transcript.addExon(ex);
 		}
 		return transcript;
 	}
-
+	
+	public static void main(String[] args) {
+		DatabaseQuery dbq = new DBQuery();
+		AbstractTranscript t = dbq.getTranscript("ENST1", "");
+		System.out.println();
+	}
 }

@@ -58,10 +58,11 @@ public class DB_Backend {
 	 * 
 	 * @throws SQLException If something goes wrong
 	 */
-	public boolean executeUpdate(Connection conn, String command) throws SQLException {
+	public boolean executeUpdate(String command) throws SQLException {
+		Connection connection = getConnection();
 	    Statement stmt = null;
 	    try {
-	        stmt = conn.createStatement();
+	        stmt = connection.createStatement();
 	        stmt.executeUpdate(command); // This will throw a SQLException if it fails
 	        return true;
 	    } finally {
@@ -72,18 +73,6 @@ public class DB_Backend {
 	}
 	
 	public void run() throws SQLException {
-
-		// Connect to MySQL
-		Connection conn = null;
-		try {
-			conn = this.getConnection();
-			System.out.println("Connected to database");
-		} catch (SQLException e) {
-			System.out.println("ERROR: Could not connect to the database");
-			e.printStackTrace();
-			return;
-		}
-
 		// Create a table
 		try {
 		    String createString =
@@ -95,7 +84,7 @@ public class DB_Backend {
 			        "STATE char(2) NOT NULL, " +
 			        "ZIP char(5), " +
 			        "PRIMARY KEY (ID))";
-			this.executeUpdate(conn, createString);
+			this.executeUpdate(createString);
 			System.out.println("Created a table");
 	    } catch (SQLException e) {
 			System.out.println("ERROR: Could not create the table");
@@ -106,7 +95,7 @@ public class DB_Backend {
 		//insert
 		String insert = "insert into "+tableName+" values(1,'john','main','LA','CA','90705')";
 		try {
-			this.executeUpdate(conn, insert);
+			this.executeUpdate(insert);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -116,7 +105,7 @@ public class DB_Backend {
 		// Drop the table
 		try {
 		    String dropString = "DROP TABLE " + this.tableName;
-			this.executeUpdate(conn, dropString);
+			this.executeUpdate(dropString);
 			System.out.println("Dropped the table");
 	    } catch (SQLException e) {
 			System.out.println("ERROR: Could not drop the table");
@@ -162,6 +151,6 @@ public class DB_Backend {
 	 */
 	public static void main(String[] args) throws SQLException {
 		DB_Backend app = new DB_Backend();
-		app.run();
+		//app.run();
 	}
 }

@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.interfaces;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ public abstract class AbstractTranscript {
     protected AbstractTranscript(String transcript_id, String protein_id) {
         this.transcript_id = transcript_id;
         this.protein_id = protein_id;
+        this.list = new ArrayList<>();
     }
 
     public void addExon(AbstractExon abstractExon) {
