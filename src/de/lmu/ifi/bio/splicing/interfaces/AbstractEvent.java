@@ -1,9 +1,12 @@
 package de.lmu.ifi.bio.splicing.interfaces;
 
+import de.lmu.ifi.bio.splicing.genome.Transcript;
+
 /**
  * Created by uhligc on 12.02.14.
  */
-public class AbstractEvent {
+public abstract class AbstractEvent {
+    //i1 und i2 sind transcript ids (keine protein ids)
     String i1, i2;
     long start, stop;
     boolean replace;
@@ -35,4 +38,7 @@ public class AbstractEvent {
     public boolean isReplace() {
         return replace;
     }
+
+    public abstract Transcript getTranscriptI1();
+    public abstract Transcript getTranscriptI2();
 }
