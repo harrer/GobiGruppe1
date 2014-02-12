@@ -13,9 +13,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `gobi1`.`transcript`
+-- Table `gobi1`.`abstractTranscript`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gobi1`.`transcript` (
+CREATE TABLE IF NOT EXISTS `gobi1`.`abstractTranscript` (
   `transcriptid` VARCHAR(20) NOT NULL,
   `proteinid` VARCHAR(20) NOT NULL,
   `gene_geneid` VARCHAR(15) NOT NULL,
@@ -30,9 +30,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `gobi1`.`exon`
+-- Table `gobi1`.`abstractExon`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gobi1`.`exon` (
+CREATE TABLE IF NOT EXISTS `gobi1`.`abstractExon` (
   `id` INT NOT NULL,
   `start` INT UNSIGNED NOT NULL,
   `stop` INT UNSIGNED NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`exon` (
   INDEX `fk_exon_transcript1_idx` (`transcript_transcriptid` ASC, `transcript_proteinid` ASC),
   CONSTRAINT `fk_exon_transcript1`
     FOREIGN KEY (`transcript_transcriptid` , `transcript_proteinid`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -138,12 +138,12 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`transcript_has_transcript1` (
   INDEX `fk_transcript_has_transcript1_transcript1_idx` (`transcript_transcriptid` ASC, `transcript_proteinid` ASC),
   CONSTRAINT `fk_transcript_has_transcript1_transcript1`
     FOREIGN KEY (`transcript_transcriptid` , `transcript_proteinid`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_transcript_has_transcript1_transcript2`
     FOREIGN KEY (`transcript_transcriptid1` , `transcript_proteinid1`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`transcript_has_event` (
   INDEX `fk_transcript_has_event_transcript1_idx` (`transcript_transcriptid` ASC, `transcript_proteinid` ASC),
   CONSTRAINT `fk_transcript_has_event_transcript1`
     FOREIGN KEY (`transcript_transcriptid` , `transcript_proteinid`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_transcript_has_event_event1`
@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`event_has_transcript2` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_event_has_transcript_transcript1`
     FOREIGN KEY (`transcript_transcriptid` , `transcript_proteinid`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -212,7 +212,7 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`event_has_transcript1` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_event_has_transcript1_transcript1`
     FOREIGN KEY (`transcript_transcriptid` , `transcript_proteinid`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`transcript_has_pdb` (
   INDEX `fk_transcript_has_pdb_transcript1_idx` (`transcript_transcriptid` ASC, `transcript_proteinid` ASC, `transcript_gene_geneid` ASC),
   CONSTRAINT `fk_transcript_has_pdb_transcript1`
     FOREIGN KEY (`transcript_transcriptid` , `transcript_proteinid` , `transcript_gene_geneid`)
-    REFERENCES `gobi1`.`transcript` (`transcriptid` , `proteinid` , `gene_geneid`)
+    REFERENCES `gobi1`.`abstractTranscript` (`transcriptid` , `proteinid` , `gene_geneid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_transcript_has_pdb_pdb1`

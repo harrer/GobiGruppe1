@@ -3,31 +3,30 @@ package de.lmu.ifi.bio.splicing.genome;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Transcript {
-	private String transcriptId, proteinId;
-	private List<Exon> cds;
+import de.lmu.ifi.bio.splicing.interfaces.AbstractTranscript;
 
-	public Transcript(String transcriptId, String proteinId) {
-		this.transcriptId = transcriptId;
-		this.proteinId = proteinId;
-		this.cds = new LinkedList<Exon>();
+public class Transcript extends AbstractTranscript {
+    private String transcriptId, proteinId;
+    private List<Exon> cds;
 
-	}
+    public Transcript(String transcriptId, String proteinId) {
+        super(transcriptId, proteinId);
+    }
 
-	public void addCds(Exon e) {
-		cds.add(e);
-	}
+    public void addCds(Exon e) {
+        cds.add(e);
+    }
 
-	public String getTranscriptId() {
-		return transcriptId;
-	}
+    public String getTranscriptId() {
+        return transcriptId;
+    }
 
-	public String getProteinId() {
-		return proteinId;
-	}
+    public String getProteinId() {
+        return proteinId;
+    }
 
-	public List<Exon> getCds() {
-		return cds;
-	}
+    public List<Exon> getCds() {
+        return cds;
+    }
 
 }

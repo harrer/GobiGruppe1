@@ -1,8 +1,8 @@
 package de.lmu.ifi.bio.splicing.genome;
 import java.util.HashMap;
+import de.lmu.ifi.bio.splicing.interfaces.AbstractGene;
 
-
-public class Gene {
+public class Gene extends AbstractGene{
 	private HashMap<String, Transcript> transcripts;
 	private HashMap<String, Transcript> protIdTranscripts;
 	private String geneId, seqName;
@@ -12,12 +12,8 @@ public class Gene {
 	
 	public Gene(String geneId,
 			String seqName, boolean strand) {
-		this.transcripts = new HashMap<String, Transcript>();
-		this.protIdTranscripts = new HashMap<String, Transcript>();
-		this.geneId = geneId;
-		this.seqName = seqName;
-		this.strand = strand;
-	}
+        super(geneId, strand, seqName);
+    }
 
 	public Transcript getTranscript(String transcriptId){
 		if(transcripts.containsKey(transcriptId))

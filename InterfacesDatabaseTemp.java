@@ -44,9 +44,9 @@ interface Genes {
 
 	public void addGene(Gene gene);
 
-	// public List<Exon> getIsoform(String transcript_id);
-	// public List<Transcript> getTranscriptsByGeneId(String gene_id);
-	// public List<Gene> getGenesFromList(List<String> gene_ids);
+	// public List<AbstractExon> getIsoform(String transcript_id);
+	// public List<AbstractTranscript> getTranscriptsByGeneId(String gene_id);
+	// public List<AbstractGene> getGenesFromList(List<String> gene_ids);
 
 	public Gene getGeneById(String gene_id);
 	public List<Gene> getGeneByList(List<String> gene_ids);
