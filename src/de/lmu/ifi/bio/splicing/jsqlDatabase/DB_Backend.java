@@ -28,12 +28,17 @@ public class DB_Backend {
 	/** The name of the table we are testing with */
 	private final String tableName = "JDBC_TEST";
 	
-	/**
-	 * Get a new database connection
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
+	private Connection connection;
+	
+	public DB_Backend(){
+		try {
+			this.connection = getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public Connection getConnection() throws SQLException {
 		Connection conn = null;
 		Properties connectionProps = new Properties();
@@ -120,7 +125,7 @@ public class DB_Backend {
 		}
 	}
 	
-	public Object[][] select(String select, boolean[] columns) throws SQLException {
+	public Object[][] select(String select) throws SQLException {
 		Connection conn = null;
 		try {
 			conn = getConnection();
@@ -129,17 +134,13 @@ public class DB_Backend {
 			return null;
 		}
 		Statement stmt = null;
-		ArrayList<Object> row = new ArrayList<>(columns.length);
+		ArrayList<Object> row = new ArrayList<>();
 		ArrayList<Object[]> list = new ArrayList<>();
 		try {
 	        stmt = conn.createStatement();
 	        ResultSet rs = stmt.executeQuery(select);
 	        while (rs.next()) {
-	        	for (int i = 0; i < columns.length; i++) {
-					if(columns[i]){
 						row.add(rs.getObject(i));
-					}
-				}
 	        	list.add(row.toArray());
 	        }
 	    } catch (SQLException e ) {
