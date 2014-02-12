@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 
-public class DBDemo {
+public class DB_Backend {
 
 	/** The name of the MySQL account to use (or empty for anonymous) */
 	private final String userName = "gobi1";//"root";
@@ -65,10 +66,6 @@ public class DBDemo {
 	    }
 	}
 	
-	/**
-	 * Connect to MySQL and do some stuff.
-	 * @throws SQLException 
-	 */
 	public void run() throws SQLException {
 
 		// Connect to MySQL
@@ -111,28 +108,6 @@ public class DBDemo {
 		}
 		System.out.println("Inserted into table");
 		
-		//select
-		String select = "SELECT *from "+tableName;
-		Statement stmt = null;
-		try {
-	        stmt = conn.createStatement();
-	        ResultSet rs = stmt.executeQuery(select);
-	        while (rs.next()) {
-	            String coffeeName = rs.getString("COF_NAME");
-	            int supplierID = rs.getInt("SUP_ID");
-	            float price = rs.getFloat("PRICE");
-	            int sales = rs.getInt("SALES");
-	            int total = rs.getInt("TOTAL");
-	            System.out.println(coffeeName + "\t" + supplierID +
-	                               "\t" + price + "\t" + sales +
-	                               "\t" + total);
-	        }
-	    } catch (SQLException e ) {
-	        e.printStackTrace();;
-	    } finally {
-	        if (stmt != null) { stmt.close(); }
-	    }
-		
 		// Drop the table
 		try {
 		    String dropString = "DROP TABLE " + this.tableName;
@@ -145,12 +120,43 @@ public class DBDemo {
 		}
 	}
 	
+	public Object[][] select(String select, boolean[] columns) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		Statement stmt = null;
+		ArrayList<Object> row = new ArrayList<>(columns.length);
+		ArrayList<Object[]> list = new ArrayList<>();
+		try {
+	        stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(select);
+	        while (rs.next()) {
+	        	for (int i = 0; i < columns.length; i++) {
+					if(columns[i]){
+						row.add(rs.getObject(i));
+					}
+				}
+	        	list.add(row.toArray());
+	        }
+	    } catch (SQLException e ) {
+	        e.printStackTrace();
+	        return null;
+	    } finally {
+	        if (stmt != null) { stmt.close(); }
+	    }
+		return list.toArray(new Object[][]{});
+	}
+
 	/**
 	 * Connect to the DB and do some stuff
 	 * @throws SQLException 
 	 */
 	public static void main(String[] args) throws SQLException {
-		DBDemo app = new DBDemo();
+		DB_Backend app = new DB_Backend();
 		app.run();
 	}
 }
