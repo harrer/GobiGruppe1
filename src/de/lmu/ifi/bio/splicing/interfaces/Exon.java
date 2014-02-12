@@ -13,7 +13,15 @@ public abstract class Exon {
         this.frame = frame;
     }
 
-    abstract public long getStart();
-    abstract public long getStop();
-    abstract public long getFrame();
+    public long getStart() {
+        return start;
+    }
+
+    public long getStop() {
+        return stop;
+    }
+
+    public long getFrame() {
+        return frame;
+    }
 }
