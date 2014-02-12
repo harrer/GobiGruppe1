@@ -66,6 +66,5 @@ public class DBQuery implements DatabaseQuery{
 	public static void main(String[] args) {
 		DatabaseQuery dbq = new DBQuery();
 		Gene g = dbq.getGene("ENSG1");
-		System.out.println();
 	}
 }
