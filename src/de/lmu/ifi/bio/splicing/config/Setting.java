@@ -9,7 +9,7 @@ import java.nio.file.Path;
  * Created by uhligc on 12.02.14.
  */
 public class Setting {
-    public static final String GTFFILEPATH = "/home/proj/biosoft/GENOMIC/HUMAN/Homo_sapiens.GRCh37.63.gtf";
+    public static final String GTFFILEPATH = "/home/proj/biosoft/GENOMIC/HUMAN/Homo_sapiens.GRCh37.73.gtf";
     public static final File GTFFILE = new File(GTFFILEPATH);
     public static final FileSystem FS = FileSystems.getDefault();
     public static final Path GTFPATH = FS.getPath(GTFFILEPATH);

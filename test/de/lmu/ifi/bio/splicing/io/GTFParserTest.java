@@ -20,5 +20,6 @@ public class GTFParserTest {
     @Test
     public void testAddGenes() throws Exception {
         gtf.addGenes(dbu);
+        System.out.println(gtf.countGenes());
     }
 }
