@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class DataImpl implements Data {
     List<String> searchlist = new LinkedList<>();
+    DBQuery dbq = new DBQuery();
 
     //TODO Query auf Database
     DataImpl() {
@@ -28,11 +29,6 @@ public class DataImpl implements Data {
 
     @Override
     public List<String> search(String keyword) {
-        if (keyword == null)
-            return findAll();
-        List<String> tmp = new ArrayList<>();
-
-        DBQuery dbq = new DBQuery();
         return dbq.search(keyword);
     }
 

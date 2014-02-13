@@ -19,41 +19,41 @@
                 </template>
             </listbox>
         </vbox>
-            <portallayout orient="horizontal">
-                <portalchildren width="50%">
-                    <panel height="150px" title="Yahoo">
-                        <panelchildren>
-                            <hbox width="100px">
-                                Liste:
-                                <listbox>
-                                    <listhead>
-                                        <listheader label="I1"/>
-                                        <listheader label="I2"/>
-                                        <listheader label="Start"/>
-                                    </listhead>
-                                    <listitem>
-                                        <listcell label="${each.model}"/>
-                                        <listcell label="${each.make}"/>
-                                        <listcell label="${each.make}"/>
-                                    </listitem>
-                                </listbox>
-                            </hbox>
-                        </panelchildren>
-                    </panel>
-                    <panel height="300px" title="Google">
-                        <panelchildren>
-                            <hbox/>
-                        </panelchildren>
-                    </panel>
-                </portalchildren>
-                <portalchildren width="50%">
-                    <panel height="150px" title="ZK">
-                        <panelchildren>
-                            <hbox/>
-                        </panelchildren>
-                    </panel>
-                </portalchildren>
-            </portallayout>
+            <!--<portallayout orient="horizontal">-->
+                <!--<portalchildren width="50%">-->
+                    <!--<panel height="150px" title="Yahoo">-->
+                        <!--<panelchildren>-->
+                            <!--<hbox width="100px">-->
+                                <!--Liste:-->
+                                <!--<listbox>-->
+                                    <!--<listhead>-->
+                                        <!--<listheader label="I1"/>-->
+                                        <!--<listheader label="I2"/>-->
+                                        <!--<listheader label="Start"/>-->
+                                    <!--</listhead>-->
+                                    <!--<listitem>-->
+                                        <!--<listcell label="${each.model}"/>-->
+                                        <!--<listcell label="${each.make}"/>-->
+                                        <!--<listcell label="${each.make}"/>-->
+                                    <!--</listitem>-->
+                                <!--</listbox>-->
+                            <!--</hbox>-->
+                        <!--</panelchildren>-->
+                    <!--</panel>-->
+                    <!--<panel height="300px" title="Google">-->
+                        <!--<panelchildren>-->
+                            <!--<hbox/>-->
+                        <!--</panelchildren>-->
+                    <!--</panel>-->
+                <!--</portalchildren>-->
+                <!--<portalchildren width="50%">-->
+                    <!--<panel height="150px" title="ZK">-->
+                        <!--<panelchildren>-->
+                            <!--<hbox/>-->
+                        <!--</panelchildren>-->
+                    <!--</panel>-->
+                <!--</portalchildren>-->
+            <!--</portallayout>-->
             <listbox id="detailedview" height="500px">
                 <listhead>
                     <listheader label="I1"/>

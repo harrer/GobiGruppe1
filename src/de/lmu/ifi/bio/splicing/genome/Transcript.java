@@ -17,8 +17,8 @@ public class Transcript implements Search {
         this.cds = new ArrayList<>();
     }
 
-    public void addExon(Exon abstractExon) {
-        cds.add(abstractExon);
+    public void addExon(Exon exon) {
+        cds.add(exon);
     }
 
     public String getTranscriptId() {
@@ -38,5 +38,14 @@ public class Transcript implements Search {
         if (transcript_id.contains(keyword) || protein_id.contains(keyword))
             return Arrays.asList(transcript_id, protein_id);
         return Arrays.asList();
+    }
+
+    @Override
+    public String toString() {
+        return "Transcript{" +
+                "cds=" + cds +
+                ", transcript_id='" + transcript_id + '\'' +
+                ", protein_id='" + protein_id + '\'' +
+                '}';
     }
 }
