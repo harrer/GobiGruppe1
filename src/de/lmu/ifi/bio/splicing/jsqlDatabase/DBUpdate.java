@@ -1,12 +1,12 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
 import java.sql.SQLException;
 
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertEvent(Event event) {// acc, sec  ??
-        String insert = "";// "insert into Event(start,stop,frame,transcriptId,proteinId) values(" + exon.getStart() +"," + exon.getStop() +"," + exon.getFrame() +"," +transcript.getTranscriptId()+"," +transcript.getProteinId()+")";
+        String insert = "insert into Event(start,stop,isoform1,isoform2,type) values(" + event.getStart() +"," + event.getStop() +",'" + event.getI1() +"','"+ event.getI2() + "','"+ event.getType() +"')";
         try {
             db.executeUpdate(insert);
         } catch (SQLException e) {

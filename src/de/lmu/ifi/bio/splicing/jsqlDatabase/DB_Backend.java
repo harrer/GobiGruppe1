@@ -139,8 +139,8 @@ public class DB_Backend {
         }
         return row.toArray(new Object[]{});
     }
-
-    public Object[][] select(String select) throws SQLException {
+    
+    public Object[][] select(String select, int length) throws SQLException {
         Statement stmt = null;
         ArrayList<Object> row = new ArrayList<>();
         ArrayList<Object[]> list = new ArrayList<>();
@@ -148,7 +148,7 @@ public class DB_Backend {
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(select);
             while (rs.next()) {
-                for (int i = 1; i <= rs.getFetchSize(); i++) {
+                for (int i = 1; i <= length; i++) {
                     Object o = rs.getObject(i);
                     row.add(o);
                 }
