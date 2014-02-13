@@ -8,3 +8,4 @@ out/
 *.jar
 lib/
 *.iml
+/nbproject/private/
