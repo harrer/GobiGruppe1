@@ -1,12 +1,9 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
 public class DBQuery implements DatabaseQuery {
