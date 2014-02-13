@@ -1,7 +1,6 @@
 package de.lmu.ifi.bio.splicing.io;
 
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBUpdate;
-import de.lmu.ifi.bio.splicing.io.GTFParser;
 import org.junit.Before;
 import org.junit.Test;
 
