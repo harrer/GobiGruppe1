@@ -39,32 +39,50 @@ public class DBUpdate implements DatabaseUpdate {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        insertTranscript(gene);
     }
 
     @Override
     public void insertTranscript(Gene gene) {
-        HashMap<String,List<Exon>> exons_with_transIds = new HashMap<>();
-        StringBuilder insert =  new StringBuilder("insert into Transcript values");
+        HashMap<String, List<Exon>> exons_with_transIds = new HashMap<>();
+        StringBuilder insert = new StringBuilder("insert into Transcript values");
         boolean setComma = false;
         for (Map.Entry<String, Transcript> en : gene.getHashmap_transcriptid().entrySet()) {
+            if (setComma) {
+                insert.append(',');
+            } else {
+                setComma = true;
+            }
             Transcript t = en.getValue();
             exons_with_transIds.put(t.getTranscriptId(), t.getCds());
-            insert.append('(').append(t.getTranscriptId()).append(',').append(t.getProteinId()).append(',').append(gene.getGeneId()).append("),");
+            insert.append('(').append(t.getTranscriptId()).append(',').append(t.getProteinId()).append(',').append(gene.getGeneId()).append(")");
         }
-        
         try {
             db.executeUpdate(insert.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        insertExon(exons_with_transIds);
     }
 
     @Override
-    public void insertExon(HashMap<String,List<Exon>> exons) {
-        String insert = "";
-//        String insert = "insert into Exon(start,stop,frame,transcriptId,proteinId) values(" + exon.getStart() + "," + exon.getStop() + "," + exon.getFrame() + "," + transcript.getTranscriptId() + "," + transcript.getProteinId() + ")";
+    public void insertExon(HashMap<String, List<Exon>> exons) {
+        StringBuilder insert = new StringBuilder("insert into Exon(start,stop,frame,transcriptId) values");
+        boolean setComma = false;
+        for (Map.Entry<String, List<Exon>> entry : exons.entrySet()) {
+            String string = entry.getKey();
+            List<Exon> list = entry.getValue();
+            for (Exon exon : list) {
+                if (setComma) {
+                    insert.append(',');
+                } else {
+                    setComma = true;
+                }
+                insert.append('(').append(exon.getStart()).append(',').append(exon.getStop()).append(',').append(exon.getFrame()).append(',').append(string).append(')');
+            }
+        }
         try {
-            db.executeUpdate(insert);
+            db.executeUpdate(insert.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
