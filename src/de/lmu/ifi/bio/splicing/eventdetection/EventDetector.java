@@ -26,26 +26,32 @@ public class EventDetector {
 	
 	public static List<long[]> getEventList(Transcript t1, Transcript t2, boolean strand){
 		EventAnnotation ea = new EventAnnotation(t1, t2, strand);
-		return ea.getEventsP();
+		return ea.getEventsP1();
 	}
 	
 	public static Set<Event> makeEventSet(EventAnnotation ea){
 		Set<Event> events = new HashSet<Event>();
 		long ins = 0, dels = 0;
-		for(long[] event : ea.getEventsP()){
-			if(event[0] == 1){
-                events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) 1));
-                events.add(new Event(ea.getT2().getProteinId(), ea.getT1().getProteinId(), event[1] - dels, event[2] - dels, (byte) 2));
-				dels += event[2] - event[1] + 1;
-			} else if(event[0] == 2){
-                events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) 2));
-                events.add(new Event(ea.getT2().getProteinId(), ea.getT1().getProteinId(), event[1] - dels, event[2] - dels, (byte) 1));
-				ins += event[2] - event[1] + 1;
-			} else if(event[0] == 3){
-				events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) 3));
-                events.add(new Event(ea.getT2().getProteinId(), ea.getT1().getProteinId(), event[1] - dels, event[2] - dels, (byte) 3));
-			}
+		for(long[] event : ea.getEventsP1()){
+            if(event[0] != 0)
+                events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) event[0]));
+//			if(event[0] == 1){
+//                events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) 1));
+//                events.add(new Event(ea.getT2().getProteinId(), ea.getT1().getProteinId(), event[1] - dels, event[2] - dels, (byte) 2));
+//				dels += event[2] - event[1] + 1;
+//			} else if(event[0] == 2){
+//                events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) 2));
+//                events.add(new Event(ea.getT2().getProteinId(), ea.getT1().getProteinId(), event[1] - dels, event[2] - dels, (byte) 1));
+//				ins += event[2] - event[1] + 1;
+//			} else if(event[0] == 3){
+//				events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) 3));
+//                events.add(new Event(ea.getT2().getProteinId(), ea.getT1().getProteinId(), event[1] - dels, event[2] - dels, (byte) 3));
+//			}
 		}
+        for(long[] event : ea.getEventsP1()){
+            if(event[0] != 0)
+                events.add(new Event(ea.getT1().getProteinId(), ea.getT2().getProteinId(), event[1] - ins, event[2] - ins, (byte) event[0]));
+        }
 		return events;
 	}
 	
@@ -67,22 +73,22 @@ public class EventDetector {
 		}
 
 		System.out.println("\nConserved:");
-		for (long[] e : ea.getEventsP()) {
+		for (long[] e : ea.getEventsP1()) {
 			if (e[0] == 0)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
 		System.out.println("\nDeletions:");
-		for (long[] e : ea.getEventsP()) {
+		for (long[] e : ea.getEventsP1()) {
 			if (e[0] == 1)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
 		System.out.println("\nInserts");
-		for (long[] e : ea.getEventsP()) {
+		for (long[] e : ea.getEventsP1()) {
 			if (e[0] == 2)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
 		System.out.println("\nReplaces");
-		for (long[] e : ea.getEventsP()) {
+		for (long[] e : ea.getEventsP1()) {
 			if (e[0] == 3)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
@@ -91,7 +97,7 @@ public class EventDetector {
 	
 	public void printVarSplice(EventAnnotation ea) {
 		StringBuilder sbp = new StringBuilder();
-		for (long[] a : ea.getEventsP()) {
+		for (long[] a : ea.getEventsP1()) {
 			if (a[0] == 0) {
 				for (long i = a[1]; i <= a[2]; i++) {
 					sbp.append("*");
