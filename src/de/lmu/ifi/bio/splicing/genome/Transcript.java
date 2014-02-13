@@ -34,7 +34,7 @@ public class Transcript implements Search{
     }
 
     @Override
-    public List<Object> search(String keyword) {
+    public List<String> search(String keyword) {
         if (transcript_id.contains(keyword) || protein_id.contains(keyword))
             return Arrays.asList((Object) this);
         return Arrays.asList();

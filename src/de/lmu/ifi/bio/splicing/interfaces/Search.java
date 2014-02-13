@@ -6,5 +6,5 @@ import java.util.List;
  * Created by Carsten on 13.02.14.
  */
 public interface Search {
-    public List<Object> search(String keyword);
+    public List<String> search(String keyword);
 }

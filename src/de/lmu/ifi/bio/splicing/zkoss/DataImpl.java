@@ -12,6 +12,8 @@ import java.util.List;
 public class DataImpl implements Data {
     List<Object> searchlist = new ArrayList<>();
 
+
+    //TODO Query auf Database
     DataImpl() {
         searchlist.add(new Gene("ENSG0000023", "1", true));
         searchlist.add(new Gene("ENSG0320002", "1", true));
@@ -22,30 +24,29 @@ public class DataImpl implements Data {
         searchlist.add(new Transcript("ENST399923", "ENSP999923"));
     }
 
-
     @Override
-    public List<Gene> findAll() {
-        List<Gene> genes = new ArrayList<>();
+    public List<String> findAll() {
+        List<String> genes = new ArrayList<>();
         for (Object o : searchlist) {
             if (o instanceof Gene) {
-                genes.add((Gene) o);
+                genes.add(((Gene) o).getGeneId());
             }
         }
         return genes;
     }
 
     @Override
-    public List<Object> search(String keyword) {
-        List<Object> tmp = new ArrayList<>();
+    public List<String> search(String keyword) {
+        List<String> tmp = new ArrayList<>();
         for (Object o : searchlist) {
-            if (o instanceof Transcript) tmp.add(((Transcript) o).search(keyword));
-            else tmp.add((Gene) ((Gene) o).search(keyword));
+            if (o instanceof Transcript) tmp.addAll(((Transcript) o).search(keyword));
+            else tmp.addAll(((Gene) o).search(keyword));
         }
         return tmp;
     }
 
     @Override
-    public List<Object> select() {
+    public List<String> select() {
         return null;
     }
 }

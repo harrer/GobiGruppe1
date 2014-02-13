@@ -79,7 +79,7 @@ public class Gene implements Search{
     }
 
     @Override
-    public List<Object> search(String keyword) {
+    public List<String> search(String keyword) {
         //TODO implement search through Gene
         return null;
     }
