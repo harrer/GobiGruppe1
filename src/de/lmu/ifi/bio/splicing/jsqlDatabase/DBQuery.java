@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;

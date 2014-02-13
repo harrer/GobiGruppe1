@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.splicing.jsqlDatabase;
+package de.lmu.ifi.bio.splicing.interfaces;
 
 import de.lmu.ifi.bio.splicing.genome.*;
 import java.util.HashMap;
