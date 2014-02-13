@@ -221,15 +221,15 @@ public class EventAnnotation {
                 dels = a[2] - a[1];
                 if(ins > 0){
                     shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
-                    shortAreasP2.add(new long[]{0, cur2, cur2 + ins});
+                    shortAreasP2.add(new long[]{2, cur2, cur2 + ins});
                     cur1 += dels + 1;
                     cur2 += ins + 1;
                 }
             } else if (a[0] == 2) {
                 ins = a[2] - a[1];
                 if(ins > 0){
-                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
-                    shortAreasP2.add(new long[]{0, cur2, cur2 + ins});
+                    shortAreasP1.add(new long[]{2, cur1, cur1 + dels});
+                    shortAreasP2.add(new long[]{1, cur2, cur2 + ins});
                     cur1 += dels + 1;
                     cur2 += ins + 1;
                 }
