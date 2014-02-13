@@ -9,7 +9,7 @@ public interface DatabaseQuery {
     public Event getEvent();
 
     /**
-     * Soll nach Gene Ids, Transcript Ids und Protein Ids suchen können
+     * Kann nach Gene Ids, Transcript Ids und Protein Ids suchen können
      *
      * @param keyword
      * @return
@@ -22,8 +22,15 @@ public interface DatabaseQuery {
 
     public List<String> findAllTranscripts();
 
+    /**
+     * Kann sich Events zurückgeben lassen
+     *
+     * @param isoform1 TranscriptID 1
+     * @param isoform2 TranscriptID 2
+     * @return new Event()
+     */
     public Event getEvent(String isoform1, String isoform2);
-    
+
     public Gene getGene(String geneID);
 
     public Transcript getTranscript(String transcriptID);

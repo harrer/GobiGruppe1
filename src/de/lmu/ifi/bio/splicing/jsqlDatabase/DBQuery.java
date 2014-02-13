@@ -14,7 +14,13 @@ public class DBQuery implements DatabaseQuery {
     public DBQuery() {
         db = new DB_Backend();
     }
-    
+
+    @Override
+    public Event getEvent() {
+        //TODO getEvent() -> ohne Parameter
+        return null;
+    }
+
     @Override
     public List<String> search(String keyword) {
         if (keyword == null)
