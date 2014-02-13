@@ -53,16 +53,14 @@ public class DB_Backend {
     }
 
     public Connection getConnection() throws SQLException {
-        Connection conn = null;
         Properties connectionProps = new Properties();
         connectionProps.put("user", this.userName);
         connectionProps.put("password", this.password);
 
-        conn = DriverManager.getConnection("jdbc:mysql://"
+        return  DriverManager.getConnection("jdbc:mysql://"
                 + this.serverName + ":" + this.portNumber + "/" + this.dbName,
                 connectionProps);
 
-        return conn;
     }
 
     /**
