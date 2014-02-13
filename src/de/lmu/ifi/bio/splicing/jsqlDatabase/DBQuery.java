@@ -132,7 +132,7 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
-        return new Event(isoform1, isoform2, (long) result[0][0], (long) result[0][1], (char) result[0][2]);
+        return new Event(isoform1, isoform2, (long) result[0][0], (long) result[0][1], ((String) result[0][2]).charAt(0));
     }
     
     @Override
