@@ -9,3 +9,4 @@ out/
 lib/
 *.iml
 /nbproject/private/
+/bin
