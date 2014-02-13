@@ -53,7 +53,7 @@ public class DBUpdate implements DatabaseUpdate {
         }
         
         try {
-            db.executeUpdate(insert);
+            db.executeUpdate(insert.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -61,7 +61,8 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertExon(HashMap<String,List<Exon>> exons) {
-        String insert = "insert into Exon(start,stop,frame,transcriptId,proteinId) values(" + exon.getStart() + "," + exon.getStop() + "," + exon.getFrame() + "," + transcript.getTranscriptId() + "," + transcript.getProteinId() + ")";
+        String insert = "";
+//        String insert = "insert into Exon(start,stop,frame,transcriptId,proteinId) values(" + exon.getStart() + "," + exon.getStop() + "," + exon.getFrame() + "," + transcript.getTranscriptId() + "," + transcript.getProteinId() + ")";
         try {
             db.executeUpdate(insert);
         } catch (SQLException e) {
