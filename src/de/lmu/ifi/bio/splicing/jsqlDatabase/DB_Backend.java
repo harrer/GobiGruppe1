@@ -1,10 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -46,21 +42,19 @@ public class DB_Backend {
     public DB_Backend() {
         try {
             this.connection = getConnection();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException, ClassNotFoundException {
         Properties connectionProps = new Properties();
         connectionProps.put("user", this.userName);
         connectionProps.put("password", this.password);
-
-        return  DriverManager.getConnection("jdbc:mysql://"
+        Class.forName("com.mysql.jdbc.Driver");
+        return DriverManager.getConnection("jdbc:mysql://"
                 + this.serverName + ":" + this.portNumber + "/" + this.dbName,
                 connectionProps);
-
     }
 
     /**

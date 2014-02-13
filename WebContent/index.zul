@@ -1,80 +1,51 @@
 <window width="800px" border="normal" apply="org.zkoss.bind.BindComposer"
         title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hbox id="main">
-        <vbox width="100px" id="left">
+        <vbox width="140px" id="left">
             <hbox align="center">
                 Keyword:
                 <textbox value="@bind(vm.keyword)"/>
-                <button id="searchButton" label="Search" onClick="@command('search')"/>
+                <vbox>
+                    <button id="searchButton" label="Search" onClick="@command('search')"/>
+                    <button id="submitButton" label="Submit" onClick="@command('add')"/>
+                </vbox>
             </hbox>
-            <listbox id="searchListbox" emptyMessage="No gene etc. found" model="@bind(vm.searchlist)" height="500"
+            <listbox id="searchListbox" width="200px" rows="20" emptyMessage="No gene etc. found"
+                     model="@bind(vm.searchlist)"
                      multiple="true" checkmark="true" selectedItems="@bind(vm.selectedSearchList)">
                 <listhead>
                     <listheader label="Entity"/>
                 </listhead>
-                <template name="model">
-                    <listitem>
-                        <listcell label="@bind(each)"/>
-                    </listitem>
-                </template>
+                <!--<template name="model">-->
+                <!--<listitem>-->
+                <!--<listcell label="@bind(each)"/>-->
+                <!--</listitem>-->
+                <!--</template>-->
             </listbox>
         </vbox>
-            <!--<portallayout orient="horizontal">-->
-                <!--<portalchildren width="50%">-->
-                    <!--<panel height="150px" title="Yahoo">-->
-                        <!--<panelchildren>-->
-                            <!--<hbox width="100px">-->
-                                <!--Liste:-->
-                                <!--<listbox>-->
-                                    <!--<listhead>-->
-                                        <!--<listheader label="I1"/>-->
-                                        <!--<listheader label="I2"/>-->
-                                        <!--<listheader label="Start"/>-->
-                                    <!--</listhead>-->
-                                    <!--<listitem>-->
-                                        <!--<listcell label="${each.model}"/>-->
-                                        <!--<listcell label="${each.make}"/>-->
-                                        <!--<listcell label="${each.make}"/>-->
-                                    <!--</listitem>-->
-                                <!--</listbox>-->
-                            <!--</hbox>-->
-                        <!--</panelchildren>-->
-                    <!--</panel>-->
-                    <!--<panel height="300px" title="Google">-->
-                        <!--<panelchildren>-->
-                            <!--<hbox/>-->
-                        <!--</panelchildren>-->
-                    <!--</panel>-->
-                <!--</portalchildren>-->
-                <!--<portalchildren width="50%">-->
-                    <!--<panel height="150px" title="ZK">-->
-                        <!--<panelchildren>-->
-                            <!--<hbox/>-->
-                        <!--</panelchildren>-->
-                    <!--</panel>-->
-                <!--</portalchildren>-->
-            <!--</portallayout>-->
-            <listbox id="detailedview" height="500px">
-                <listhead>
-                    <listheader label="I1"/>
-                    <listheader label="I2"/>
-                    <listheader label="Start"/>
-                    <listheader label="Stop"/>
-                    <listheader label="Pattern"/>
-                    <listheader label="SecStruc"/>
-                    <listheader label="Acc"/>
-                </listhead>
-                <template name="model">
-                    <listitem>
-                        <listcell label="${each.model}"/>
-                        <listcell label="${each.make}"/>
-                        <listcell label="${each.make}"/>
-                        <listcell label="${each.make}"/>
-                        <listcell label="${each.make}"/>
-                        <listcell label="${each.make}"/>
-                        <listcell label="${each.make}"/>
-                    </listitem>
-                </template>
-            </listbox>
+        <listbox id="detailedview" height="500px">
+            <listhead>
+                <listheader label="I1"/>
+                <listheader label="I2"/>
+                <listheader label="Start"/>
+                <listheader label="Stop"/>
+                <listheader label="Type"/>
+                <listheader label="Pattern"/>
+                <listheader label="SEC"/>
+                <listheader label="ACC"/>
+            </listhead>
+            <template name="model">
+                <listitem>
+                    <listcell label="${each.model}"/>
+                    <listcell label="${each.make}"/>
+                    <listcell label="${each.make}"/>
+                    <listcell label="${each.make}"/>
+                    <listcell label="${each.make}"/>
+                    <listcell label="${each.make}"/>
+                    <listcell label="${each.make}"/>
+                    <listcell label="${each.make}"/>
+                </listitem>
+            </template>
+        </listbox>
     </hbox>
 </window>

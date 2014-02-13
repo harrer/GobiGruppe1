@@ -28,4 +28,8 @@ public interface DatabaseQuery {
      * @param proteinID may be null, transcriptID must be valid
      */
     public Transcript getTranscript(String transcriptID, String proteinID);
+
+    public Transcript getTranscriptByTranscriptid(String transcriptID);
+
+    public Transcript getTranscriptByProteinid(String proteinid);
 }

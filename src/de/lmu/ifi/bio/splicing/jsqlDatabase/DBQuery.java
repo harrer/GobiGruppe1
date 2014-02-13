@@ -16,6 +16,8 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<String> search(String keyword) {
+        if (keyword == null)
+            return findAllGenes();
         if (keyword.isEmpty())
             return findAllGenes();
         DB_Backend db = new DB_Backend();

@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
@@ -12,19 +13,20 @@ import java.util.List;
  * Created by Carsten on 13.02.14.
  */
 public class DataImpl implements Data {
-    List<String> searchlist = new LinkedList<>();
-    DBQuery dbq = new DBQuery();
+    List<String> searchlist;
+    List<Event> eventlist;
+    DBQuery dbq;
 
     //TODO Query auf Database
     DataImpl() {
-//        searchlist.add("ENSG2929293");
-//        searchlist.add("ENSG2320392093");
-//        searchlist.add("ENST2398283928");
+        dbq = new DBQuery();
+        searchlist = new LinkedList<>();
+        eventlist = new ArrayList<>();
     }
 
     @Override
     public List<String> findAll() {
-        return new DBQuery().findAllGenes();
+        return dbq.findAllGenes();
     }
 
     @Override
@@ -33,7 +35,7 @@ public class DataImpl implements Data {
     }
 
     @Override
-    public List<Object[]> select(List<String> keylist) {
+    public List<EventDisplay> select(List<String> keylist) {
         //TODO select implement
         //liste von strings die geneids, transcriptids und proteinids enthalten
         //muss jeweils mit get gene/transcript abgefragt werden
