@@ -19,11 +19,7 @@ public class map {
     public String createColoringJmolScript(Set<Event> events, int[][] aligned){
         StringBuilder jmolScript = new StringBuilder();
         for (Event event : events) {
-            if(event.isReplace()){
-//                jmolScript.append("select " + event.getStart() + "-" + event.getStop() + "\ncolor green");
-            } else  {
-//                jmolScript.append("select " + event.getStart() + "-" + event.getStop() + "\ncolor red");
-            }
+
         }
         return jmolScript.toString();
     }
