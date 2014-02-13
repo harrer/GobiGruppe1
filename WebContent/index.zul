@@ -8,7 +8,7 @@
                 <button id="searchButton" label="Search" onClick="@command('search')"/>
             </hbox>
             <listbox id="searchListbox" emptyMessage="No gene etc. found" model="@bind(vm.searchlist)" height="500"
-                     multiple="true" checkmark="true">
+                     multiple="true" checkmark="true" selectedItems="@bind(vm.selectedSearchList)">
                 <listhead>
                     <listheader label="Entity"/>
                 </listhead>
@@ -19,22 +19,41 @@
                 </template>
             </listbox>
         </vbox>
-        <vbox id="right" width="400px">
-            <hbox width="100px">
-                Liste:
-                <listbox>
-                    <listhead>
-                        <listheader label="I1"/>
-                        <listheader label="I2"/>
-                        <listheader label="Start"/>
-                    </listhead>
-                    <listitem>
-                        <listcell label="${each.model}"/>
-                        <listcell label="${each.make}"/>
-                        <listcell label="${each.make}"/>
-                    </listitem>
-                </listbox>
-            </hbox>
+            <portallayout orient="horizontal">
+                <portalchildren width="50%">
+                    <panel height="150px" title="Yahoo">
+                        <panelchildren>
+                            <hbox width="100px">
+                                Liste:
+                                <listbox>
+                                    <listhead>
+                                        <listheader label="I1"/>
+                                        <listheader label="I2"/>
+                                        <listheader label="Start"/>
+                                    </listhead>
+                                    <listitem>
+                                        <listcell label="${each.model}"/>
+                                        <listcell label="${each.make}"/>
+                                        <listcell label="${each.make}"/>
+                                    </listitem>
+                                </listbox>
+                            </hbox>
+                        </panelchildren>
+                    </panel>
+                    <panel height="300px" title="Google">
+                        <panelchildren>
+                            <hbox/>
+                        </panelchildren>
+                    </panel>
+                </portalchildren>
+                <portalchildren width="50%">
+                    <panel height="150px" title="ZK">
+                        <panelchildren>
+                            <hbox/>
+                        </panelchildren>
+                    </panel>
+                </portalchildren>
+            </portallayout>
             <listbox id="detailedview" height="500px">
                 <listhead>
                     <listheader label="I1"/>
@@ -57,10 +76,5 @@
                     </listitem>
                 </template>
             </listbox>
-            <hbox/>
-            <hbox/>
-            <hbox/>
-            <hbox/>
-        </vbox>
     </hbox>
 </window>

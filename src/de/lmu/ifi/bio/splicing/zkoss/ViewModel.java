@@ -45,4 +45,9 @@ public class ViewModel {
     public void search() {
         searchlist = data.search(keyword);
     }
+
+    @NotifyChange("detailedview")
+    public void processSelectedItems() {
+
+    }
 }

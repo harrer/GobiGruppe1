@@ -37,7 +37,7 @@ public class DataImpl implements Data {
     }
 
     @Override
-    public List<Object> select(List<String> keylist) {
+    public List<Object[]> select(List<String> keylist) {
         //TODO select implement
         //liste von strings die geneids, transcriptids und proteinids enthalten
         //muss jeweils mit get gene/transcript abgefragt werden
