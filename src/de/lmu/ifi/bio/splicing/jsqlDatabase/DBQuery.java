@@ -17,25 +17,23 @@ public class DBQuery implements DatabaseQuery {
         return null;
     }
 
-    
-
     @Override
     public List<String> search(String keyword) {
         if (keyword.isEmpty())
             return findAllGenes();
         DB_Backend db = new DB_Backend();
         String query = "SELECT transcriptid FROM gobi1.Transcript WHERE transcriptid LIKE '%" + keyword + "%';";
-        Object[][] result = null;
+        Object[] result = null;
         try {
-            result = db.select(query);
+            result = db.select_oneColumn(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         List<String> liste = new LinkedList<>();
 
         if (result != null && result.length > 1) {
-            for (Object[] objects : result) {
-                liste.add((String) objects[0]);
+            for (Object object : result) {
+                liste.add((String) object);
             }
         }
 
@@ -48,8 +46,8 @@ public class DBQuery implements DatabaseQuery {
         }
 
         if (result != null && result.length > 1) {
-            for (Object[] objects : result) {
-                liste.add((String) objects[0]);
+            for (Object object : result) {
+                liste.add((String) object);
             }
         }
 
@@ -62,8 +60,8 @@ public class DBQuery implements DatabaseQuery {
         }
 
         if (result != null && result.length > 1) {
-            for (Object[] objects : result) {
-                liste.add((String) objects[0]);
+            for (Object object : result) {
+                liste.add((String) object);
             }
         }
 
@@ -76,7 +74,7 @@ public class DBQuery implements DatabaseQuery {
         String query = "SELECT geneid FROM gobi1.Gene";
         Object[] result = null;
         try {
-            result = db.select(query);
+            result = db.select_oneColumn(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -96,17 +94,17 @@ public class DBQuery implements DatabaseQuery {
     public List<String> findAllTranscripts() {
         DB_Backend db = new DB_Backend();
         String query = "SELECT transcriptid FROM gobi1.Transcript";
-        Object[][] result = null;
+        Object[] result = null;
         try {
-            result = db.select(query);
+            result = db.select_oneColumn(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         List<String> liste = new LinkedList<>();
 
-        for (Object[] objects : result) {
-            liste.add((String) objects[0]);
+        for (Object object : result) {
+            liste.add((String) object);
         }
         return liste;
     }
@@ -115,17 +113,17 @@ public class DBQuery implements DatabaseQuery {
     public List<String> findAllProteins() {
         DB_Backend db = new DB_Backend();
         String query = "SELECT proteinid FROM gobi1.Transcript";
-        Object[][] result = null;
+        Object[] result = null;
         try {
-            result = db.select(query);
+            result = db.select_oneColumn(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         List<String> liste = new LinkedList<>();
 
-        for (Object[] objects : result) {
-            liste.add((String) objects[0]);
+        for (Object object : result) {
+            liste.add((String) object);
         }
         return liste;
     }
