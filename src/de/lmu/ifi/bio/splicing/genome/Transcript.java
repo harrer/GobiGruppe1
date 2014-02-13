@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Transcript implements Search{
-	List<Exon> cds;
+public class Transcript implements Search {
+    List<Exon> cds;
     String transcript_id;
     String protein_id;
 
@@ -34,9 +34,9 @@ public class Transcript implements Search{
     }
 
     @Override
-    public List<Object> search(String keyword) {
+    public List<String> search(String keyword) {
         if (transcript_id.contains(keyword) || protein_id.contains(keyword))
-            return Arrays.asList((Object) this);
+            return Arrays.asList(transcript_id, protein_id);
         return Arrays.asList();
     }
 }

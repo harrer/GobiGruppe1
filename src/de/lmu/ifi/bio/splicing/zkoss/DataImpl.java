@@ -2,50 +2,45 @@ package de.lmu.ifi.bio.splicing.zkoss;
 
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by Carsten on 13.02.14.
  */
 public class DataImpl implements Data {
-    List<Object> searchlist = new ArrayList<>();
+    List<String> searchlist = new LinkedList<>();
 
+    //TODO Query auf Database
     DataImpl() {
-        searchlist.add(new Gene("ENSG0000023", "1", true));
-        searchlist.add(new Gene("ENSG0320002", "1", true));
-        searchlist.add(new Gene("ENSG0033002", "1", true));
-        searchlist.add(new Transcript("ENST3999393", "ENSP9999323"));
-        searchlist.add(new Transcript("ENST399953", "ENSP9999323"));
-        searchlist.add(new Transcript("ENST399923", "ENSP999923"));
-        searchlist.add(new Transcript("ENST399923", "ENSP999923"));
-    }
-
-
-    @Override
-    public List<Gene> findAll() {
-        List<Gene> genes = new ArrayList<>();
-        for (Object o : searchlist) {
-            if (o instanceof Gene) {
-                genes.add((Gene) o);
-            }
-        }
-        return genes;
+//        searchlist.add("ENSG2929293");
+//        searchlist.add("ENSG2320392093");
+//        searchlist.add("ENST2398283928");
     }
 
     @Override
-    public List<Object> search(String keyword) {
-        List<Object> tmp = new ArrayList<>();
-        for (Object o : searchlist) {
-            if (o instanceof Transcript) tmp.add(((Transcript) o).search(keyword));
-            else tmp.add((Gene) ((Gene) o).search(keyword));
-        }
-        return tmp;
+    public List<String> findAll() {
+        return new DBQuery().findAllGenes();
     }
 
     @Override
-    public List<Object> select() {
+    public List<String> search(String keyword) {
+        if (keyword == null)
+            return findAll();
+        List<String> tmp = new ArrayList<>();
+
+        DBQuery dbq = new DBQuery();
+        return dbq.search(keyword);
+    }
+
+    @Override
+    public List<Object> select(List<String> keylist) {
+        //TODO select implement
+        //liste von strings die geneids, transcriptids und proteinids enthalten
+        //muss jeweils mit get gene/transcript abgefragt werden
         return null;
     }
 }

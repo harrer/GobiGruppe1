@@ -1,6 +1,10 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.NotifyChange;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -8,19 +12,19 @@ import java.util.List;
  */
 public class ViewModel {
     private String keyword;
-    private List<Object> searchList = new ArrayList<>();
-    private List<Object> selectedSearchList = new ArrayList<>();
+    private List<String> searchlist = new ArrayList<>();
+    private List<String> selectedSearchList = new ArrayList<>();
     private Data data = new DataImpl();
 
     public String getKeyword() {
         return keyword;
     }
 
-    public List<Object> getSearchList() {
-        return searchList;
+    public List<String> getSearchlist() {
+        return searchlist;
     }
 
-    public List<Object> getSelectedSearchList() {
+    public List<String> getSelectedSearchList() {
         return selectedSearchList;
     }
 
@@ -28,11 +32,17 @@ public class ViewModel {
         this.keyword = keyword;
     }
 
-    public void setSearchList(List<Object> searchList) {
-        this.searchList = searchList;
+    public void setSearchlist(List<String> searchlist) {
+        this.searchlist = searchlist;
     }
 
-    public void setSelectedSearchList(List<Object> selectedSearchList) {
+    public void setSelectedSearchList(List<String> selectedSearchList) {
         this.selectedSearchList = selectedSearchList;
+    }
+
+    @Command
+    @NotifyChange("searchlist")
+    public void search() {
+        searchlist = data.search(keyword);
     }
 }

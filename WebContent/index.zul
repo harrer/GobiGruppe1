@@ -4,19 +4,19 @@
         <vbox width="100px" id="left">
             <hbox align="center">
                 Keyword:
-                <textbox id="@bind(vm.keyword)"/>
-                <button id="searchButton" label="Search"/>
+                <textbox value="@bind(vm.keyword)"/>
+                <button id="searchButton" label="Search" onClick="@command('search')"/>
             </hbox>
-            <listbox id="searchListbox" emptyMessage="No Gene/Transcript/Protein Found"
-                     height="500px" model="@bind(vm.searchList)">
+            <listbox id="searchListbox" emptyMessage="No gene etc. found" model="@bind(vm.searchlist)" height="500"
+                     multiple="true" checkmark="true">
                 <listhead>
-                    <listheader label="Model"/>
-                    <listheader label="Make"/>
+                    <listheader label="Entity"/>
                 </listhead>
-                <listitem>
-                    <listcell label="${each.model}"></listcell>
-                    <listcell label="${each.make}"></listcell>
-                </listitem>
+                <template name="model">
+                    <listitem>
+                        <listcell label="@bind(each)"/>
+                    </listitem>
+                </template>
             </listbox>
         </vbox>
         <vbox id="right" width="400px">
@@ -29,9 +29,9 @@
                         <listheader label="Start"/>
                     </listhead>
                     <listitem>
-                        <listcell label="${each.model}"></listcell>
-                        <listcell label="${each.make}"></listcell>
-                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.model}"/>
+                        <listcell label="${each.make}"/>
+                        <listcell label="${each.make}"/>
                     </listitem>
                 </listbox>
             </hbox>
@@ -47,20 +47,20 @@
                 </listhead>
                 <template name="model">
                     <listitem>
-                        <listcell label="${each.model}"></listcell>
-                        <listcell label="${each.make}"></listcell>
-                        <listcell label="${each.make}"></listcell>
-                        <listcell label="${each.make}"></listcell>
-                        <listcell label="${each.make}"></listcell>
-                        <listcell label="${each.make}"></listcell>
-                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.model}"/>
+                        <listcell label="${each.make}"/>
+                        <listcell label="${each.make}"/>
+                        <listcell label="${each.make}"/>
+                        <listcell label="${each.make}"/>
+                        <listcell label="${each.make}"/>
+                        <listcell label="${each.make}"/>
                     </listitem>
                 </template>
             </listbox>
-            <hbox></hbox>
-            <hbox></hbox>
-            <hbox></hbox>
-            <hbox></hbox>
+            <hbox/>
+            <hbox/>
+            <hbox/>
+            <hbox/>
         </vbox>
     </hbox>
 </window>
