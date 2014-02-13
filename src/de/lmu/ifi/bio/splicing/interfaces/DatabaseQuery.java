@@ -5,7 +5,6 @@ import de.lmu.ifi.bio.splicing.genome.*;
 import java.util.List;
 
 public interface DatabaseQuery {
-    public Event getEvent();
 
     /**
      * Soll nach Gene Ids, Transcript Ids und Protein Ids suchen können
@@ -21,6 +20,8 @@ public interface DatabaseQuery {
 
     public List<String> findAllTranscripts();
 
+    public Event getEvent(String isoform1, String isoform2);
+    
     public Gene getGene(String geneID);
 
     public Transcript getTranscript(String transcriptID);
