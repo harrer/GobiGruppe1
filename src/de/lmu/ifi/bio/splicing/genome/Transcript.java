@@ -1,9 +1,12 @@
 package de.lmu.ifi.bio.splicing.genome;
 
+import de.lmu.ifi.bio.splicing.interfaces.Search;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class Transcript {
+public class Transcript implements Search{
 	List<Exon> cds;
     String transcript_id;
     String protein_id;
@@ -30,4 +33,10 @@ public class Transcript {
         return cds;
     }
 
+    @Override
+    public List<Object> search(String keyword) {
+        if (transcript_id.contains(keyword) || protein_id.contains(keyword))
+            return Arrays.asList((Object) this);
+        return Arrays.asList();
+    }
 }

@@ -1,72 +1,66 @@
-<window width="800px" border="normal" apply="tutorial.SearchController"
-	title="ProSAS" height="800px">
-
-
-
-	<hbox id="main">
-		<vbox width="100px" id="left">
-			<hbox align="center">
-				Keyword:
-				<textbox id="keywordBox" />
-				<button id="searchButton" label="Search" image="/img/search.png" />
-			</hbox>
-			<listbox id="carListbox" emptyMessage="No car found in the result"
-				height="500px">
-				<listhead>
-					<listheader label="Model" />
-					<listheader label="Make" />
-				</listhead>
-				<template name="model">
-					<listitem>
-						<listcell label="${each.model}"></listcell>
-						<listcell label="${each.make}"></listcell>
-					</listitem>
-				</template>
-			</listbox>
-		</vbox>
-		<vbox id="right" width="400px">
-			<hbox width="100px">
-			Liste:
-			<listbox>
-			<listhead>
-			<listheader label="I1"/>
-			<listheader label="I2"/>
-			<listheader label="Start"/>
-			</listhead>
-			<template name="model">
-					<listitem>
-						<listcell label="${each.model}"></listcell>
-						<listcell label="${each.make}"></listcell>
-						<listcell label="${each.make}"></listcell>
-					</listitem>
-				</template>
-			</listbox></hbox>
-			<listbox id="detailedview" height="500px">
-			<listhead>
-			<listheader label="I1"/>
-			<listheader label="I2"/>
-			<listheader label="Start"/>
-			<listheader label="Stop"/>
-			<listheader label="Pattern"/>
-			<listheader label="SecStruc"/>
-			<listheader label="Acc"/>
-			</listhead>
-			<template name="model">
-					<listitem>
-						<listcell label="${each.model}"></listcell>
-						<listcell label="${each.make}"></listcell>
-						<listcell label="${each.make}"></listcell>
-						<listcell label="${each.make}"></listcell>
-						<listcell label="${each.make}"></listcell>
-						<listcell label="${each.make}"></listcell>
-						<listcell label="${each.make}"></listcell>
-					</listitem>
-				</template>
-			</listbox>
-			<hbox></hbox>
-			<hbox></hbox>
-			<hbox></hbox>
-			<hbox></hbox>
-		</vbox>
-	</hbox>
+<window width="800px" border="normal" apply="org.zkoss.bind.BindComposer"
+        title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
+    <hbox id="main">
+        <vbox width="100px" id="left">
+            <hbox align="center">
+                Keyword:
+                <textbox id="@bind(vm.keyword)"/>
+                <button id="searchButton" label="Search"/>
+            </hbox>
+            <listbox id="searchListbox" emptyMessage="No Gene/Transcript/Protein Found"
+                     height="500px" model="@bind(vm.searchList)">
+                <listhead>
+                    <listheader label="Model"/>
+                    <listheader label="Make"/>
+                </listhead>
+                <listitem>
+                    <listcell label="${each.model}"></listcell>
+                    <listcell label="${each.make}"></listcell>
+                </listitem>
+            </listbox>
+        </vbox>
+        <vbox id="right" width="400px">
+            <hbox width="100px">
+                Liste:
+                <listbox>
+                    <listhead>
+                        <listheader label="I1"/>
+                        <listheader label="I2"/>
+                        <listheader label="Start"/>
+                    </listhead>
+                    <listitem>
+                        <listcell label="${each.model}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                    </listitem>
+                </listbox>
+            </hbox>
+            <listbox id="detailedview" height="500px">
+                <listhead>
+                    <listheader label="I1"/>
+                    <listheader label="I2"/>
+                    <listheader label="Start"/>
+                    <listheader label="Stop"/>
+                    <listheader label="Pattern"/>
+                    <listheader label="SecStruc"/>
+                    <listheader label="Acc"/>
+                </listhead>
+                <template name="model">
+                    <listitem>
+                        <listcell label="${each.model}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                        <listcell label="${each.make}"></listcell>
+                    </listitem>
+                </template>
+            </listbox>
+            <hbox></hbox>
+            <hbox></hbox>
+            <hbox></hbox>
+            <hbox></hbox>
+        </vbox>
+    </hbox>
 </window>

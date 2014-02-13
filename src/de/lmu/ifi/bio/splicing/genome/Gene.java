@@ -1,8 +1,11 @@
 package de.lmu.ifi.bio.splicing.genome;
 
-import java.util.HashMap;
+import de.lmu.ifi.bio.splicing.interfaces.Search;
 
-public class Gene {
+import java.util.HashMap;
+import java.util.List;
+
+public class Gene implements Search{
     HashMap<String, Transcript> hashmap_transcriptid; //transcript_id
     HashMap<String, Transcript> hashmap_proteinid; //protein_id als key
     String geneId, chromosome;
@@ -73,5 +76,11 @@ public class Gene {
         result = 31 * result + chromosome.hashCode();
         result = 31 * result + (strand ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public List<Object> search(String keyword) {
+        //TODO implement search through Gene
+        return null;
     }
 }
