@@ -1,7 +1,9 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.lmu.ifi.bio.splicing.interfaces.*;
@@ -23,6 +25,8 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<String> search(String keyword) {
+        if (keyword.isEmpty())
+            return findAllGenes();
         DB_Backend db = new DB_Backend();
         String query = "SELECT transcriptid FROM gobi1.Transcript WHERE transcriptid LIKE '%" + keyword + "%';";
         Object[][] result = null;
@@ -31,13 +35,15 @@ public class DBQuery implements DatabaseQuery {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        List<String> liste = null;
+        List<String> liste = new LinkedList<>();
 
-        for (Object[] objects : result) {
-            liste.add((String) objects[0]);
+        if (result != null && result.length > 1) {
+            for (Object[] objects : result) {
+                liste.add((String) objects[0]);
+            }
         }
 
-        query = "SELECT proteinid FROM gobi1.Protein WHERE proteinid LIKE '%" + keyword + "%';";
+        query = "SELECT proteinid FROM gobi1.Transcript WHERE proteinid LIKE '%" + keyword + "%';";
         result = null;
         try {
             result = db.select(query);
@@ -45,8 +51,10 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
         }
 
-        for (Object[] objects : result) {
-            liste.add((String) objects[0]);
+        if (result != null && result.length > 1) {
+            for (Object[] objects : result) {
+                liste.add((String) objects[0]);
+            }
         }
 
         query = "SELECT geneid FROM gobi1.Gene WHERE geneid LIKE '%" + keyword + "%';";
@@ -57,10 +65,72 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
         }
 
+        if (result != null && result.length > 1) {
+            for (Object[] objects : result) {
+                liste.add((String) objects[0]);
+            }
+        }
+
+        return liste;
+    }
+
+    @Override
+    public List<String> findAllGenes() {
+        DB_Backend db = new DB_Backend();
+        String query = "SELECT geneid FROM gobi1.Gene";
+        Object[] result = null;
+        try {
+            result = db.select(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<String> liste = new LinkedList<>();
+
+        if (result != null && result.length > 1) {
+            for (int i = 0; i < result.length; i++) {
+                System.out.println((String) result[i]);
+//                liste.add((String) result[i][0]);
+            }
+        }
+        return liste;
+    }
+
+    @Override
+    public List<String> findAllTranscripts() {
+        DB_Backend db = new DB_Backend();
+        String query = "SELECT transcriptid FROM gobi1.Transcript";
+        Object[][] result = null;
+        try {
+            result = db.select(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<String> liste = new LinkedList<>();
+
         for (Object[] objects : result) {
             liste.add((String) objects[0]);
         }
+        return liste;
+    }
 
+    @Override
+    public List<String> findAllProteins() {
+        DB_Backend db = new DB_Backend();
+        String query = "SELECT proteinid FROM gobi1.Transcript";
+        Object[][] result = null;
+        try {
+            result = db.select(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<String> liste = new LinkedList<>();
+
+        for (Object[] objects : result) {
+            liste.add((String) objects[0]);
+        }
         return liste;
     }
 
@@ -83,7 +153,7 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
-        for (int i = 0; i < result.length; i++) {
+        for (int i = 0; i < result[0].length; i++) {
             gene.addTranscript(getTranscript((String) result[i][0], (String) result[i][1]));
         }
 
@@ -102,7 +172,7 @@ public class DBQuery implements DatabaseQuery {
             return null;
         }
         Transcript transcript = new Transcript(transcriptID, proteinID);
-        for (int i = 0; i < result.length; i++) {
+        for (int i = 0; i < result[0].length; i++) {
             Exon ex = new Exon((long) result[i][0], (long) result[i][1], (int) result[i][2]);
             transcript.addExon(ex);
         }

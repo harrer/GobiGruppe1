@@ -4,6 +4,7 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class ViewModel {
     private String keyword;
-    private List<String> searchList = new ArrayList<>();
+    private List<String> searchlist = new ArrayList<>();
     private List<String> selectedSearchList = new ArrayList<>();
     private Data data = new DataImpl();
 
@@ -19,8 +20,8 @@ public class ViewModel {
         return keyword;
     }
 
-    public List<String> getSearchList() {
-        return searchList;
+    public List<String> getSearchlist() {
+        return searchlist;
     }
 
     public List<String> getSelectedSearchList() {
@@ -31,8 +32,8 @@ public class ViewModel {
         this.keyword = keyword;
     }
 
-    public void setSearchList(List<String> searchList) {
-        this.searchList = searchList;
+    public void setSearchlist(List<String> searchlist) {
+        this.searchlist = searchlist;
     }
 
     public void setSelectedSearchList(List<String> selectedSearchList) {
@@ -40,9 +41,8 @@ public class ViewModel {
     }
 
     @Command
-    @NotifyChange("searchList")
+    @NotifyChange("searchlist")
     public void search() {
-        searchList = data.search(keyword);
+        searchlist = data.search(keyword);
     }
-
 }
