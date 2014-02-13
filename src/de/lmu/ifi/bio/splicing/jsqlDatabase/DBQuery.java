@@ -1,19 +1,12 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import java.sql.SQLException;
-import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
 public class DBQuery implements DatabaseQuery{
 
 	@Override
 	public Event getEvent() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Exon getExon() {
 		// TODO Auto-generated method stub
 		return null;
 	}
