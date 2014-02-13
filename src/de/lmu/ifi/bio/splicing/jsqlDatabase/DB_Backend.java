@@ -53,16 +53,14 @@ public class DB_Backend {
     }
 
     public Connection getConnection() throws SQLException {
-        Connection conn = null;
         Properties connectionProps = new Properties();
         connectionProps.put("user", this.userName);
         connectionProps.put("password", this.password);
 
-        conn = DriverManager.getConnection("jdbc:mysql://"
+        return  DriverManager.getConnection("jdbc:mysql://"
                 + this.serverName + ":" + this.portNumber + "/" + this.dbName,
                 connectionProps);
 
-        return conn;
     }
 
     /**
@@ -147,8 +145,8 @@ public class DB_Backend {
         }
         return row.toArray(new Object[]{});
     }
-
-    public Object[][] select(String select) throws SQLException {
+    
+    public Object[][] select(String select, int length) throws SQLException {
         Statement stmt = null;
         ArrayList<Object> row = new ArrayList<>();
         ArrayList<Object[]> list = new ArrayList<>();
@@ -156,7 +154,7 @@ public class DB_Backend {
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(select);
             while (rs.next()) {
-                for (int i = 1; i <= rs.getFetchSize(); i++) {
+                for (int i = 1; i <= length; i++) {
                     Object o = rs.getObject(i);
                     row.add(o);
                 }

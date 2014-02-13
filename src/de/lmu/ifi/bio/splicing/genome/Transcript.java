@@ -17,8 +17,8 @@ public class Transcript implements Search {
         this.cds = new ArrayList<>();
     }
 
-    public void addExon(Exon abstractExon) {
-        cds.add(abstractExon);
+    public void addExon(Exon exon) {
+        cds.add(exon);
     }
 
     public String getTranscriptId() {

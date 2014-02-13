@@ -1,11 +1,13 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
 import java.sql.SQLException;
 
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertGene(Gene gene) {
-        String insert = "insert into Gene values(" + gene.getGeneId() + "," + gene.getChromosome() + "," + gene.getStrand() + ")";
+        String insert = "insert into Gene values('" + gene.getGeneId() + "','" + gene.getChromosome() + "'," + gene.getStrand() + ")";
         try {
             db.executeUpdate(insert);
         } catch (SQLException e) {
@@ -55,7 +57,7 @@ public class DBUpdate implements DatabaseUpdate {
             }
             Transcript t = en.getValue();
             exons_with_transIds.put(t.getTranscriptId(), t.getCds());
-            insert.append('(').append(t.getTranscriptId()).append(',').append(t.getProteinId()).append(',').append(gene.getGeneId()).append(")");
+            insert.append("('").append(t.getTranscriptId()).append("','").append(t.getProteinId()).append("','").append(gene.getGeneId()).append("')");
         }
         try {
             db.executeUpdate(insert.toString());
@@ -78,7 +80,7 @@ public class DBUpdate implements DatabaseUpdate {
                 } else {
                     setComma = true;
                 }
-                insert.append('(').append(exon.getStart()).append(',').append(exon.getStop()).append(',').append(exon.getFrame()).append(',').append(string).append(')');
+                insert.append("('").append(exon.getStart()).append("','").append(exon.getStop()).append("','").append(exon.getFrame()).append("','").append(string).append("')");
             }
         }
         try {
@@ -86,5 +88,21 @@ public class DBUpdate implements DatabaseUpdate {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public static void main(String[] args) {
+        Transcript t1 = new Transcript("ENST1", "ENSP1");
+        t1.addExon(new Exon(12, 32, 1));
+        t1.addExon(new Exon(412, 532, 3));
+        t1.addExon(new Exon(6122, 7232, 2));
+        Transcript t2 = new Transcript("ENST2", "ENSP2");
+        t2.addExon(new Exon(112, 232, 4));
+        t2.addExon(new Exon(516, 562, 2));
+        t2.addExon(new Exon(882, 932, 3));
+        Gene gene =  new Gene("ENSG012", "12", true);
+        gene.addTranscript(t1);
+        gene.addTranscript(t2);
+        DBUpdate db = new DBUpdate();
+        db.insertGene(gene);
     }
 }

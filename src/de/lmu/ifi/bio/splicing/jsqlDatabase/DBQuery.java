@@ -1,12 +1,10 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
 public class DBQuery implements DatabaseQuery {
@@ -133,7 +131,7 @@ public class DBQuery implements DatabaseQuery {
         String query = "select chromosome, strand from Gene where geneId = '" + geneID + "'";
         Object[][] result = null;
         try {
-            result = db.select(query);
+            result = db.select(query,2);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -141,30 +139,38 @@ public class DBQuery implements DatabaseQuery {
         Gene gene = new Gene(geneID, (String) result[0][0], (boolean) result[0][1]);
         query = "Select transcriptId, proteinId from Transcript where geneId = '" + geneID + "'";
         try {
-            result = db.select(query);
+            result = db.select(query,2);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
         for (int i = 0; i < result[0].length; i++) {
-            gene.addTranscript(getTranscript((String) result[i][0], (String) result[i][1]));
+            gene.addTranscript(getTranscript((String) result[i][0]));
         }
 
         return gene;
     }
 
     @Override
-    public Transcript getTranscript(String transcriptID, String proteinID) {
+    public Transcript getTranscript(String transcriptID) {
         DB_Backend db = new DB_Backend();
         String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptID + "'";
         Object[][] result = null;
         try {
-            result = db.select(query);
+            result = db.select(query,3);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
-        Transcript transcript = new Transcript(transcriptID, proteinID);
+        String protId_query = "select proteinid from Transcript where transcriptid = '" + transcriptID + "'";
+        Object[] prot_result = null;
+        try {
+            prot_result = db.select_oneColumn(protId_query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Transcript transcript = new Transcript(transcriptID, (String) prot_result[0]);
         for (int i = 0; i < result[0].length; i++) {
             Exon ex = new Exon((long) result[i][0], (long) result[i][1], (int) result[i][2]);
             transcript.addExon(ex);

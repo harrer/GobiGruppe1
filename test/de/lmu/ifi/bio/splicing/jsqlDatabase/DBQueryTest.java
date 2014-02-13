@@ -3,43 +3,38 @@ package de.lmu.ifi.bio.splicing.jsqlDatabase;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Created by uhligc on 13.02.14.
  */
 public class DBQueryTest {
     DBQuery dbq;
     String keyword;
+
     @Before
     public void setUp() throws Exception {
         dbq = new DBQuery();
-        keyword = "01";
-    }
-
-    @Test
-    public void main() throws Exception {
-        testSearch();
-        testFindAllGenes();
-        testFindAllProteins();
-        testFindAllTranscripts();
+        keyword = "EN";
     }
 
     @Test
     public void testSearch() throws Exception {
-        System.out.println(dbq.search(keyword));
+        assertTrue(dbq.search(keyword).size() > 0);
     }
 
     @Test
     public void testFindAllGenes() throws Exception {
-        System.out.println(dbq.findAllGenes());
+        assertTrue(dbq.findAllGenes().size() > 0);
     }
 
     @Test
     public void testFindAllTranscripts() throws Exception {
-        System.out.println(dbq.findAllTranscripts());
+        assertTrue(dbq.findAllTranscripts().size() > 0);
     }
 
     @Test
     public void testFindAllProteins() throws Exception {
-        System.out.println(dbq.findAllProteins());
+        assertTrue(dbq.findAllProteins().size() > 0);
     }
 }
