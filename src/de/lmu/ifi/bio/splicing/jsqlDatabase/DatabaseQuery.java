@@ -24,8 +24,5 @@ public interface DatabaseQuery {
 
     public Gene getGene(String geneID);
 
-    /**
-     * @param proteinID may be null, transcriptID must be valid
-     */
-    public Transcript getTranscript(String transcriptID, String proteinID);
+    public Transcript getTranscript(String transcriptID);
 }
