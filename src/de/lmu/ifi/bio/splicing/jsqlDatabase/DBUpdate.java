@@ -44,7 +44,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertTranscript(Gene gene) {
-        HashMap<String[], List<Exon>> exons_with_transIds = new HashMap<>();
+        HashMap<String, List<Exon>> exons_with_transIds = new HashMap<>();
         StringBuilder insert = new StringBuilder("insert into Transcript values");
         boolean setComma = false;
         for (Map.Entry<String, Transcript> en : gene.getHashmap_transcriptid().entrySet()) {
@@ -54,7 +54,7 @@ public class DBUpdate implements DatabaseUpdate {
                 setComma = true;
             }
             Transcript t = en.getValue();
-            exons_with_transIds.put(new String[]{t.getTranscriptId(), t.getProteinId()}, t.getCds());
+            exons_with_transIds.put(t.getTranscriptId(), t.getCds());
             insert.append('(').append(t.getTranscriptId()).append(',').append(t.getProteinId()).append(',').append(gene.getGeneId()).append(")");
         }
         try {
@@ -66,11 +66,11 @@ public class DBUpdate implements DatabaseUpdate {
     }
 
     @Override
-    public void insertExon(HashMap<String[], List<Exon>> exons) {
-        StringBuilder insert = new StringBuilder("insert into Exon(start,stop,frame,transcriptId,proteinId) values");
+    public void insertExon(HashMap<String, List<Exon>> exons) {
+        StringBuilder insert = new StringBuilder("insert into Exon(start,stop,frame,transcriptId) values");
         boolean setComma = false;
-        for (Map.Entry<String[], List<Exon>> entry : exons.entrySet()) {
-            String[] string = entry.getKey();
+        for (Map.Entry<String, List<Exon>> entry : exons.entrySet()) {
+            String string = entry.getKey();
             List<Exon> list = entry.getValue();
             for (Exon exon : list) {
                 if (setComma) {
@@ -78,7 +78,7 @@ public class DBUpdate implements DatabaseUpdate {
                 } else {
                     setComma = true;
                 }
-                insert.append('(').append(exon.getStart()).append(',').append(exon.getStop()).append(',').append(exon.getFrame()).append(',').append(string[0]).append(',').append(string[1]).append(')');
+                insert.append('(').append(exon.getStart()).append(',').append(exon.getStop()).append(',').append(exon.getFrame()).append(',').append(string).append(')');
             }
         }
         try {

@@ -9,7 +9,7 @@ public interface DatabaseUpdate {
 
     public void insertTranscript(Gene gene);
 
-    public void insertExon(HashMap<String[],List<Exon>> exons);
+    public void insertExon(HashMap<String,List<Exon>> exons);
 
     public void insertEvent(Event event);
 }
