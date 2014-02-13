@@ -39,4 +39,13 @@ public class Transcript implements Search {
             return Arrays.asList(transcript_id, protein_id);
         return Arrays.asList();
     }
+
+    @Override
+    public String toString() {
+        return "Transcript{" +
+                "cds=" + cds +
+                ", transcript_id='" + transcript_id + '\'' +
+                ", protein_id='" + protein_id + '\'' +
+                '}';
+    }
 }

@@ -43,4 +43,13 @@ public class Exon {
         result = 31 * result + frame;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Exon{" +
+                "start=" + start +
+                ", stop=" + stop +
+                ", frame=" + frame +
+                '}';
+    }
 }

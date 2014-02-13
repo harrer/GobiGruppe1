@@ -31,7 +31,7 @@ public class DBQuery implements DatabaseQuery {
         }
         List<String> liste = new LinkedList<>();
 
-        if (result != null && result.length > 1) {
+        if (result != null && result.length > 0) {
             for (Object object : result) {
                 liste.add((String) object);
             }
@@ -40,12 +40,12 @@ public class DBQuery implements DatabaseQuery {
         query = "SELECT proteinid FROM gobi1.Transcript WHERE proteinid LIKE '%" + keyword + "%';";
         result = null;
         try {
-            result = db.select(query);
+            result = db.select_oneColumn(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        if (result != null && result.length > 1) {
+        if (result != null && result.length > 0) {
             for (Object object : result) {
                 liste.add((String) object);
             }
@@ -54,12 +54,12 @@ public class DBQuery implements DatabaseQuery {
         query = "SELECT geneid FROM gobi1.Gene WHERE geneid LIKE '%" + keyword + "%';";
         result = null;
         try {
-            result = db.select(query);
+            result = db.select_oneColumn(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        if (result != null && result.length > 1) {
+        if (result != null && result.length > 0) {
             for (Object object : result) {
                 liste.add((String) object);
             }
@@ -81,10 +81,9 @@ public class DBQuery implements DatabaseQuery {
 
         List<String> liste = new LinkedList<>();
 
-        if (result != null && result.length > 1) {
+        if (result != null && result.length > 0) {
             for (int i = 0; i < result.length; i++) {
-                System.out.println((String) result[i]);
-//                liste.add((String) result[i][0]);
+                liste.add((String) result[i]);
             }
         }
         return liste;

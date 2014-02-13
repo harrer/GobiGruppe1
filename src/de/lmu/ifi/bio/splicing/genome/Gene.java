@@ -83,4 +83,15 @@ public class Gene implements Search{
         //TODO implement search through Gene
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Gene{" +
+                "hashmap_transcriptid=" + hashmap_transcriptid +
+                ", hashmap_proteinid=" + hashmap_proteinid +
+                ", geneId='" + geneId + '\'' +
+                ", chromosome='" + chromosome + '\'' +
+                ", strand=" + strand +
+                '}';
+    }
 }
