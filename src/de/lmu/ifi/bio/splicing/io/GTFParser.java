@@ -89,7 +89,6 @@ public class GTFParser {
                 if (!pieces[2].equals("CDS")) {
                     continue;
                 }
-
                 // save pieces
                 seqname = pieces[0];
                 source = pieces[1];
