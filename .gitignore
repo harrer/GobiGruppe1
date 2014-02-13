@@ -1,9 +1,9 @@
-/build
-/out
-/.idea
-/.settings
+build/
+out/
+.idea/
+.settings/
 .classpath
 .project
 *.class
 *.jar
-/lib
+lib/
