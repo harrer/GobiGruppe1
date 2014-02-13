@@ -7,14 +7,14 @@ public class Event {
     //i1 und i2 sind transcript ids (keine protein ids)
     String i1, i2;
     long start, stop;
-    boolean replace;
+    byte type; //1 = deletion, 2 = insert, 3 = replace
 
-    public Event(String i1, String i2, long start, long stop, boolean replace) {
+    public Event(String i1, String i2, long start, long stop, byte type) {
         this.i1 = i1;
         this.i2 = i2;
         this.start = start;
         this.stop = stop;
-        this.replace = replace;
+        this.type = type;
     }
 
     public String getI1() {
@@ -33,7 +33,5 @@ public class Event {
         return stop;
     }
 
-    public boolean isReplace() {
-        return replace;
-    }
+    public byte getType() { return type; }
 }

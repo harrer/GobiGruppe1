@@ -7,13 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
-public class EventAnotation {
+public class EventAnnotation {
 	private List<long[]> eventsN, eventsP;
 	private long i1frame;
 	private Transcript t1, t2;
 	private boolean strand;
 
-	public EventAnotation(Transcript t1, Transcript t2, boolean strand) {
+	public EventAnnotation(Transcript t1, Transcript t2, boolean strand) {
 		this.t1 = t1;
 		this.t2 = t2;
 		i1frame = t1.getCds().get(0).getFrame();
@@ -192,40 +192,104 @@ public class EventAnotation {
 		}
 	}
 
+    public void shortenEventsPNew(){
+        List<long[]> shortAreasP1 = new LinkedList<long[]>();
+        List<long[]> shortAreasP2 = new LinkedList<long[]>();
+        long cur1 = 0;
+        long cur2 = 0;
+        long dels = 0;
+        long ins = 0;
+        for (long[] a : eventsP) {
+            if (a[0] == 0) {
+                if (dels != 0) {
+                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
+                    shortAreasP2.add(new long[]{2, cur1, cur1 - 1});
+                    cur1 += dels + 1;
+                    dels = 0;
+                }
+                if (ins != 0) {
+                    shortAreasP1.add(new long[]{2, cur1, cur1 - 1});
+                    shortAreasP2.add(new long[]{1, cur2, cur2 + ins});
+                    cur2 += ins + 1;
+                    ins = 0;
+                }
+                shortAreasP1.add(new long[]{0, cur1, cur1 + a[2] - a[1]});
+                shortAreasP2.add(new long[]{0, cur2, cur2 + a[2] - a[1]});
+                cur1 += a[2] - a[1] + 1;
+                cur2 += a[2] - a[1] + 1;
+            } else if (a[0] == 1) {
+                dels = a[2] - a[1];
+                if(ins > 0){
+                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
+                    shortAreasP2.add(new long[]{2, cur2, cur2 + ins});
+                    cur1 += dels + 1;
+                    cur2 += ins + 1;
+                }
+            } else if (a[0] == 2) {
+                ins = a[2] - a[1];
+                if(ins > 0){
+                    shortAreasP1.add(new long[]{2, cur1, cur1 + dels});
+                    shortAreasP2.add(new long[]{1, cur2, cur2 + ins});
+                    cur1 += dels + 1;
+                    cur2 += ins + 1;
+                }
+            } else {
+
+            }
+        }
+        if (dels != 0) {
+            shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
+            shortAreasP2.add(new long[]{2, cur1 - 1, cur1});
+            cur1 += dels + 1;
+            dels = 0;
+        }
+        if (ins != 0) {
+            shortAreasP1.add(new long[]{2, cur1 - 1, cur1});
+            shortAreasP2.add(new long[]{1, cur2, cur2 + ins});
+            cur2 += ins + 1;
+            ins = 0;
+        }
+    }
+
 	public void shortenEventsP() {
-		List<long[]> shortAreasP = new LinkedList<long[]>();
-		long cur = 0;
+		List<long[]> shortAreasP1 = new LinkedList<long[]>();
+        List<long[]> shortAreasP2 = new LinkedList<long[]>();
+		long cur1 = 0;
+        long cur2 = 0;
 		long dels = 0;
 		long ins = 0;
 		for (long[] a : eventsP) {
 			if (a[0] == 0) {
 				if (ins != 0) {
-					shortAreasP.add(new long[] { 2, cur, cur + ins });
-					cur += ins + 1;
+					shortAreasP1.add(new long[]{2, cur1, cur1 + ins});
+                    shortAreasP2.add(new long[]{2, cur2, cur2 + ins});
+					cur1 += ins + 1;
+                    cur2 += ins + 1;
 					ins = 0;
 				}
 				if (dels != 0) {
-					shortAreasP.add(new long[] { 1, cur, cur + dels });
-					cur += dels + 1;
+					shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
+                    shortAreasP2.add(new long[]{1, cur1, cur1 + dels});
+					cur1 += dels + 1;
 					dels = 0;
 				}
-				shortAreasP.add(new long[] { 0, cur, cur += a[2] - a[1] });
-				cur++;
+				shortAreasP1.add(new long[]{0, cur1, cur1 += a[2] - a[1]});
+				cur1++;
 			} else if (a[0] == 1) {
 				dels = a[2] - a[1];
 				if (ins != 0) {
 					if (ins > dels) {
-						shortAreasP.add(new long[] { 2, cur,
-								cur + ins - dels - 1 });
-						cur += ins - dels;
-						shortAreasP.add(new long[] { 3, cur, cur + dels });
-						cur += dels + 1;
+						shortAreasP1.add(new long[]{2, cur1,
+                                cur1 + dels - 1});
+						cur1 += dels;
+						shortAreasP2.add(new long[]{1, cur1, cur1 + dels});
+						cur1 += dels + 1;
 					} else {
-						shortAreasP.add(new long[] { 3, cur, cur + ins });
-						cur += ins + 1;
-						shortAreasP.add(new long[] { 1, cur,
-								cur + dels - ins - 1 });
-						cur += dels - ins;
+						shortAreasP1.add(new long[]{3, cur1, cur1 + ins});
+						cur1 += ins + 1;
+						shortAreasP1.add(new long[]{1, cur1,
+                                cur1 + dels - ins - 1});
+						cur1 += dels - ins;
 					}
 					ins = 0;
 					dels = 0;
@@ -234,37 +298,37 @@ public class EventAnotation {
 				ins = a[2] - a[1];
 				if (dels != 0) {
 					if (dels > ins) {
-						shortAreasP.add(new long[] { 1, cur,
-								cur + dels - ins - 1 });
-						cur += dels - ins;
-						shortAreasP.add(new long[] { 3, cur, cur + ins });
-						cur += ins + 1;
+						shortAreasP1.add(new long[]{1, cur1,
+                                cur1 + dels - ins - 1});
+						cur1 += dels - ins;
+						shortAreasP1.add(new long[]{3, cur1, cur1 + ins});
+						cur1 += ins + 1;
 					} else {
-						shortAreasP.add(new long[] { 3, cur, cur + dels });
-						cur += dels + 1;
-						shortAreasP.add(new long[] { 2, cur,
-								cur + ins - dels - 1 });
-						cur += ins - dels;
+						shortAreasP1.add(new long[]{3, cur1, cur1 + dels});
+						cur1 += dels + 1;
+						shortAreasP1.add(new long[]{2, cur1,
+                                cur1 + ins - dels - 1});
+						cur1 += ins - dels;
 					}
 					ins = 0;
 					dels = 0;
 				}
 			} else {
 				if (ins != 0) {
-					shortAreasP.add(new long[] { 2, cur, cur + ins });
-					cur += ins + 1;
+					shortAreasP1.add(new long[]{2, cur1, cur1 + ins});
+					cur1 += ins + 1;
 					ins = 0;
                 }
 				if (dels != 0) {
-					shortAreasP.add(new long[] { 1, cur, cur + dels });
-					cur += dels + 1;
+					shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
+					cur1 += dels + 1;
 					dels = 0;
 				}
-				shortAreasP.add(new long[] { 3, cur, cur += a[2] - a[1] });
-				cur++;
+				shortAreasP1.add(new long[]{3, cur1, cur1 += a[2] - a[1]});
+				cur1++;
 			}
 		}
-		eventsP = shortAreasP;
+		eventsP = shortAreasP1;
 	}
 
 	public List<long[]> getEventsN() {
@@ -289,71 +353,6 @@ public class EventAnotation {
 
 	public boolean isStrand() {
 		return strand;
-	}
-
-	public void printVarSplice() {
-		StringBuilder sb = new StringBuilder();
-		for (long[] a : eventsP) {
-			if (a[0] == 0) {
-				for (long i = a[1]; i <= a[2]; i++) {
-					sb.append("*");
-				}
-			} else if (a[0] == 1) {
-				for (long i = a[1]; i <= a[2]; i++) {
-					sb.append("D");
-				}
-			} else if (a[0] == 2) {
-				for (long i = a[1]; i <= a[2]; i++) {
-					sb.append("I");
-				}
-			} else if (a[0] == 3) {
-				for (long i = a[1]; i <= a[2]; i++) {
-					sb.append("R");
-				}
-			}
-		}
-		// System.out.println(sb.toString().replaceAll("(.)", "$1  "));
-		System.out.println(sb);
-	}
-
-	public void printEvents() {
-		System.out.println("Conserved:");
-		for (long[] e : eventsN) {
-			if (e[0] == 0)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-		System.out.println("\nDeletions:");
-		for (long[] e : eventsN) {
-			if (e[0] == 1)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-		System.out.println("\nInserts");
-		for (long[] e : eventsN) {
-			if (e[0] == 2)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-
-		System.out.println("\nConserved:");
-		for (long[] e : eventsP) {
-			if (e[0] == 0)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-		System.out.println("\nDeletions:");
-		for (long[] e : eventsP) {
-			if (e[0] == 1)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-		System.out.println("\nInserts");
-		for (long[] e : eventsP) {
-			if (e[0] == 2)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-		System.out.println("\nReplaces");
-		for (long[] e : eventsP) {
-			if (e[0] == 3)
-				System.out.print("(" + e[1] + ", " + e[2] + ") ");
-		}
-		System.out.println();
 	}
 
 }
