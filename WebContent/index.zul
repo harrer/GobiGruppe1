@@ -16,14 +16,9 @@
                 <listhead>
                     <listheader label="Entity"/>
                 </listhead>
-                <!--<template name="model">-->
-                <!--<listitem>-->
-                <!--<listcell label="@bind(each)"/>-->
-                <!--</listitem>-->
-                <!--</template>-->
             </listbox>
         </vbox>
-        <listbox id="detailedview" height="500px">
+        <listbox id="detailedview" model="@bind(vm.gridlist)" rows="23" checkmark="true">
             <listhead>
                 <listheader label="I1"/>
                 <listheader label="I2"/>
@@ -36,14 +31,14 @@
             </listhead>
             <template name="model">
                 <listitem>
-                    <listcell label="${each.model}"/>
-                    <listcell label="${each.make}"/>
-                    <listcell label="${each.make}"/>
-                    <listcell label="${each.make}"/>
-                    <listcell label="${each.make}"/>
-                    <listcell label="${each.make}"/>
-                    <listcell label="${each.make}"/>
-                    <listcell label="${each.make}"/>
+                    <listcell label="${each.i1}"/>
+                    <listcell label="${each.i2}"/>
+                    <listcell label="${each.start}"/>
+                    <listcell label="${each.stop}"/>
+                    <listcell label="${each.type}"/>
+                    <listcell label="${each.pattern}"/>
+                    <listcell label="${each.sec}"/>
+                    <listcell label="${each.acc}"/>
                 </listitem>
             </template>
         </listbox>
