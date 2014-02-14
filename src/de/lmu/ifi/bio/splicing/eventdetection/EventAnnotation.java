@@ -18,8 +18,7 @@ public class EventAnnotation {
         this.strand = strand;
         calculateNucleotideEvents();
         calculateProteinEvents();
-        shortenEventsP2();
-//        shortenEventsP();
+        shortenEventsP();
     }
 
     public void calculateNucleotideEvents() {
@@ -192,58 +191,6 @@ public class EventAnnotation {
     }
 
     public void shortenEventsP() {
-        eventsP1 = new LinkedList<>();
-        eventsP2 = new LinkedList<>();
-        long cur1 = 0;
-        long cur2 = 0;
-        long dels = 0;
-        long ins = 0;
-        for (long[] a : eventsPLong) {
-            if (a[0] == 0 || a[0] == 3) {
-                if (dels != 0) {
-                    eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
-                    eventsP2.add(new long[]{2, cur1, cur1 - 1});
-                    cur1 += dels;
-                    dels = 0;
-                }
-                if (ins != 0) {
-                    eventsP1.add(new long[]{2, cur1, cur1 - 1});
-                    eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});
-                    cur2 += ins;
-                    ins = 0;
-                }
-                eventsP1.add(new long[]{a[0], cur1, cur1 + a[2] - a[1]});
-                eventsP2.add(new long[]{a[0], cur2, cur2 + a[2] - a[1]});
-                cur1 += a[2] - a[1] + 1;
-                cur2 += a[2] - a[1] + 1;
-            } else {
-                if (a[0] == 1) {
-                    dels = a[2] - a[1] + 1;
-                }
-                if (a[0] == 2) {
-                    ins = a[2] - a[1] + 1;
-                }
-                if (ins > 0 && dels > 0) {
-                    eventsP1.add(new long[]{3, cur1, cur1 + dels - 1});
-                    eventsP2.add(new long[]{3, cur2, cur2 + ins - 1});
-                    cur1 += dels;
-                    cur2 += ins;
-                    ins = 0;
-                    dels = 0;
-                }
-            }
-        }
-        if (dels != 0) {
-            eventsP1.add(new long[]{1, cur1, cur1 + dels});
-            eventsP2.add(new long[]{2, cur1 - 1, cur1});
-        }
-        if (ins != 0) {
-            eventsP1.add(new long[]{2, cur1 - 1, cur1});
-            eventsP2.add(new long[]{1, cur2, cur2 + ins});
-        }
-    }
-
-    public void shortenEventsP2() {
         eventsP1 = new LinkedList<>();
         eventsP2 = new LinkedList<>();
         long cur1 = 0;

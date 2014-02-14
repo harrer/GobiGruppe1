@@ -4,6 +4,7 @@ import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -12,12 +13,15 @@ import java.util.Set;
 public class Map {
 //    private Set<Event> events;
     private PDBData pdb;
+    private HashMap<Integer, Integer> aligned;
 
-    public Map(PDBData pdb) {
+
+    public Map(PDBData pdb, HashMap<Integer, Integer> aligned) {
         this.pdb = pdb;
+        this.aligned = aligned;
     }
 
-    public String createColoringJmolScript(Set<Event> events, HashMap<Integer, Integer> aligned){
+    public String createColoringJmolScript(Set<Event> events){
         StringBuilder jmolScript = new StringBuilder();
         for (Event event : events) {
             if(event.getType() == 'D'){
@@ -29,5 +33,14 @@ public class Map {
         return jmolScript.toString();
     }
 
+    public Set<Integer> getAffectedPositions(Event event){
+        Set<Integer> affected = new HashSet<>();
+        for(long i = event.getStart(); i <= event.getStop(); i++){
+            if(aligned.containsKey(i)){
+                affected.add(aligned.get(i));
+            }
+        }
+        return affected;
+    }
 
 }
