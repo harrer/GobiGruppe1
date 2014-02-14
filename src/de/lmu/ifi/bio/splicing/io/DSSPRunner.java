@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by schmidtju on 14.02.14.
  */
-public class DsspRunner {
+public class DSSPRunner {
 
     public static DSSPData getDsspAcc(String protein, String pdbDirectory) {
         Runtime rt = Runtime.getRuntime();
