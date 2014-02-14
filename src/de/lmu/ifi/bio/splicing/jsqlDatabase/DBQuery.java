@@ -9,14 +9,22 @@ import de.lmu.ifi.bio.splicing.genome.*;
 
 public class DBQuery implements DatabaseQuery {
 
+    private DB_Backend db;
+
+    public DBQuery() {
+        db = new DB_Backend();
+    }
+
     @Override
     public Event getEvent() {
-        // TODO Auto-generated method stub
+        //TODO getEvent() -> ohne Parameter
         return null;
     }
 
     @Override
     public List<String> search(String keyword) {
+        if (keyword == null)
+            return findAllGenes();
         if (keyword.isEmpty())
             return findAllGenes();
         DB_Backend db = new DB_Backend();
@@ -68,7 +76,6 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<String> findAllGenes() {
-        DB_Backend db = new DB_Backend();
         String query = "SELECT geneid FROM gobi1.Gene";
         Object[] result = null;
         try {
@@ -89,7 +96,6 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<String> findAllTranscripts() {
-        DB_Backend db = new DB_Backend();
         String query = "SELECT transcriptid FROM gobi1.Transcript";
         Object[] result = null;
         try {
@@ -108,7 +114,6 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<String> findAllProteins() {
-        DB_Backend db = new DB_Backend();
         String query = "SELECT proteinid FROM gobi1.Transcript";
         Object[] result = null;
         try {
@@ -126,8 +131,20 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
+    public Event getEvent(String isoform1, String isoform2) {
+        String query = "Select start, stop, type from Event where isoform1 = '" + isoform1 + "' and isoform2 = '"+isoform2+"'";
+        Object[][] result = null;
+        try {
+            result = db.select(query,3);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return new Event(isoform1, isoform2, (long) result[0][0], (long) result[0][1], ((String) result[0][2]).charAt(0));
+    }
+    
+    @Override
     public Gene getGene(String geneID) {
-        DB_Backend db = new DB_Backend();
         String query = "select chromosome, strand from Gene where geneId = '" + geneID + "'";
         Object[][] result = null;
         try {
@@ -153,7 +170,6 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public Transcript getTranscript(String transcriptID) {
-        DB_Backend db = new DB_Backend();
         String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptID + "'";
         Object[][] result = null;
         try {

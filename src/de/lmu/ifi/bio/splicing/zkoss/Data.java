@@ -10,5 +10,5 @@ import java.util.List;
 public interface Data {
     public List<String> findAll();
     public List<String> search(String keyword);
-    public List<Object[]> select(List<String> keylist);
+    public List<EventDisplay> select(List<String> keylist);
 }
