@@ -1,4 +1,4 @@
-<window width="800px" border="normal" apply="org.zkoss.bind.BindComposer"
+<window width="1024px" border="normal" apply="org.zkoss.bind.BindComposer"
         title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hbox id="main">
         <vbox width="140px" id="left">
@@ -18,29 +18,53 @@
                 </listhead>
             </listbox>
         </vbox>
-        <listbox id="detailedview" model="@bind(vm.gridlist)" rows="23" checkmark="true">
-            <listhead>
-                <listheader label="I1"/>
-                <listheader label="I2"/>
-                <listheader label="Start"/>
-                <listheader label="Stop"/>
-                <listheader label="Type"/>
-                <listheader label="Pattern"/>
-                <listheader label="SEC"/>
-                <listheader label="ACC"/>
-            </listhead>
+        <!--<listbox id="detailedview" model="@load(vm.gridlist)" rows="6" checkmark="true">-->
+            <!--<listhead>-->
+                <!--<listheader label="I1"/>-->
+                <!--<listheader label="I2"/>-->
+                <!--<listheader label="Start"/>-->
+                <!--<listheader label="Stop"/>-->
+                <!--<listheader label="Type"/>-->
+                <!--<listheader label="Pattern"/>-->
+                <!--<listheader label="SEC"/>-->
+                <!--<listheader label="ACC"/>-->
+            <!--</listhead>-->
+            <!--<template name="model">-->
+                <!--<listitem>-->
+                    <!--<listcell label="${each.i1}"/>-->
+                    <!--<listcell label="${each.i2}"/>-->
+                    <!--<listcell label="${each.start}"/>-->
+                    <!--<listcell label="${each.stop}"/>-->
+                    <!--<listcell label="${each.type}"/>-->
+                    <!--<listcell label="${each.pattern}"/>-->
+                    <!--<listcell label="${each.sec}"/>-->
+                    <!--<listcell label="${each.acc}"/>-->
+                <!--</listitem>-->
+            <!--</template>-->
+        <!--</listbox>-->
+        <grid height="600px" model="@load(vm.gridlist)">
+            <columns>
+                <column hflex="2">I1</column>
+                <column hflex="2">I2</column>
+                <column label="Start" width="70px"/>
+                <column label="Stop" width="70px"/>
+                <column label="T" width="20px"/>
+                <column label="Pattern" width="60px"/>
+                <column label="Secondary Structure" width="120px"/>
+                <column label="ACC" width="40px"/>
+            </columns>
             <template name="model">
-                <listitem>
-                    <listcell label="${each.i1}"/>
-                    <listcell label="${each.i2}"/>
-                    <listcell label="${each.start}"/>
-                    <listcell label="${each.stop}"/>
-                    <listcell label="${each.type}"/>
-                    <listcell label="${each.pattern}"/>
-                    <listcell label="${each.sec}"/>
-                    <listcell label="${each.acc}"/>
-                </listitem>
+                <row>
+                    <label value="${each.i1}"/>
+                    <label value="${each.i2}"/>
+                    <label value="${each.start}"/>
+                    <label value="${each.stop}"/>
+                    <label value="${each.type}"/>
+                    <label value="${each.pattern}"/>
+                    <label value="${each.sec}"/>
+                    <label value="${each.acc}"/>
+                </row>
             </template>
-        </listbox>
+        </grid>
     </hbox>
 </window>

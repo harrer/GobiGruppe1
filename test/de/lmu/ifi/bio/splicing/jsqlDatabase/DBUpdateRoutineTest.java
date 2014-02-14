@@ -18,4 +18,14 @@ public class DBUpdateRoutineTest {
     public void testInsertEventsForGene() throws Exception {
         DBUpdateRoutine.insertEventsForGene("ENSG00000132330");
     }
+
+    @Test
+    public void testInsertEventsThroughSearch() throws Exception {
+        DBUpdateRoutine.insertEventsForKeyword("12112");
+    }
+
+    @Test
+    public void testAll() throws Exception {
+        DBUpdateRoutine.insertEvents();
+    }
 }

@@ -28,23 +28,12 @@ public class DBQuery implements DatabaseQuery {
             return findAllGenes();
         if (keyword.isEmpty())
             return findAllGenes();
-        DB_Backend db = new DB_Backend();
-        String query = "SELECT transcriptid FROM gobi1.Transcript WHERE transcriptid LIKE '%" + keyword + "%';";
-        Object[] result = null;
-        try {
-            result = db.select_oneColumn(query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        String query;
+        Object[] result;
         List<String> liste = new LinkedList<>();
 
-        if (result != null && result.length > 0) {
-            for (Object object : result) {
-                liste.add((String) object);
-            }
-        }
-
-        query = "SELECT proteinid FROM gobi1.Transcript WHERE proteinid LIKE '%" + keyword + "%';";
+        query = "SELECT geneid FROM gobi1.Gene WHERE geneid LIKE '%" + keyword + "%';";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -58,7 +47,22 @@ public class DBQuery implements DatabaseQuery {
             }
         }
 
-        query = "SELECT geneid FROM gobi1.Gene WHERE geneid LIKE '%" + keyword + "%';";
+        db = new DB_Backend();
+        query = "SELECT transcriptid FROM gobi1.Transcript WHERE transcriptid LIKE '%" + keyword + "%';";
+        result = null;
+        try {
+            result = db.select_oneColumn(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (result != null && result.length > 0) {
+            for (Object object : result) {
+                liste.add((String) object);
+            }
+        }
+
+        query = "SELECT proteinid FROM gobi1.Transcript WHERE proteinid LIKE '%" + keyword + "%';";
         result = null;
         try {
             result = db.select_oneColumn(query);
