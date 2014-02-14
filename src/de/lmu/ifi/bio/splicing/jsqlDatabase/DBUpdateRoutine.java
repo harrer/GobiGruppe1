@@ -25,4 +25,11 @@ public class DBUpdateRoutine {
             }
         }
     }
+
+    public static void insertEventsForGene(String geneid) {
+        Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(geneid));
+        for (Event event : eventSet) {
+            dbu.insertEvent(event);
+        }
+    }
 }

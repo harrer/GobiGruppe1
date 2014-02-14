@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.splicing.eventdetection;
 
 import de.lmu.ifi.bio.splicing.genome.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,13 @@ public class EventDetector {
 
     public static Set<Event> getEvents(Gene g){
         Set<Event> events = new HashSet<Event>();
-        Transcript[] t = (Transcript[]) g.getHashmap_transcriptid().values().toArray();
+        HashMap<String, Transcript> hashmap = g.getHashmap_transcriptid();
+        Transcript[] t = new Transcript[hashmap.size()];
+        int counter = 0;
+        for (Transcript transcript : hashmap.values()) {
+            t[counter] = transcript;
+            counter++;
+        }
         for (int i = 0; i < t.length; i++) {
             for (int j = i + 1; j < t.length; j++) {
                  events.addAll(makeEventSet(new EventAnnotation(t[i], t[j], g.getStrand())));
