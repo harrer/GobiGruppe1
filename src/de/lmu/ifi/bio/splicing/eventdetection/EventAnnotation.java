@@ -21,7 +21,8 @@ public class EventAnnotation {
         this.strand = strand;
         calculateNucleotideEvents();
         calculateProteinEvents();
-        shortenEventsP();
+        shortenEventsPNew();
+//        shortenEventsP();
     }
 
     public void calculateNucleotideEvents() {
@@ -203,15 +204,15 @@ public class EventAnnotation {
         for (long[] a : eventsP1) {
             if (a[0] == 0 || a[0] == 3) {
                 if (dels != 0) {
-                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
+                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels - 1});
                     shortAreasP2.add(new long[]{2, cur1, cur1 - 1});
-                    cur1 += dels + 1;
+                    cur1 += dels;
                     dels = 0;
                 }
                 if (ins != 0) {
                     shortAreasP1.add(new long[]{2, cur1, cur1 - 1});
-                    shortAreasP2.add(new long[]{1, cur2, cur2 + ins});
-                    cur2 += ins + 1;
+                    shortAreasP2.add(new long[]{1, cur2, cur2 + ins - 1});
+                    cur2 += ins;
                     ins = 0;
                 }
                 shortAreasP1.add(new long[]{a[0], cur1, cur1 + a[2] - a[1]});
@@ -220,16 +221,16 @@ public class EventAnnotation {
                 cur2 += a[2] - a[1] + 1;
             } else {
                 if (a[0] == 1) {
-                    dels = a[2] - a[1];
+                    dels = a[2] - a[1] + 1;
                 }
                 if (a[0] == 2) {
-                    ins = a[2] - a[1];
+                    ins = a[2] - a[1] + 1;
                 }
                 if (ins > 0 && dels > 0) {
-                    shortAreasP1.add(new long[]{3, cur1, cur1 + dels});
-                    shortAreasP2.add(new long[]{3, cur2, cur2 + ins});
-                    cur1 += dels + 1;
-                    cur2 += ins + 1;
+                    shortAreasP1.add(new long[]{3, cur1, cur1 + dels - 1});
+                    shortAreasP2.add(new long[]{3, cur2, cur2 + ins - 1});
+                    cur1 += dels;
+                    cur2 += ins;
                     ins = 0;
                     dels = 0;
                 }
