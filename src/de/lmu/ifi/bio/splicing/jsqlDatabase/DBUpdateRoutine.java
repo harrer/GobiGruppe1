@@ -1,0 +1,28 @@
+package de.lmu.ifi.bio.splicing.jsqlDatabase;
+
+import de.lmu.ifi.bio.splicing.eventdetection.EventDetector;
+import de.lmu.ifi.bio.splicing.genome.Event;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Created by uhligc on 14.02.14.
+ */
+public class DBUpdateRoutine {
+    final static DBQuery dbq = new DBQuery();
+    final static DBUpdate dbu = new DBUpdate();
+
+    public static void insertEvents() {
+        List<String> thebiglist = new LinkedList<>();
+        thebiglist = dbq.findAllGenes();
+        for (String s : thebiglist) {
+            Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(s));
+            for (Event event : eventSet) {
+                dbu.insertEvent(event);
+            }
+        }
+    }
+}

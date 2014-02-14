@@ -1,6 +1,7 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -132,23 +133,26 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public Event getEvent(String isoform1, String isoform2) {
-        String query = "Select start, stop, type from Event where isoform1 = '" + isoform1 + "' and isoform2 = '"+isoform2+"'";
+        String query = "Select start, stop, type from Event where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
         Object[][] result = null;
         try {
-            result = db.select(query,3);
+            result = db.select(query, 3);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
-        return new Event(isoform1, isoform2, (long) result[0][0], (long) result[0][1], ((String) result[0][2]).charAt(0));
+        if (result.length > 0)
+            return new Event(isoform1, isoform2, (long) result[0][0], (long) result[0][1], ((String) result[0][2]).charAt(0));
+        else
+            return null;
     }
-    
+
     @Override
     public Gene getGene(String geneID) {
         String query = "select chromosome, strand from Gene where geneId = '" + geneID + "'";
         Object[][] result = null;
         try {
-            result = db.select(query,2);
+            result = db.select(query, 2);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -156,7 +160,7 @@ public class DBQuery implements DatabaseQuery {
         Gene gene = new Gene(geneID, (String) result[0][0], (boolean) result[0][1]);
         query = "Select transcriptId, proteinId from Transcript where geneId = '" + geneID + "'";
         try {
-            result = db.select(query,2);
+            result = db.select(query, 2);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -173,7 +177,7 @@ public class DBQuery implements DatabaseQuery {
         String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptID + "'";
         Object[][] result = null;
         try {
-            result = db.select(query,3);
+            result = db.select(query, 3);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

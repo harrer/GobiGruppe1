@@ -75,7 +75,10 @@ public class DataImpl implements Data {
             String transcript1 = stringTranscriptEntry.getKey();
             for (Map.Entry<String, Transcript> transcriptEntry : agene.getHashmap_transcriptid().entrySet()) {
                 String transcript2 = transcriptEntry.getKey();
+                if (transcript1.equals(transcript2)) continue;
                 Event tmpevent = dbq.getEvent(transcript1, transcript2);
+                if (tmpevent == null)
+                    continue;
                 tmp.add(new EventDisplay(tmpevent.getI1(), tmpevent.getI2(), tmpevent.getStart(), tmpevent.getStop(), tmpevent.getType(), 0.0, new Pattern("P00000", 1, 2), SecondaryStructure.HELIX));
             }
         }
