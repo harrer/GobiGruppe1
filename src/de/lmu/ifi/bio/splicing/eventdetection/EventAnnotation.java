@@ -3,13 +3,10 @@ package de.lmu.ifi.bio.splicing.eventdetection;
 
 import de.lmu.ifi.bio.splicing.genome.*;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
 public class EventAnnotation {
-    private List<long[]> eventsN, eventsP1, eventsP2;
+    private List<long[]> eventsN, eventsPLong, eventsP1, eventsP2;
     private long i1frame;
     private Transcript t1, t2;
     private boolean strand;
@@ -21,12 +18,12 @@ public class EventAnnotation {
         this.strand = strand;
         calculateNucleotideEvents();
         calculateProteinEvents();
-        shortenEventsPNew();
+        shortenEventsP2();
 //        shortenEventsP();
     }
 
     public void calculateNucleotideEvents() {
-        eventsN = new LinkedList<long[]>();
+        eventsN = new LinkedList<>();
         List<Exon> cds1 = t1.getCds();
         List<Exon> cds2 = t2.getCds();
         if (!strand) {
@@ -133,8 +130,8 @@ public class EventAnnotation {
     }
 
     public void calculateProteinEvents() {
-        eventsP1 = new LinkedList<long[]>();
-        Iterator<long[]> it = eventsN.iterator();
+        eventsPLong = new LinkedList<>();
+        ListIterator<long[]> it = eventsN.listIterator();
         long[] a = it.next();
         long frameshift = 0;
         long cur = 0, len, extra = -i1frame;
@@ -150,16 +147,16 @@ public class EventAnnotation {
                 } while (a != null && a[0] == 0);
                 if (frameshift == 0) {
                     if ((len + extra) / 3 - len / 3 == 1) {
-                        eventsP1.add(new long[]{3, cur, cur});
+                        eventsPLong.add(new long[]{3, cur, cur});
                         cur++;
                     }
-                    eventsP1.add(new long[]{0, cur, cur + (len) / 3 - 1});
+                    eventsPLong.add(new long[]{0, cur, cur + (len) / 3 - 1});
                 } else {
                     if ((len + extra) / 3 - len / 3 == 1) {
-                        eventsP1.add(new long[]{3, cur, cur + (len) / 3});
+                        eventsPLong.add(new long[]{3, cur, cur + (len) / 3});
                         cur++;
                     } else {
-                        eventsP1.add(new long[]{3, cur, cur + (len) / 3 - 1});
+                        eventsPLong.add(new long[]{3, cur, cur + (len) / 3 - 1});
                     }
                 }
                 cur += (len) / 3;
@@ -173,7 +170,7 @@ public class EventAnnotation {
                     else
                         a = null;
                 } while (a != null && a[0] == 1);
-                eventsP1.add(new long[]{1, cur, cur + (len + extra) / 3 - 1});
+                eventsPLong.add(new long[]{1, cur, cur + (len + extra) / 3 - 1});
                 cur += (len + extra) / 3;
                 extra = (len + extra) % 3;
                 frameshift = (frameshift + len) % 3;
@@ -186,7 +183,7 @@ public class EventAnnotation {
                     else
                         a = null;
                 } while (a != null && a[0] == 2);
-                eventsP1.add(new long[]{2, cur, cur + (len + extra) / 3 - 1});
+                eventsPLong.add(new long[]{2, cur, cur + (len + extra) / 3 - 1});
                 cur += (len + extra) / 3;
                 extra = (len + extra) % 3;
                 frameshift = (frameshift - len) % 3;
@@ -194,29 +191,29 @@ public class EventAnnotation {
         }
     }
 
-    public void shortenEventsPNew() {
-        List<long[]> shortAreasP1 = new LinkedList<>();
-        List<long[]> shortAreasP2 = new LinkedList<>();
+    public void shortenEventsP() {
+        eventsP1 = new LinkedList<>();
+        eventsP2 = new LinkedList<>();
         long cur1 = 0;
         long cur2 = 0;
         long dels = 0;
         long ins = 0;
-        for (long[] a : eventsP1) {
+        for (long[] a : eventsPLong) {
             if (a[0] == 0 || a[0] == 3) {
                 if (dels != 0) {
-                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels - 1});
-                    shortAreasP2.add(new long[]{2, cur1, cur1 - 1});
+                    eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
+                    eventsP2.add(new long[]{2, cur1, cur1 - 1});
                     cur1 += dels;
                     dels = 0;
                 }
                 if (ins != 0) {
-                    shortAreasP1.add(new long[]{2, cur1, cur1 - 1});
-                    shortAreasP2.add(new long[]{1, cur2, cur2 + ins - 1});
+                    eventsP1.add(new long[]{2, cur1, cur1 - 1});
+                    eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});
                     cur2 += ins;
                     ins = 0;
                 }
-                shortAreasP1.add(new long[]{a[0], cur1, cur1 + a[2] - a[1]});
-                shortAreasP2.add(new long[]{a[0], cur2, cur2 + a[2] - a[1]});
+                eventsP1.add(new long[]{a[0], cur1, cur1 + a[2] - a[1]});
+                eventsP2.add(new long[]{a[0], cur2, cur2 + a[2] - a[1]});
                 cur1 += a[2] - a[1] + 1;
                 cur2 += a[2] - a[1] + 1;
             } else {
@@ -227,8 +224,8 @@ public class EventAnnotation {
                     ins = a[2] - a[1] + 1;
                 }
                 if (ins > 0 && dels > 0) {
-                    shortAreasP1.add(new long[]{3, cur1, cur1 + dels - 1});
-                    shortAreasP2.add(new long[]{3, cur2, cur2 + ins - 1});
+                    eventsP1.add(new long[]{3, cur1, cur1 + dels - 1});
+                    eventsP2.add(new long[]{3, cur2, cur2 + ins - 1});
                     cur1 += dels;
                     cur2 += ins;
                     ins = 0;
@@ -237,96 +234,90 @@ public class EventAnnotation {
             }
         }
         if (dels != 0) {
-            shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
-            shortAreasP2.add(new long[]{2, cur1 - 1, cur1});
+            eventsP1.add(new long[]{1, cur1, cur1 + dels});
+            eventsP2.add(new long[]{2, cur1 - 1, cur1});
         }
         if (ins != 0) {
-            shortAreasP1.add(new long[]{2, cur1 - 1, cur1});
-            shortAreasP2.add(new long[]{1, cur2, cur2 + ins});
+            eventsP1.add(new long[]{2, cur1 - 1, cur1});
+            eventsP2.add(new long[]{1, cur2, cur2 + ins});
         }
-        eventsP1 = shortAreasP1;
-        eventsP2 = shortAreasP2;
     }
 
-    public void shortenEventsP() {
-        List<long[]> shortAreasP1 = new LinkedList<long[]>();
-        List<long[]> shortAreasP2 = new LinkedList<long[]>();
+    public void shortenEventsP2() {
+        eventsP1 = new LinkedList<>();
+        eventsP2 = new LinkedList<>();
         long cur1 = 0;
         long cur2 = 0;
         long dels = 0;
         long ins = 0;
-        for (long[] a : eventsP1) {
+        long reps1 = 0;
+        long reps2 = 0;
+        for (long[] a : eventsPLong) {
             if (a[0] == 0) {
-                if (ins != 0) {
-                    shortAreasP1.add(new long[]{2, cur1, cur1 + ins});
-                    cur1 += ins + 1;
-                    ins = 0;
-                }
-                if (dels != 0) {
-                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
-                    cur1 += dels + 1;
+                if (reps1 != 0) {
+                    eventsP1.add(new long[]{3, cur1, cur1 + reps1 + dels - 1});
+                    eventsP2.add(new long[]{3, cur1, cur1 + reps2 + ins - 1});
+                    cur1 += reps1 + dels;
+                    cur2 += reps2 + ins;
+                    reps1 = 0;
+                    reps2 = 0;
                     dels = 0;
-                }
-                shortAreasP1.add(new long[]{0, cur1, cur1 += a[2] - a[1]});
-                cur1++;
-            } else if (a[0] == 1) {
-                dels = a[2] - a[1];
-                if (ins != 0) {
-                    if (ins > dels) {
-                        shortAreasP1.add(new long[]{2, cur1,
-                                cur1 + ins - dels - 1});
-                        cur1 += ins - dels;
-                        shortAreasP1.add(new long[]{3, cur1, cur1 + dels});
-                        cur1 += dels + 1;
-                    } else {
-                        shortAreasP1.add(new long[]{3, cur1, cur1 + ins});
-                        cur1 += ins + 1;
-                        shortAreasP1.add(new long[]{1, cur1,
-                                cur1 + dels - ins - 1});
-                        cur1 += dels - ins;
+                    ins = 0;
+                } else {
+                    if (dels != 0) {
+                        eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
+                        eventsP2.add(new long[]{2, cur1, cur1 - 1});
+                        cur1 += dels;
+                        dels = 0;
+                    } else if (ins != 0) {
+                        eventsP1.add(new long[]{2, cur1, cur1 - 1});
+                        eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});
+                        cur2 += ins;
+                        ins = 0;
                     }
-                    ins = 0;
-                    dels = 0;
                 }
-            } else if (a[0] == 2) {
-                ins = a[2] - a[1];
-                if (dels != 0) {
-                    if (dels > ins) {
-                        shortAreasP1.add(new long[]{1, cur1,
-                                cur1 + dels - ins - 1});
-                        cur1 += dels - ins;
-                        shortAreasP1.add(new long[]{3, cur1, cur1 + ins});
-                        cur1 += ins + 1;
-                    } else {
-                        shortAreasP1.add(new long[]{3, cur1, cur1 + dels});
-                        cur1 += dels + 1;
-                        shortAreasP1.add(new long[]{2, cur1,
-                                cur1 + ins - dels - 1});
-                        cur1 += ins - dels;
-                    }
-                    ins = 0;
-                    dels = 0;
-                }
+                eventsP1.add(new long[]{0, cur1, cur1 + a[2] - a[1]});
+                eventsP2.add(new long[]{0, cur2, cur2 + a[2] - a[1]});
+                cur1 += a[2] - a[1] + 1;
+                cur2 += a[2] - a[1] + 1;
+            } else if (a[0] == 3) {
+                reps1 += a[2] - a[1];
+                reps2 += a[2] - a[1];
             } else {
-                if (ins != 0) {
-                    shortAreasP1.add(new long[]{2, cur1, cur1 + ins});
-                    cur1 += ins + 1;
-                    ins = 0;
+                if (a[0] == 1) {
+                    dels = a[2] - a[1] + 1;
                 }
-                if (dels != 0) {
-                    shortAreasP1.add(new long[]{1, cur1, cur1 + dels});
-                    cur1 += dels + 1;
+                if (a[0] == 2) {
+                    ins = a[2] - a[1] + 1;
+                }
+                if (ins > 0 && dels > 0) {
+                    reps1 += dels;
+                    reps2 += ins;
+                    ins = 0;
                     dels = 0;
                 }
-                shortAreasP1.add(new long[]{3, cur1, cur1 += a[2] - a[1]});
-                cur1++;
             }
         }
-        eventsP1 = shortAreasP1;
+        if (reps1 != 0) {
+            eventsP1.add(new long[]{3, cur1, cur1 + reps1 + dels - 1});
+            eventsP2.add(new long[]{3, cur1, cur1 + reps2 + ins - 1});
+        } else {
+            if (dels != 0) {
+                eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
+                eventsP2.add(new long[]{2, cur1, cur1 - 1});
+            } else if (ins != 0) {
+                eventsP1.add(new long[]{2, cur1, cur1 - 1});
+                eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});
+            }
+        }
     }
 
     public List<long[]> getEventsN() {
         return eventsN;
+    }
+
+    public List<long[]> getEventsPLong() {
+        return eventsPLong;
     }
 
     public List<long[]> getEventsP1() {
