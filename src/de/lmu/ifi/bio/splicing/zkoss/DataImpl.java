@@ -1,15 +1,15 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.Pattern;
+import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Carsten on 13.02.14.
@@ -19,7 +19,6 @@ public class DataImpl implements Data {
     List<EventDisplay> eventlist;
     DBQuery dbq;
 
-    //TODO Query auf Database
     DataImpl() {
         dbq = new DBQuery();
         searchlist = new LinkedList<>();
@@ -58,7 +57,6 @@ public class DataImpl implements Data {
         }
 
         //iterate over protein list and transcript list
-
         for (Gene gene : genes) {
             eventlist.addAll(getEventsPerGene(gene));
         }
@@ -67,6 +65,44 @@ public class DataImpl implements Data {
         //liste von strings die geneids, transcriptids und proteinids enthalten
         //muss jeweils mit get gene/transcript abgefragt werden
         return eventlist;
+    }
+
+    @Override
+    public List<EventDisplay> filter(SpliceEventFilter sef) {
+        //TODO implement method for filtering data in grid > < and in between range
+        List<EventDisplay> events = new LinkedList<>();
+        String i1 = sef.getI1().toLowerCase();
+        String i2 = sef.getI2().toLowerCase();
+        String start = sef.getStart().toLowerCase();
+        String stop = sef.getStop().toLowerCase();
+        String type = sef.getType().toUpperCase();
+        String pattern = sef.getPattern().toUpperCase();
+        String sec = sef.getSec().toLowerCase();
+        String acc = sef.getAcc();
+
+        Iterator<EventDisplay> evit = eventlist.iterator();
+
+        while (evit.hasNext()) {
+            EventDisplay next = evit.next();
+            if (!next.getI1().toLowerCase().contains(i1))
+                continue;
+            if (!next.getI2().toLowerCase().contains(i2))
+                continue;
+            if (!String.valueOf(next.getStart()).contains(start))
+                continue;
+            if (!String.valueOf(next.getStop()).contains(stop))
+                continue;
+            if (!String.valueOf(next.getType()).contains(type))
+                continue;
+            if (!next.getPattern().getName().contains(pattern))
+                continue;
+            if (!next.getSec().toString().toLowerCase().contains(sec))
+                continue;
+            //TODO acc filtering
+            events.add(next);
+        }
+
+        return events;
     }
 
 

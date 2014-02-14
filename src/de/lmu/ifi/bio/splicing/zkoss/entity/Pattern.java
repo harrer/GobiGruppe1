@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.splicing.zkoss;
+package de.lmu.ifi.bio.splicing.zkoss.entity;
 
 /**
  * Created by uhligc on 13.02.14.

@@ -1,7 +1,8 @@
-package de.lmu.ifi.bio.splicing.zkoss;
+package de.lmu.ifi.bio.splicing.zkoss.entity;
 
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
+import de.lmu.ifi.bio.splicing.zkoss.entity.Pattern;
 
 /**
  * Created by uhligc on 13.02.14.
