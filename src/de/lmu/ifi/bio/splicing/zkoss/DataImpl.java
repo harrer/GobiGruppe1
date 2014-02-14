@@ -38,6 +38,7 @@ public class DataImpl implements Data {
 
     @Override
     public List<EventDisplay> select(List<String> keylist) {
+        eventlist = new LinkedList<>();
         List<String> geneslist = new LinkedList<>();
         List<String> transcriptslist = new LinkedList<>();
         List<String> proteinslist = new LinkedList<>();

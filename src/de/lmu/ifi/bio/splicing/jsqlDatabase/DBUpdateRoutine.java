@@ -26,6 +26,15 @@ public class DBUpdateRoutine {
         }
     }
 
+    public static void insertEventsForKeyword(String keyword) {
+        List<String> list = dbq.search(keyword);
+        for (String s : list) {
+            if (s.startsWith("ENSG")) {
+                insertEventsForGene(s);
+            }
+        }
+    }
+
     public static void insertEventsForGene(String geneid) {
         Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(geneid));
         for (Event event : eventSet) {

@@ -63,8 +63,10 @@ public class ViewModel {
     }
 
     @Command
-    @NotifyChange("selectedSearchList,detailedview")
+    @NotifyChange({"detailedView", "gridlist"})
     public void add() {
+        gridlist = new ArrayList<>();
+        definedList = new LinkedList<>();
         definedList.addAll(selectedSearchList);
         selectedSearchList = new ArrayList<>();
         gridlist = data.select(definedList);
