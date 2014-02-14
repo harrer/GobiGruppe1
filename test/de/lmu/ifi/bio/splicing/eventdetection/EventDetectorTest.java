@@ -16,15 +16,15 @@ public class EventDetectorTest extends TestCase {
 		p1.addExon(new Exon(0, 8, 0));
 		p2.addExon(new Exon(0, 8, 0));
 		p1.addExon(new Exon(20, 40, 0));
-		p2.addExon(new Exon(26, 40, 0));
-		p1.addExon(new Exon(70, 80, 0));
-		p2.addExon(new Exon(60, 80, 0));
-		p1.addExon(new Exon(90, 100, 0));
-		p2.addExon(new Exon(91, 100, 0));
+		p2.addExon(new Exon(20, 46, 0));
+		p1.addExon(new Exon(61, 90, 0));
+		p2.addExon(new Exon(70, 90, 0));
         ea = new EventAnnotation(p1, p2, true);
+//        ea.shortenEventsPNew();
     }
 
     public void testPrintEvents() throws Exception {
         EventDetector.printEvents(ea);
+        EventDetector.makeEventSet(ea);
     }
 }
