@@ -161,7 +161,7 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
-        for (int i = 0; i < result[0].length; i++) {
+        for (int i = 0; i < result.length; i++) {
             gene.addTranscript(getTranscript((String) result[i][0]));
         }
 
@@ -187,7 +187,7 @@ public class DBQuery implements DatabaseQuery {
             return null;
         }
         Transcript transcript = new Transcript(transcriptID, (String) prot_result[0]);
-        for (int i = 0; i < result[0].length; i++) {
+        for (int i = 0; i < result.length; i++) {
             Exon ex = new Exon((long) result[i][0], (long) result[i][1], (int) result[i][2]);
             transcript.addExon(ex);
         }

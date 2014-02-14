@@ -153,6 +153,7 @@ public class DB_Backend {
                     row.add(o);
                 }
                 list.add(row.toArray());
+                row = new ArrayList<>();
             }
         } catch (SQLException e) {
             e.printStackTrace();
