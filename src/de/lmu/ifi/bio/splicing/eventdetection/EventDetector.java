@@ -38,27 +38,22 @@ public class EventDetector {
 	
 	public static Set<Event> makeEventSet(EventAnnotation ea){
 		Set<Event> events = new HashSet<>();
-		long ins = 0, dels = 0;
 		for(long[] event : ea.getEventsP1()){
 			if(event[0] == 1){
-                events.add(new Event(ea.getT1().getTranscriptId(), ea.getT2().getTranscriptId(), event[1] - ins, event[2] - ins, 'D'));
-				dels += event[2] - event[1] + 1;
-			} else if(event[0] == 2){
-                events.add(new Event(ea.getT1().getTranscriptId(), ea.getT2().getTranscriptId(), event[1] - ins, event[2] - ins, 'I'));
-				ins += event[2] - event[1] + 1;
+                events.add(new Event(ea.getT1().getTranscriptId(), ea.getT2().getTranscriptId(), event[1], event[2], 'D'));
+            } else if(event[0] == 2){
+                events.add(new Event(ea.getT1().getTranscriptId(), ea.getT2().getTranscriptId(), event[1], event[2], 'I'));
 			} else if(event[0] == 3){
-				events.add(new Event(ea.getT1().getTranscriptId(), ea.getT2().getTranscriptId(), event[1] - ins, event[2] - ins, 'R'));
+				events.add(new Event(ea.getT1().getTranscriptId(), ea.getT2().getTranscriptId(), event[1], event[2], 'R'));
 			}
 		}
         for(long[] event : ea.getEventsP2()){
             if(event[0] == 1){
-                events.add(new Event(ea.getT2().getTranscriptId(), ea.getT1().getTranscriptId(), event[1] - ins, event[2] - ins, 'D'));
-                dels += event[2] - event[1] + 1;
+                events.add(new Event(ea.getT2().getTranscriptId(), ea.getT1().getTranscriptId(), event[1], event[2], 'D'));
             } else if(event[0] == 2){
-                events.add(new Event(ea.getT2().getTranscriptId(), ea.getT1().getTranscriptId(), event[1] - ins, event[2] - ins, 'I'));
-                ins += event[2] - event[1] + 1;
+                events.add(new Event(ea.getT2().getTranscriptId(), ea.getT1().getTranscriptId(), event[1], event[2], 'I'));
             } else if(event[0] == 3){
-                events.add(new Event(ea.getT2().getTranscriptId(), ea.getT1().getTranscriptId(), event[1] - ins, event[2] - ins, 'R'));
+                events.add(new Event(ea.getT2().getTranscriptId(), ea.getT1().getTranscriptId(), event[1], event[2], 'R'));
             }
         }
 		return events;
@@ -81,7 +76,23 @@ public class EventDetector {
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
 
-		System.out.println("\nConserved:");
+        System.out.println("\nConserved:");
+        for (long[] e : ea.getEventsPLong()) {
+            if (e[0] == 0)
+                System.out.print("(" + e[1] + ", " + e[2] + ") ");
+        }
+        System.out.println("\nDeletions:");
+        for (long[] e : ea.getEventsPLong()) {
+            if (e[0] == 1)
+                System.out.print("(" + e[1] + ", " + e[2] + ") ");
+        }
+        System.out.println("\nInserts");
+        for (long[] e : ea.getEventsPLong()) {
+            if (e[0] == 2)
+                System.out.print("(" + e[1] + ", " + e[2] + ") ");
+        }
+
+        System.out.println("\nConserved:");
 		for (long[] e : ea.getEventsP1()) {
 			if (e[0] == 0)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
