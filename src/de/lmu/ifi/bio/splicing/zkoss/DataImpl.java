@@ -98,7 +98,6 @@ public class DataImpl implements Data {
                 continue;
             if (!next.getSec().toString().toLowerCase().contains(sec))
                 continue;
-            //TODO acc filtering
             events.add(next);
         }
 

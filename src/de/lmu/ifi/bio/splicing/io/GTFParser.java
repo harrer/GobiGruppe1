@@ -81,7 +81,7 @@ public class GTFParser {
                 // split
                 pieces = line.split(regexdelimit);
                 //falls nicht chromosome enthält.. egal
-                //TODO Kannst anmachen um nur 1-22 oder x oder y chromosome zu catchen
+                //SETTING Kannst anmachen um nur 1-22 oder x oder y chromosome zu catchen
 //                if (!pieces[0].matches(regexchromosome)) {
 //                    continue;
 //                }
@@ -159,7 +159,7 @@ public class GTFParser {
                 // split
                 pieces = line.split(regexdelimit);
                 //falls nicht chromosome enthält.. egal
-                //TODO Kannst anmachen um nur 1-22 oder x oder y chromosome zu catchen
+                //SETTING Kannst anmachen um nur 1-22 oder x oder y chromosome zu catchen
 //                if (!pieces[0].matches(regexchromosome)) {
 //                    continue;
 //                }
