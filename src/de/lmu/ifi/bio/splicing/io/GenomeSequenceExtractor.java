@@ -4,6 +4,8 @@ import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.util.AminoAcidType;
+import de.lmu.ifi.bio.splicing.util.GenomicUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class GenomeSequenceExtractor {
     public static String getNucleotideSequence(String chromosome, long start, long stop) {
         byte[] b = new byte[0];
         try {
-            RandomAccessFile raf = new RandomAccessFile(Setting.GTFDIR + chromosome + ".fa", "r");
+            RandomAccessFile raf = new RandomAccessFile(Setting.GTFDIRPATH + chromosome + ".fa", "r");
             raf.seek(0);
             int headeroffset = raf.readLine().length();
             start += (headeroffset + start / 60);
@@ -46,7 +48,40 @@ public class GenomeSequenceExtractor {
         return sb.toString();
     }
 
-    public static String getProteinSequence(Transcript transcript, String chromosome) {
+    public static String getProteinSequence(Transcript transcript) {
+        String chromosome = Setting.dbq.getChrForTranscriptID(transcript.getTranscriptId());
+        boolean strand = Setting.dbq.getStrandForTranscriptID(transcript.getTranscriptId());
+        Iterator<Exon> itexon = transcript.getCds().iterator();
+        StringBuilder sb = new StringBuilder();
+        long start;
+        long stop;
+        int length;
+        int extra;
+
+        while (itexon.hasNext()) {
+            Exon next = itexon.next();
+            start = next.getStart() + next.getFrame();
+            length = (int) (next.getStop() - start);
+//            extra = length % 3;
+            stop = next.getStop();
+            sb.append(getNucleotideSequence(chromosome, start, stop));
+        }
+
+        //Strand = '-'
+        if (!strand) {
+            sb = new StringBuilder(GenomicUtils.convertToStrandPlus(sb.toString()));
+            sb.reverse();
+        }
+
+        StringBuilder sbaa = new StringBuilder();
+        for (int i = 0; i < sb.length() - 2; i += 3) {
+            sbaa.append(AminoAcidType.get(sb.substring(i, i + 3)));
+        }
+
+        return sbaa.toString();
+    }
+
+    public static String getProteinSequence(Transcript transcript, String chromosome, boolean strand) {
         Iterator<Exon> itexon = transcript.getCds().iterator();
         StringBuilder sb = new StringBuilder();
         long start;
@@ -63,7 +98,18 @@ public class GenomeSequenceExtractor {
             sb.append(getNucleotideSequence(chromosome, start, stop));
         }
 
-        return sb.toString();
+        //Strand = '-'
+        if (!strand) {
+            sb = new StringBuilder(GenomicUtils.convertToStrandPlus(sb.toString()));
+            sb.reverse();
+        }
+
+        StringBuilder sbaa = new StringBuilder();
+        for (int i = 0; i < sb.length() - 3; i += 3) {
+            sbaa.append(AminoAcidType.get(sb.substring(i, i + 3)));
+        }
+
+        return sbaa.toString();
     }
 
     public static void writeAllSequencesToFile(String file) {
@@ -73,15 +119,49 @@ public class GenomeSequenceExtractor {
             BufferedWriter bw = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
 
             List<String> genestrings = Setting.dbq.findAllGenes();
+            int size = genestrings.size();
+            int counter = 0;
             Gene g;
             HashMap<String, Transcript> transenhashmap;
             for (String s : genestrings) {
                 g = Setting.dbq.getGene(s);
+
                 transenhashmap = g.getHashmap_transcriptid();
                 for (Transcript t : transenhashmap.values()) {
-                    bw.write(">" + t.getTranscriptId() + "\n" + getProteinSequence(t, g.getChromosome() + "\n"));
+                    bw.write(">" + t.getTranscriptId() + "\n" + getProteinSequence(t, g.getChromosome(), g.getStrand()) + "\n");
                 }
+                if (counter % (size / 144) == 0)
+                    System.out.printf("Bereits %.2f %%%n", counter / (double) size * 100);
+                counter++;
             }
+
+            bw.close();
+        } catch (IOException e) {
+            System.err.println("Datei \"" + file + "\" konnte nicht erstellt werden. [GenomeSequenceExtractor]");
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeAllSequencesToFileFromGTFParser(String file, HashMap<String, Gene> hashMap) {
+        
+        Path p = Setting.FS.getPath(file);
+
+        try {
+            BufferedWriter bw = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
+            
+            int size = hashMap.size();
+            int counter = 0;
+            HashMap<String, Transcript> transenhashmap;
+            for (Gene g : hashMap.values()) {
+                transenhashmap = g.getHashmap_transcriptid();
+                for (Transcript t : transenhashmap.values()) {
+                    bw.write(">" + t.getTranscriptId() + "\n" + getProteinSequence(t, g.getChromosome(), g.getStrand()) + "\n");
+                }
+                if (counter % (size / 144) == 0)
+                    System.out.printf("Bereits %.2f %%%n", counter / (double) size * 100);
+                counter++;
+            }
+
             bw.close();
         } catch (IOException e) {
             System.err.println("Datei \"" + file + "\" konnte nicht erstellt werden. [GenomeSequenceExtractor]");
@@ -96,15 +176,20 @@ public class GenomeSequenceExtractor {
             BufferedWriter bw = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
 
             Transcript t;
-            HashMap<String, Transcript> transenhashmap;
             for (String s : trlist) {
                 t = Setting.dbq.getTranscript(s);
-                bw.write(">" + t.getTranscriptId() + "\n" + getProteinSequence(t, /** TODO chromosome zu transcript id finden **/"FAIL" + "\n"));
+                bw.write(String.format(">%s\n%s\n", t.getTranscriptId(), getProteinSequence(t)));
             }
+
             bw.close();
         } catch (IOException e) {
-            System.err.println("Datei \"" + file + "\" konnte nicht erstellt werden. [GenomeSequenceExtractor]");
+            System.err.printf("Datei \"%s\" konnte nicht erstellt werden. [GenomeSequenceExtractor]%n", file);
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        String file = args[0];
+        writeAllSequencesToFile(file);
     }
 }
