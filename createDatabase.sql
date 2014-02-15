@@ -80,11 +80,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `gobi1`.`patternEvent`
+-- Table `gobi1`.`pattern`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gobi1`.`patternEvent` (
+CREATE TABLE IF NOT EXISTS `gobi1`.`pattern` (
   `name` VARCHAR(15) NOT NULL,
-  `patternEvent` VARCHAR(1000) NOT NULL,
+  `pattern` VARCHAR(1000) NOT NULL,
   `description` VARCHAR(120) NULL,
   `link` VARCHAR(45) NULL,
   PRIMARY KEY (`name`))
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `gobi1`.`patternevent` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_patternevent_pattern1`
     FOREIGN KEY (`pattern_name`)
-    REFERENCES `gobi1`.`patternEvent` (`name`)
+    REFERENCES `gobi1`.`pattern` (`name`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

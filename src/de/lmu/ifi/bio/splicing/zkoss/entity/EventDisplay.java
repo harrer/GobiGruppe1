@@ -8,13 +8,13 @@ import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
  */
 public class EventDisplay extends Event{
     private double acc;
-    private PatternEvent patternEvent;
+    private PatternEvent pattern;
     private SecondaryStructure sec;
 
-    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, PatternEvent patternEvent, SecondaryStructure sec) {
+    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
         super(i1, i2, start, stop, type);
         this.acc = acc;
-        this.patternEvent = patternEvent;
+        this.pattern = pattern;
         this.sec = sec;
     }
 
@@ -22,8 +22,8 @@ public class EventDisplay extends Event{
         return acc;
     }
 
-    public PatternEvent getPatternEvent() {
-        return patternEvent;
+    public PatternEvent getPattern() {
+        return pattern;
     }
 
     public SecondaryStructure getSec() {

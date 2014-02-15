@@ -94,7 +94,7 @@ public class DataImpl implements Data {
                 continue;
             if (!String.valueOf(next.getType()).contains(type))
                 continue;
-            if (!next.getPatternEvent().getName().contains(pattern))
+            if (!next.getPattern().getName().contains(pattern))
                 continue;
             if (!next.getSec().toString().toLowerCase().contains(sec))
                 continue;

@@ -1,0 +1,80 @@
+<window width="1024px" border="normal" apply="org.zkoss.bind.BindComposer"
+        title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
+    <hbox id="main">
+        <vbox width="140px" id="left">
+            <hbox align="center">
+                Keyword:
+                <textbox value="@bind(vm.keyword)"/>
+                <vbox>
+                    <button id="searchButton" label="Search" onClick="@command('search')"/>
+                    <button id="submitButton" label="Submit" onClick="@command('add')"/>
+                </vbox>
+            </hbox>
+            <listbox id="searchListbox" width="200px" rows="20" emptyMessage="No gene etc. found"
+                     model="@bind(vm.searchlist)"
+                     multiple="true" checkmark="true" selectedItems="@bind(vm.selectedSearchList)">
+                <listhead>
+                    <listheader label="Entity"/>
+                </listhead>
+            </listbox>
+        </vbox>
+        <grid height="600px" model="@load(vm.gridlist)">
+            <columns>
+                <column hflex="3">Isoform 1</column>
+                <column hflex="3">Isoform 2</column>
+                <column hflex="1">Start</column>
+                <column hflex="1">Stop</column>
+                <column hflex="1">Type</column>
+                <column hflex="1">Pattern</column>
+                <column hflex="3">Secondary Structure</column>
+                <column hflex="1">Acces.</column>
+            </columns>
+            <auxhead sclass="category-center">
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.i1)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.i2)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.start)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.stop)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.type)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.pattern)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.sec)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.acc)" onChange="@command('changeFilter')"/>
+                </auxheader>
+            </auxhead>
+            <template name="model">
+                <row>
+                    <label value="${each.i1}"/>
+                    <label value="${each.i2}"/>
+                    <label value="${each.start}"/>
+                    <label value="${each.stop}"/>
+                    <label value="${each.type}"/>
+                    <label value="${each.pattern.name}"/>
+                    <label value="${each.sec}"/>
+                    <label value="${each.acc}"/>
+                </row>
+            </template>
+        </grid>
+    </hbox>
+</window>
