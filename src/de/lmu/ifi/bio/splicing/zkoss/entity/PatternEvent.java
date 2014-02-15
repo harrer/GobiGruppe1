@@ -3,11 +3,11 @@ package de.lmu.ifi.bio.splicing.zkoss.entity;
 /**
  * Created by uhligc on 13.02.14.
  */
-public class Pattern {
-    private String name;
+public class PatternEvent {
+    private String name, id;
     private int start, stop;
 
-    public Pattern(String name, int start, int stop) {
+    public PatternEvent(String name, int start, int stop) {
         this.name = name;
         this.start = start;
         this.stop = stop;
@@ -23,5 +23,9 @@ public class Pattern {
 
     public int getStop() {
         return stop;
+    }
+
+    public String getId() {
+        return id;
     }
 }

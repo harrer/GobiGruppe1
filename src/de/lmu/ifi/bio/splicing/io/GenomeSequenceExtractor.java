@@ -34,8 +34,7 @@ public class GenomeSequenceExtractor {
             raf.read(b);
             raf.close();
         } catch (IOException e) {
-            System.err.println("Datei konnte nicht gefunden oder gelesen werden. [GenomeSequenceExtractor]");
-            e.printStackTrace();
+            System.err.printf("[GenomeSequenceExtractor]: %s%s.fa%n", Setting.GTFDIRPATH, chromosome);
         }
 
         String tmp = new String(b);
@@ -55,18 +54,16 @@ public class GenomeSequenceExtractor {
         StringBuilder sb = new StringBuilder();
         long start;
         long stop;
-        int length;
-        int extra;
+        Exon next;
 
         while (itexon.hasNext()) {
-            Exon next = itexon.next();
-            start = next.getStart() + next.getFrame();
-            length = (int) (next.getStop() - start);
-//            extra = length % 3;
+            next = itexon.next();
+            start = next.getStart();
             stop = next.getStop();
             sb.append(getNucleotideSequence(chromosome, start, stop));
         }
 
+        //TODO Bugfix für strand - irgendwas ist hier schon wieder falsch..... /-> nur auf kleinem Datensatz testen mit strand = +
         //Strand = '-'
         if (!strand) {
             sb = new StringBuilder(GenomicUtils.convertToStrandPlus(sb.toString()));
@@ -86,15 +83,11 @@ public class GenomeSequenceExtractor {
         StringBuilder sb = new StringBuilder();
         long start;
         long stop;
-        int length;
-        int extra;
-
+        Exon next;
         while (itexon.hasNext()) {
-            Exon next = itexon.next();
+            next = itexon.next();
             start = next.getStart() + next.getFrame();
-            length = (int) (next.getStop() - start);
-            extra = length % 3;
-            stop = next.getStop() - extra;
+            stop = next.getStop();
             sb.append(getNucleotideSequence(chromosome, start, stop));
         }
 
@@ -143,12 +136,12 @@ public class GenomeSequenceExtractor {
     }
 
     public static void writeAllSequencesToFileFromGTFParser(String file, HashMap<String, Gene> hashMap) {
-        
+
         Path p = Setting.FS.getPath(file);
 
         try {
             BufferedWriter bw = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
-            
+
             int size = hashMap.size();
             int counter = 0;
             HashMap<String, Transcript> transenhashmap;

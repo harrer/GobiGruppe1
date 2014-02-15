@@ -7,6 +7,8 @@ import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,12 @@ public class DBUpdate implements DatabaseUpdate {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void insertPattern(PatternEvent patternEvent) {
+        String insert = "insert into PatternEvent values('" + patternEvent.getName();
+        //TODO insert Pattern (not patternevent) -> patternevent change
     }
 
     @Override

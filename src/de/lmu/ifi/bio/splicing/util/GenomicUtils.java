@@ -48,6 +48,7 @@ public class GenomicUtils {
                     break;
             }
         }
+
         return sb.toString();
     }
 
