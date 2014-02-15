@@ -7,14 +7,13 @@ import java.util.*;
 
 public class EventAnnotation {
     private List<long[]> eventsN, eventsPLong, eventsP1, eventsP2;
-    private long i1frame;
+    private long i1frame, i2frame;
     private Transcript t1, t2;
     private boolean strand;
 
     public EventAnnotation(Transcript t1, Transcript t2, boolean strand) {
         this.t1 = t1;
         this.t2 = t2;
-        i1frame = t1.getCds().get(0).getFrame();
         this.strand = strand;
         calculateNucleotideEvents();
         calculateProteinEvents();
@@ -29,6 +28,8 @@ public class EventAnnotation {
             Collections.reverse(cds1);
             Collections.reverse(cds2);
         }
+        i1frame = t1.getCds().get(0).getFrame();
+        i2frame = t1.getCds().get(0).getFrame();
         Iterator<Exon> i1 = cds1.iterator();
         Iterator<Exon> i2 = cds2.iterator();
         Exon e1 = i1.next();
@@ -129,11 +130,22 @@ public class EventAnnotation {
     }
 
     public void calculateProteinEvents() {
+        List<long[]> eventsNWork;
+        if (strand) {
+            eventsNWork = eventsN ;
+        } else {
+            eventsNWork = new LinkedList<>();
+            long max = eventsN.get(eventsN.size() - 1)[2];
+            for (long[] event : eventsN) {
+                eventsNWork.add(new long[]{event[0], max - event[2], max - event[1]});
+            }
+            Collections.reverse(eventsNWork);
+        }
         eventsPLong = new LinkedList<>();
-        ListIterator<long[]> it = eventsN.listIterator();
+        ListIterator<long[]> it = eventsNWork.listIterator();
         long[] a = it.next();
         long frameshift = 0;
-        long cur = 0, len, extra = -i1frame;
+        long cur = 0, len, extra1 = -i1frame, extra2 = -i2frame;
         while (a != null) {
             if (a[0] == 0) { // conserved
                 len = 0;
@@ -145,13 +157,13 @@ public class EventAnnotation {
                         a = null;
                 } while (a != null && a[0] == 0);
                 if (frameshift == 0) {
-                    if ((len + extra) / 3 - len / 3 == 1) {
+                    if ((len + Math.min(extra1, extra2)) / 3 - len / 3 == 1) {
                         eventsPLong.add(new long[]{3, cur, cur});
                         cur++;
                     }
                     eventsPLong.add(new long[]{0, cur, cur + (len) / 3 - 1});
                 } else {
-                    if ((len + extra) / 3 - len / 3 == 1) {
+                    if ((len + Math.min(extra1, extra2)) / 3 - len / 3 == 1) {
                         eventsPLong.add(new long[]{3, cur, cur + (len) / 3});
                         cur++;
                     } else {
@@ -159,7 +171,16 @@ public class EventAnnotation {
                     }
                 }
                 cur += (len) / 3;
-                extra = (len + extra) % 3;
+                if ((len + extra1) % 3 > (len + extra2) % 3) {
+                    extra1 = extra1 - extra2 + (len + extra2) % 3;
+                    extra2 = (len + extra2) % 3;
+                } else if ((len + extra1) % 3 < (len + extra2) % 3) {
+                    extra2 = extra2 - extra1 + (len + extra1) % 3;
+                    extra1 = (len + extra1) % 3;
+                } else {
+                    extra1 = (len + extra1) % 3;
+                    extra2 = (len + extra2) % 3;
+                }
             } else if (a[0] == 1) { // deletion
                 len = 0;
                 do {
@@ -169,9 +190,9 @@ public class EventAnnotation {
                     else
                         a = null;
                 } while (a != null && a[0] == 1);
-                eventsPLong.add(new long[]{1, cur, cur + (len + extra) / 3 - 1});
-                cur += (len + extra) / 3;
-                extra = (len + extra) % 3;
+                eventsPLong.add(new long[]{1, cur, cur + (len + extra1) / 3 - 1});
+                cur += (len + extra1) / 3;
+                extra1 = (len + extra1) % 3;
                 frameshift = (frameshift + len) % 3;
             } else if (a[0] == 2) { // insert
                 len = 0;
@@ -182,11 +203,12 @@ public class EventAnnotation {
                     else
                         a = null;
                 } while (a != null && a[0] == 2);
-                eventsPLong.add(new long[]{2, cur, cur + (len + extra) / 3 - 1});
-                cur += (len + extra) / 3;
-                extra = (len + extra) % 3;
+                eventsPLong.add(new long[]{2, cur, cur + (len + extra2) / 3 - 1});
+                cur += (len + extra2) / 3;
+                extra2 = (len + extra2) % 3;
                 frameshift = (frameshift - len) % 3;
             }
+            System.out.println();
         }
     }
 

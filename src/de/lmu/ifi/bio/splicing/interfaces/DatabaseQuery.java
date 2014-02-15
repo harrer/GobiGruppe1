@@ -22,6 +22,14 @@ public interface DatabaseQuery {
 
     public List<String> findAllTranscripts();
 
+    public String getChrForTranscriptID(String transcriptid);
+
+    public boolean getStrandForTranscriptID(String transcriptid);
+
+    public List<Transcript> findTranscriptsForKeyword(String keyword);
+
+    public List<String> findTranscriptIDsForKeyword(String keyword);
+
     /**
      * Kann sich Events zurückgeben lassen
      *

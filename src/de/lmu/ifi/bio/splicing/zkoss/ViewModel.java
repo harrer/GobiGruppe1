@@ -1,5 +1,7 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 
@@ -15,6 +17,7 @@ public class ViewModel {
     private Data data = new DataImpl();
     private List<String> definedList = new LinkedList<>();
     private List<EventDisplay> gridlist = new ArrayList<>();
+    private SpliceEventFilter filter = new SpliceEventFilter();
 
     public String getKeyword() {
         return keyword;
@@ -56,6 +59,14 @@ public class ViewModel {
         this.selectedSearchList = selectedSearchList;
     }
 
+    public SpliceEventFilter getFilter() {
+        return filter;
+    }
+
+    public void setFilter(SpliceEventFilter filter) {
+        this.filter = filter;
+    }
+
     @Command
     @NotifyChange("searchlist")
     public void search() {
@@ -63,12 +74,18 @@ public class ViewModel {
     }
 
     @Command
-    @NotifyChange({"detailedView", "gridlist"})
+    @NotifyChange("gridlist")
     public void add() {
         gridlist = new ArrayList<>();
         definedList = new LinkedList<>();
         definedList.addAll(selectedSearchList);
         selectedSearchList = new ArrayList<>();
         gridlist = data.select(definedList);
+    }
+
+    @Command
+    @NotifyChange("gridlist")
+    public void changeFilter() {
+        gridlist = data.filter(filter);
     }
 }

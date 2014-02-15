@@ -31,8 +31,7 @@ public class DSSP {
         surface.put('W', 255);
         surface.put('Y', 230);
         surface.put('V', 155);
-        String[] split = Utilities.getDsspAcc(protein, pdbDirectory)
-                .split("\n");
+        String[] split = null; //Utilities.getDsspAcc(protein, pdbDirectory).split("\n");
         boolean acids = false;
         List<Boolean> accessible = new ArrayList<Boolean>();
         for (String line : split) {

@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 
 import java.sql.SQLException;
@@ -118,6 +119,74 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
+    public String getChrForTranscriptID(String transcriptid) {
+        String query = "select chromosome from Gene\n" +
+                "  natural join Transcript\n" +
+                "  where transcriptid = '" + transcriptid + "'";
+        try {
+            return (String) db.select_oneColumn(query)[0];
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean getStrandForTranscriptID(String transcriptid) {
+        String query = "select strand from Gene\n" +
+                "  natural join Transcript\n" +
+                "  where transcriptid = '" + transcriptid + "'";
+        try {
+            return (boolean) db.select_oneColumn(query)[0];
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("transcriptid " + transcriptid + " nicht gefunden.");
+            return true;
+        }
+    }
+
+    @Override
+    public List<Transcript> findTranscriptsForKeyword(String keyword) {
+        String query = "SELECT transcriptid FROM gobi1.Transcript";
+        Object[] result = null;
+        try {
+            result = db.select_oneColumn(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<Transcript> liste = new LinkedList<>();
+
+        for (int i = 0; i < result.length; i++) {
+            liste.add(getTranscript((String) result[i]));
+        }
+
+        return liste;
+    }
+
+    @Override
+    public List<String> findTranscriptIDsForKeyword(String keyword) {
+        String query = "SELECT transcriptid FROM Transcript WHERE transcriptid LIKE '%" + keyword + "%'";
+        Object[] results;
+        try {
+            results = db.select_oneColumn(query);
+        } catch (SQLException e) {
+            return new LinkedList<>();
+        }
+
+        if (results.length == 0)
+            return new LinkedList<>();
+
+        List<String> liste = new LinkedList<>();
+
+        for (int i = 0; i < results.length; i++) {
+            liste.add((String) results[i]);
+        }
+
+        return liste;
+    }
+
+    @Override
     public List<String> findAllProteins() {
         String query = "SELECT proteinid FROM gobi1.Transcript";
         Object[] result = null;
@@ -178,7 +247,7 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public Transcript getTranscript(String transcriptID) {
-        String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptID + "'";
+        String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptID + "' order by start";
         Object[][] result = null;
         try {
             result = db.select(query, 3);
