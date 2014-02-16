@@ -24,10 +24,10 @@ public class EventAnnotation {
         eventsN = new LinkedList<>();
         List<Exon> cds1 = t1.getCds();
         List<Exon> cds2 = t2.getCds();
-        if (!strand) {
-            Collections.reverse(cds1);
-            Collections.reverse(cds2);
-        }
+//        if (!strand) {
+//            Collections.reverse(cds1);
+//            Collections.reverse(cds2);
+//        }
         i1frame = t1.getCds().get(0).getFrame();
         i2frame = t1.getCds().get(0).getFrame();
         Iterator<Exon> i1 = cds1.iterator();
@@ -132,7 +132,7 @@ public class EventAnnotation {
     public void calculateProteinEvents() {
         List<long[]> eventsNWork;
         if (strand) {
-            eventsNWork = eventsN ;
+            eventsNWork = eventsN;
         } else {
             eventsNWork = new LinkedList<>();
             long max = eventsN.get(eventsN.size() - 1)[2];
@@ -144,8 +144,9 @@ public class EventAnnotation {
         eventsPLong = new LinkedList<>();
         ListIterator<long[]> it = eventsNWork.listIterator();
         long[] a = it.next();
-        long frameshift = 0;
+        long frameshift = i1frame - i2frame;
         long cur = 0, len, extra1 = -i1frame, extra2 = -i2frame;
+        boolean first = true;
         while (a != null) {
             if (a[0] == 0) { // conserved
                 len = 0;
@@ -157,24 +158,25 @@ public class EventAnnotation {
                         a = null;
                 } while (a != null && a[0] == 0);
                 if (frameshift == 0) {
-                    if ((len + Math.min(extra1, extra2)) / 3 - len / 3 == 1) {
-                        eventsPLong.add(new long[]{3, cur, cur});
-                        cur++;
-                    }
-                    eventsPLong.add(new long[]{0, cur, cur + (len) / 3 - 1});
-                } else {
-                    if ((len + Math.min(extra1, extra2)) / 3 - len / 3 == 1) {
-                        eventsPLong.add(new long[]{3, cur, cur + (len) / 3});
-                        cur++;
+                    if (Math.min(extra1, extra2) != 0) {
+                        if (first) {
+                            eventsPLong.add(new long[]{0, cur, cur + (len + Math.min(extra1, extra2)) / 3 - 1});
+                            first = false;
+                        } else {
+                            eventsPLong.add(new long[]{3, cur, cur});
+                            eventsPLong.add(new long[]{0, cur + 1, cur + (len + Math.min(extra1, extra2)) / 3 - 1});
+                        }
                     } else {
-                        eventsPLong.add(new long[]{3, cur, cur + (len) / 3 - 1});
+                        eventsPLong.add(new long[]{0, cur, cur + (len + Math.min(extra1, extra2)) / 3 - 1});
                     }
+                } else {
+                    eventsPLong.add(new long[]{3, cur, cur + (len + Math.min(extra1, extra2)) / 3 - 1});
                 }
-                cur += (len) / 3;
-                if ((len + extra1) % 3 > (len + extra2) % 3) {
+                cur += (len + Math.min(extra1, extra2)) / 3;
+                if (extra1 > extra2) {
                     extra1 = extra1 - extra2 + (len + extra2) % 3;
                     extra2 = (len + extra2) % 3;
-                } else if ((len + extra1) % 3 < (len + extra2) % 3) {
+                } else if (extra1 < extra2) {
                     extra2 = extra2 - extra1 + (len + extra1) % 3;
                     extra1 = (len + extra1) % 3;
                 } else {
@@ -250,8 +252,8 @@ public class EventAnnotation {
                 cur1 += a[2] - a[1] + 1;
                 cur2 += a[2] - a[1] + 1;
             } else if (a[0] == 3) {
-                reps1 += a[2] - a[1];
-                reps2 += a[2] - a[1];
+                reps1 += a[2] - a[1] + 1;
+                reps2 += a[2] - a[1] + 1;
             } else {
                 if (a[0] == 1) {
                     dels = a[2] - a[1] + 1;

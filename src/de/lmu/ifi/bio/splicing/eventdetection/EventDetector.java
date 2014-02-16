@@ -60,7 +60,7 @@ public class EventDetector {
 	}
 	
 	public static void printEvents(EventAnnotation ea) {
-		System.out.println("Conserved:");
+		System.out.println("N\nConserved:");
 		for (long[] e : ea.getEventsN()) {
 			if (e[0] == 0)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
@@ -76,7 +76,7 @@ public class EventDetector {
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
 
-        System.out.println("\nConserved:");
+        System.out.println("\nPlong\nConserved:");
         for (long[] e : ea.getEventsPLong()) {
             if (e[0] == 0)
                 System.out.print("(" + e[1] + ", " + e[2] + ") ");
@@ -91,8 +91,13 @@ public class EventDetector {
             if (e[0] == 2)
                 System.out.print("(" + e[1] + ", " + e[2] + ") ");
         }
+        System.out.println("\nReplaces");
+        for (long[] e : ea.getEventsPLong()) {
+            if (e[0] == 3)
+                System.out.print("(" + e[1] + ", " + e[2] + ") ");
+        }
 
-        System.out.println("\nConserved:");
+        System.out.println("\nP1\nConserved:");
 		for (long[] e : ea.getEventsP1()) {
 			if (e[0] == 0)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
@@ -112,7 +117,7 @@ public class EventDetector {
 			if (e[0] == 3)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");
 		}
-        System.out.println("\nConserved:");
+        System.out.println("\nP2\nConserved:");
         for (long[] e : ea.getEventsP2()) {
             if (e[0] == 0)
                 System.out.print("(" + e[1] + ", " + e[2] + ") ");
