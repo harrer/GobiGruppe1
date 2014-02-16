@@ -32,7 +32,8 @@ public class GenomeSequenceExtractorTest {
 
     @Test
     public void testGetProteinSequence() throws Exception {
-        GenomeSequenceExtractor.getProteinSequence(tr);
+        String bla = GenomeSequenceExtractor.getProteinSequence(tr);
+        System.out.println(bla);
     }
 
     @Test

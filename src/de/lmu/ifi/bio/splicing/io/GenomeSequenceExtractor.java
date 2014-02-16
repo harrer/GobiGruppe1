@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class GenomeSequenceExtractor {
     public static String getNucleotideSequence(String chromosome, long start, long stop) {
+        if (stop < start)
+            return "";
         byte[] b = new byte[0];
         try {
             RandomAccessFile raf = new RandomAccessFile(Setting.GTFDIRPATH + chromosome + ".fa", "r");
@@ -56,9 +58,15 @@ public class GenomeSequenceExtractor {
         long stop;
         Exon next;
 
+        boolean first = true;
+
         while (itexon.hasNext()) {
             next = itexon.next();
-            start = next.getStart();
+            if (first) {
+                start = next.getStart() + next.getFrame();
+                first = false;
+            } else
+                start = next.getStart();
             stop = next.getStop();
             sb.append(getNucleotideSequence(chromosome, start, stop));
         }
@@ -84,9 +92,15 @@ public class GenomeSequenceExtractor {
         long start;
         long stop;
         Exon next;
+        boolean first = true;
+
         while (itexon.hasNext()) {
             next = itexon.next();
-            start = next.getStart() + next.getFrame();
+            if (first) {
+                start = next.getStart() + next.getFrame();
+                first = false;
+            } else
+                start = next.getStart();
             stop = next.getStop();
             sb.append(getNucleotideSequence(chromosome, start, stop));
         }
@@ -151,7 +165,7 @@ public class GenomeSequenceExtractor {
                     bw.write(">" + t.getTranscriptId() + "\n" + getProteinSequence(t, g.getChromosome(), g.getStrand()) + "\n");
                 }
                 if (counter % (size / 144) == 0)
-                    System.out.printf("Bereits %.2f %%%n", counter / (double) size * 100);
+                        System.out.printf("Bereits %.2f %%%n", counter / (double) size * 100);
                 counter++;
             }
 
