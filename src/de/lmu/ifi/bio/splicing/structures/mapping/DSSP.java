@@ -1,19 +1,33 @@
 package de.lmu.ifi.bio.splicing.structures.mapping;
 
+import de.lmu.ifi.bio.splicing.genome.Event;
+
 import java.util.*;
 
 /**
  * Created by schmidtju on 14.02.14.
  */
 public class DSSP {
-    public static List<Boolean> calcAccessiblity(String protein,
-                                                 String pdbDirectory, double cutoff) {
-
-        List<Boolean> accessible = new ArrayList<Boolean>();
+    public static List<Double> calcAccessiblity(DSSPData dssp) {
+        List<Double> accessible = new ArrayList<>();
+        for (int i = 0; i < dssp.getAccesibility().length; i++) {
+            double fraction = calcAccessibility(dssp.getSequence().charAt(i), dssp.getAccesibility()[i]);
+            accessible.add(fraction);
+        }
         return accessible;
     }
 
-    private double calcAccessibility(char aa, int accessible) {
+    public static double mapAccessibility(DSSPData dssp, Map map, Event event){
+        double meanAccess = 0;
+        Set<Integer> affected = map.getAffectedPositions(event);
+        List<Double> accessible = calcAccessiblity(dssp);
+        for (Integer aff : affected) {
+            meanAccess += accessible.get(aff);
+        }
+        return meanAccess/affected.size();
+    }
+
+    private static double calcAccessibility(char aa, int accessible) {
         // Values taken from: C. Chotia, The Nature of the Accessible and Buried
         // Surfaces in Proteins (ASA calculated in G-X-G tripeptide)
         HashMap<Character, Integer> surface = new HashMap<>();

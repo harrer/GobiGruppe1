@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class DSSPParser {
 
-    public static DSSPData runDSSP(String protein, String pdbDirectory) {
+    public static DSSPData runDSSP(String proteinId, String pdbDirectory) {
         Runtime rt = Runtime.getRuntime();
         StreamWrapper error, output;
         String out = "";
         try {
-            System.out.println("/home/proj/biosoft/PROTEINS/software/dsspcmbi " + pdbDirectory + protein + ".pdb");
-            Process proc = rt.exec("/home/proj/biosoft/PROTEINS/software/dsspcmbi " + pdbDirectory + protein + ".pdb");
+            System.out.println("/home/proj/biosoft/PROTEINS/software/dsspcmbi " + pdbDirectory + proteinId + ".pdb");
+            Process proc = rt.exec("/home/proj/biosoft/PROTEINS/software/dsspcmbi " + pdbDirectory + proteinId + ".pdb");
             error = new StreamWrapper(proc.getErrorStream(), "ERROR");
             output = new StreamWrapper(proc.getInputStream(), "OUTPUT");
             int exitVal = 0;
@@ -51,10 +51,10 @@ public class DSSPParser {
                 acids = true;
             }
         }
-        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString());
+        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString(), proteinId);
     }
 
-    public static DSSPData parseDSSPFile(File file) {
+    public static DSSPData parseDSSPFile(File file, String proteinId) {
 
         boolean acids = false;
         List<Integer> accessibility = new ArrayList<>();
@@ -80,7 +80,7 @@ public class DSSPParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString());
+        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString(), proteinId);
     }
 
     public static DSSPData getDSSPData(String proteinId) {
@@ -92,7 +92,7 @@ public class DSSPParser {
         });
         for (File file : matchingFiles) {
             if (file.getName().startsWith(proteinId)) {
-                return parseDSSPFile(file);
+                return parseDSSPFile(file, proteinId);
             }
         }
         return runDSSP(proteinId, Setting.PDBREPCCHAINSDIR);
