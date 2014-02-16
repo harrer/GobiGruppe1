@@ -16,4 +16,6 @@ public interface DatabaseUpdate {
     public void insertEvent(Event event);
 
     public void insertPattern(Pattern pattern);
+
+    public void insertPatternEvent(PatternEvent patternEvent);
 }

@@ -34,7 +34,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertPattern(Pattern pattern) {
-        String insert = null;
+        String insert;
 
         //for insert
         boolean specialquote = false;
@@ -43,7 +43,7 @@ public class DBUpdate implements DatabaseUpdate {
                 specialquote = true;
         }
 
-        if (!pattern.isProfile()) { //wenn kein
+        if (!pattern.isProfile()) { //wenn kein profile
             if (pattern.hasLink()) //contructor only link having when description too -> description must be included
                 insert = String.format("insert into Pattern values('%s','%s','%s','%s','%s', 1)", pattern.getId(), pattern.getPattern(), pattern.getDescription(), pattern.getLink(), pattern.getName());
             else if (pattern.hasDescription())
@@ -69,6 +69,16 @@ public class DBUpdate implements DatabaseUpdate {
             db.executeUpdate(insert);
         } catch (SQLException e) {
             System.err.printf("[DBUpdate]: insertPattern: %s%n", insert);
+        }
+    }
+
+    @Override
+    public void insertPatternEvent(PatternEvent patternEvent) {
+        String insert = String.format("insert into PatternEvent (fk_pattern_id,transcriptid,start,stop) values('%s','%s',%s,%s)", patternEvent.getId(), patternEvent.getTranscriptid(), patternEvent.getStart(), patternEvent.getStop());
+        try {
+            db.executeUpdate(insert);
+        } catch (SQLException e) {
+            System.err.printf("[DBUpdate]: insertPatternEvent: %s%n", insert);
         }
     }
 

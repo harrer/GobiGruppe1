@@ -94,7 +94,7 @@ public class DataImpl implements Data {
                 continue;
             if (!String.valueOf(next.getType()).contains(type))
                 continue;
-            if (!next.getPattern().getName().contains(pattern))
+            if (!next.getPattern().getId().contains(pattern))
                 continue;
             if (!next.getSec().toString().toLowerCase().contains(sec))
                 continue;
@@ -115,7 +115,7 @@ public class DataImpl implements Data {
                 Event tmpevent = dbq.getEvent(transcript1, transcript2);
                 if (tmpevent == null)
                     continue;
-                tmp.add(new EventDisplay(tmpevent.getI1(), tmpevent.getI2(), tmpevent.getStart(), tmpevent.getStop(), tmpevent.getType(), 0.0, new PatternEvent("P00000", 1, 2), SecondaryStructure.HELIX));
+                tmp.add(new EventDisplay(tmpevent.getI1(), tmpevent.getI2(), tmpevent.getStart(), tmpevent.getStop(), tmpevent.getType(), 0.0, new PatternEvent("P00000", "ENST000202", 1, 2), SecondaryStructure.HELIX));
             }
         }
         return tmp;

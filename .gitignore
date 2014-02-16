@@ -10,4 +10,4 @@ lib/
 *.iml
 /nbproject/private/
 /bin
-/dist/
+/dist/*.mf

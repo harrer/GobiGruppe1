@@ -70,7 +70,7 @@
                     <label value="${each.start}"/>
                     <label value="${each.stop}"/>
                     <label value="${each.type}"/>
-                    <label value="${each.pattern.name}"/>
+                    <label value="${each.pattern.id}"/>
                     <label value="${each.sec}"/>
                     <label value="${each.acc}"/>
                 </row>

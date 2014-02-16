@@ -4,14 +4,19 @@ package de.lmu.ifi.bio.splicing.zkoss.entity;
  * Created by uhligc on 13.02.14.
  */
 public class PatternEvent {
-    private String name, id;
+    private String id, transcriptid;
     private int start, stop;
     private boolean is_total; //whether pattern is completetly inside in splicevent or not.
 
-    public PatternEvent(String name, int start, int stop) {
-        this.name = name;
+    public PatternEvent(String id, String transcriptid, int start, int stop) {
+        this.id = id;
+        this.transcriptid = transcriptid;
         this.start = start;
         this.stop = stop;
+    }
+
+    public String getTranscriptid() {
+        return transcriptid;
     }
 
     public void setIs_total(boolean is_total) {
@@ -23,8 +28,8 @@ public class PatternEvent {
         return is_total;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
     public int getStart() {
@@ -35,7 +40,4 @@ public class PatternEvent {
         return stop;
     }
 
-    public String getId() {
-        return id;
-    }
 }
