@@ -10,6 +10,7 @@ import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by uhligc on 12.02.14.
@@ -79,6 +80,21 @@ public class DBUpdate implements DatabaseUpdate {
             db.executeUpdate(insert);
         } catch (SQLException e) {
             System.err.printf("[DBUpdate]: insertPatternEvent: %s%n", insert);
+        }
+    }
+
+    @Override
+    public void insertEventSet(Set<Event> eventSet) {
+        StringBuilder sb = new StringBuilder("insert into Event(start,stop,isoform1,isoform2,type) values");
+        for (Event event : eventSet) {
+            sb.append("(" + event.getStart() + "," + event.getStop() + ",'" + event.getI1() + "','" + event.getI2() + "','" + event.getType() + "'),\n");
+        }
+        sb.replace(sb.length()-2,sb.length(),"");
+        try {
+            db.executeUpdate(sb.toString());
+        } catch (SQLException e) {
+            System.err.printf("[DBUpdate]: %s%n", sb.toString());
+            e.printStackTrace();
         }
     }
 

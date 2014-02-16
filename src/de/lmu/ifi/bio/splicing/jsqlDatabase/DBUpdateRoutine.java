@@ -16,13 +16,20 @@ public class DBUpdateRoutine {
     final static DBUpdate dbu = new DBUpdate();
 
     public static void insertEvents() {
-        List<String> thebiglist = new LinkedList<>();
-        thebiglist = dbq.findAllGenes();
+        List<String> thebiglist = dbq.findAllGenes();
         for (String s : thebiglist) {
             Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(s));
             for (Event event : eventSet) {
                 dbu.insertEvent(event);
             }
+        }
+    }
+
+    public static void insertEventSets() {
+        List<String> thebiglist = dbq.findAllGenes();
+        for (String s : thebiglist) {
+            Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(s));
+            dbu.insertEventSet(eventSet);
         }
     }
 
@@ -40,5 +47,9 @@ public class DBUpdateRoutine {
         for (Event event : eventSet) {
             dbu.insertEvent(event);
         }
+    }
+
+    public static void main(String[] args) {
+        insertEventSets();
     }
 }

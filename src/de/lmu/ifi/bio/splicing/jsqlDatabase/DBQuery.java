@@ -215,7 +215,7 @@ public class DBQuery implements DatabaseQuery {
             return null;
         }
         if (result.length > 0)
-            return new Event(isoform1, isoform2, (long) result[0][0], (long) result[0][1], ((String) result[0][2]).charAt(0));
+            return new Event(isoform1, isoform2, (long) (int) result[0][0], (long) (int) result[0][1], ((String) result[0][2]).charAt(0));
         else
             return null;
     }

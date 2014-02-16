@@ -5,6 +5,7 @@ import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public interface DatabaseUpdate {
     public void insertGene(Gene gene);
@@ -18,4 +19,6 @@ public interface DatabaseUpdate {
     public void insertPattern(Pattern pattern);
 
     public void insertPatternEvent(PatternEvent patternEvent);
+
+    public void insertEventSet(Set<Event> events);
 }
