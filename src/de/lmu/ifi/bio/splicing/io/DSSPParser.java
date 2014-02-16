@@ -38,18 +38,20 @@ public class DSSPParser {
         boolean acids = false;
         List<Integer> accessibility = new ArrayList<>();
         List<Character> secondaryStructure = new ArrayList<>();
+        StringBuilder sequence = new StringBuilder();
         for (String line : out.split("\n")) {
             if (acids) {
                 if (line.length() > 1) {
                     accessibility.add(Integer.parseInt(line.substring(35, 38).replaceAll(" ", "")));
                     secondaryStructure.add(line.charAt(16));
+                    sequence.append(line.charAt(13));
                 } else
                     break;
             } else if (line.startsWith("  #")) {
                 acids = true;
             }
         }
-        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]));
+        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString());
     }
 
     public static DSSPData parseDSSPFile(File file) {
@@ -57,6 +59,7 @@ public class DSSPParser {
         boolean acids = false;
         List<Integer> accessibility = new ArrayList<>();
         List<Character> secondaryStructure = new ArrayList<>();
+        StringBuilder sequence = new StringBuilder();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line = "";
@@ -65,6 +68,7 @@ public class DSSPParser {
                     if (line.length() > 1) {
                         accessibility.add(Integer.parseInt(line.substring(35, 38).replaceAll(" ", "")));
                         secondaryStructure.add(line.charAt(16));
+                        sequence.append(line.charAt(13));
                     } else
                         break;
                 } else if (line.startsWith("  #")) {
@@ -76,7 +80,7 @@ public class DSSPParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]));
+        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString());
     }
 
     public static DSSPData getDSSPData(String proteinId) {
