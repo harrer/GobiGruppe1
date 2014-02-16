@@ -21,20 +21,19 @@ public class PSScanParser {
         try {
             BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8);
             String line, transcriptid = null, id = null;
-            int start = 0,stop = 0;
-            String regex = "^>(\\w+)/(\\d+)-(\\d+) : (\\w+).*";
+            int start = 0, stop = 0;
+            String regex = "^>(\\w+)/(\\d+)\\-(\\d+) : (\\w+).*";
             Pattern pat = Pattern.compile(regex);
             Matcher m = pat.matcher("");
             while ((line = br.readLine()) != null) {
                 if (m.reset(line).matches()) {
-                    transcriptid = m.group(0);
-                    start = Integer.valueOf(m.group(1));
-                    stop = Integer.valueOf(m.group(2));
-                    id = m.group(3);
+                    transcriptid = m.group(1);
+                    start = Integer.valueOf(m.group(2));
+                    stop = Integer.valueOf(m.group(3));
+                    id = m.group(4);
                 } else {
-                    if (transcriptid != null) {
+                    if (transcriptid != null)
                         addPatternEventToDatabase(new PatternEvent(id, transcriptid, start, stop));
-                    }
                     transcriptid = null;
                 }
             }
@@ -47,5 +46,9 @@ public class PSScanParser {
 
     private static void addPatternEventToDatabase(PatternEvent patternEvent) {
         Setting.dbu.insertPatternEvent(patternEvent);
+    }
+
+    public static void main(String[] args) {
+        PSScanParser.readPSScanFastaResultFile(args[0]);
     }
 }
