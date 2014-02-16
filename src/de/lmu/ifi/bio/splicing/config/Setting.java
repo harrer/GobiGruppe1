@@ -1,5 +1,8 @@
 package de.lmu.ifi.bio.splicing.config;
 
+import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+import de.lmu.ifi.bio.splicing.jsqlDatabase.DBUpdate;
+
 import java.io.File;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -18,4 +21,7 @@ public class Setting {
     public static final String DSSPDIR = "/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/DSSP/";
     public static final String TMALIGNDIR = "/home/proj/biosoft/PROTEINS/software/TMalign/";
     public static final String BLASTDIR = "/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/BLAST/";
+    public static final String GTFDIRPATH = "/home/proj/biosoft/GENOMIC/HUMAN/HUMAN_GENOME_FASTA/Homo_sapiens.GRCh37.63.dna.chromosome.";
+    public static final DBQuery dbq = new DBQuery();
+    public static final DBUpdate dbu = new DBUpdate();
 }

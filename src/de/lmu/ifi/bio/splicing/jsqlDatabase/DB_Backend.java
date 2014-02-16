@@ -103,7 +103,6 @@ public class DB_Backend {
         try {
             this.executeUpdate(insert);
         } catch (SQLException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         System.out.println("Inserted into table");
