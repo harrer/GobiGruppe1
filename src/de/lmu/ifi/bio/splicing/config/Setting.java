@@ -15,6 +15,7 @@ public class Setting {
     public static final Path GTFPATH = FS.getPath(GTFFILEPATH);
     public static final String PDBREPCCHAINSDIR = "/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/STRUCTURES/";
     public static final String PDBCATHSCOPDIR = "/home/proj/biosoft/PROTEINS/CATHSCOP/STRUCTURES/";
+    public static final String DSSPDIR = "/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/DSSP/";
     public static final String TMALIGNDIR = "/home/proj/biosoft/PROTEINS/software/TMalign/";
     public static final String BLASTDIR = "/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/BLAST/";
 }
