@@ -43,4 +43,7 @@ public class Map {
         return affected;
     }
 
+    public int[] getBoundaries(Event event){
+        return new int[]{aligned.get(event.getStart()), aligned.get(event.getStop())};
+    }
 }
