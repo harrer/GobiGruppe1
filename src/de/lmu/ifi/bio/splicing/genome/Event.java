@@ -7,7 +7,8 @@ public class Event {
     //i1 und i2 sind transcript ids (keine protein ids)
     String i1, i2;
     long start, stop;
-    char type; //1 = deletion, 2 = insert, 3 = replace
+    char type, secondaryStructure; //1 = deletion, 2 = insert, 3 = replace
+    double accessibility;
 
     public Event(String i1, String i2, long start, long stop, char type) {
         this.i1 = i1;
@@ -34,4 +35,20 @@ public class Event {
     }
 
     public char getType() { return type; }
+
+    public char getSecondaryStructure() {
+        return secondaryStructure;
+    }
+
+    public void setSecondaryStructure(char secondaryStructure) {
+        this.secondaryStructure = secondaryStructure;
+    }
+
+    public double getAccessibility() {
+        return accessibility;
+    }
+
+    public void setAccessibility(double accessibility) {
+        this.accessibility = accessibility;
+    }
 }
