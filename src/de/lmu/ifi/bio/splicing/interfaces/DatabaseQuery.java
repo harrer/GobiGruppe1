@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.interfaces;
 
+import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
 import java.util.List;
@@ -41,6 +42,8 @@ public interface DatabaseQuery {
     public Gene getGene(String geneID);
 
     public Transcript getTranscript(String transcriptID);
+
+    public Gene getGeneForTranscriptID(String transcriptid);
     
     public Transcript getTranscriptForProteinId(String proteinId);
 }

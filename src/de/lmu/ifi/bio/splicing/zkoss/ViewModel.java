@@ -5,6 +5,7 @@ import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 
+import java.awt.image.RenderedImage;
 import java.util.*;
 
 /**
@@ -18,6 +19,41 @@ public class ViewModel {
     private List<String> definedList = new LinkedList<>();
     private List<EventDisplay> gridlist = new ArrayList<>();
     private SpliceEventFilter filter = new SpliceEventFilter();
+    private EventDisplay selectedItemGridlist;
+    private RenderedImage renderedImage; // set int und height by init
+    private int height_img_ri = 100, width_img_ri = 200;
+
+    public EventDisplay getSelectedItemGridlist() {
+        return selectedItemGridlist;
+    }
+
+    public RenderedImage getRenderedImage() {
+        return renderedImage;
+    }
+
+    public void setRenderedImage(RenderedImage renderedImage) {
+        this.renderedImage = renderedImage;
+    }
+
+    public int getHeight_img() {
+        return height_img_ri;
+    }
+
+    public void setHeight_img(int height_img) {
+        this.height_img_ri = height_img;
+    }
+
+    public int getWidth_img_ri() {
+        return width_img_ri;
+    }
+
+    public void setWidth_img_ri(int width_img_ri) {
+        this.width_img_ri = width_img_ri;
+    }
+
+    public void setSelectedItemGridlist(EventDisplay selectedItemGridlist) {
+        this.selectedItemGridlist = selectedItemGridlist;
+    }
 
     public String getKeyword() {
         return keyword;
@@ -71,6 +107,17 @@ public class ViewModel {
     @NotifyChange("searchlist")
     public void search() {
         searchlist = data.search(keyword);
+    }
+
+    @Command
+    public void selectgriditem() {
+        //TODO was passiert wenn auf item in gridlist geklickt wird
+        // pattern
+        // superposition
+        // ....
+
+        //ExonView by selected Transcript --> Gene
+        renderedImage = data.renderImage(selectedItemGridlist);
     }
 
     @Command

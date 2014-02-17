@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
@@ -9,6 +10,7 @@ import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 
+import java.awt.image.RenderedImage;
 import java.util.*;
 
 /**
@@ -102,6 +104,12 @@ public class DataImpl implements Data {
         }
 
         return events;
+    }
+
+    @Override
+    public RenderedImage renderImage(EventDisplay eventDisplay, int height, int width) {
+        Gene g = Setting.dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
+        return null;
     }
 
 

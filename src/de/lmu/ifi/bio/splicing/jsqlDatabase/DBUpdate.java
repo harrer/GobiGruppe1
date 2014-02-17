@@ -1,16 +1,21 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import de.lmu.ifi.bio.splicing.genome.*;
+import de.lmu.ifi.bio.splicing.homology.ShortenPDB_Mapping;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
 
 import java.sql.SQLException;
 
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by uhligc on 12.02.14.
@@ -40,27 +45,31 @@ public class DBUpdate implements DatabaseUpdate {
         //for insert
         boolean specialquote = false;
         if (pattern.hasDescription()) {
-            if (pattern.getDescription().contains("'"))
+            if (pattern.getDescription().contains("'")) {
                 specialquote = true;
+            }
         }
 
         if (!pattern.isProfile()) { //wenn kein profile
             if (pattern.hasLink()) //contructor only link having when description too -> description must be included
+            {
                 insert = String.format("insert into Pattern values('%s','%s','%s','%s','%s', 1)", pattern.getId(), pattern.getPattern(), pattern.getDescription(), pattern.getLink(), pattern.getName());
-            else if (pattern.hasDescription())
-                if (!specialquote)
+            } else if (pattern.hasDescription()) {
+                if (!specialquote) {
                     insert = String.format("insert into Pattern (id,pattern,name,description, type) values('%s','%s','%s','%s',1)", pattern.getId(), pattern.getPattern(), pattern.getName(), pattern.getDescription());
-                else
+                } else {
                     insert = String.format("insert into Pattern (id,pattern,name,description, type) values('%s','%s','%s',\"%s\",1)", pattern.getId(), pattern.getPattern(), pattern.getName(), pattern.getDescription());
-            else {
+                }
+            } else {
                 insert = String.format("insert into Pattern (id,pattern,name,type) values('%s','%s','%s',1)", pattern.getId(), pattern.getPattern(), pattern.getName());
             }
         } else {
             if (pattern.hasDescription()) {
-                if (!specialquote)
+                if (!specialquote) {
                     insert = String.format("insert into Pattern (id,name,description,type) values('%s','%s','%s',0)", pattern.getId(), pattern.getName(), pattern.getDescription());
-                else
+                } else {
                     insert = String.format("insert into Pattern (id,name,description,type) values('%s','%s',\"%s\",0)", pattern.getId(), pattern.getName(), pattern.getDescription());
+                }
             } else {
                 insert = String.format("insert into Pattern (id,name,type) values('%s','%s',0)", pattern.getId(), pattern.getName());
             }
@@ -89,7 +98,7 @@ public class DBUpdate implements DatabaseUpdate {
         for (Event event : eventSet) {
             sb.append("(" + event.getStart() + "," + event.getStop() + ",'" + event.getI1() + "','" + event.getI2() + "','" + event.getType() + "'),\n");
         }
-        sb.replace(sb.length()-2,sb.length(),"");
+        sb.replace(sb.length() - 2, sb.length(), "");
         try {
             db.executeUpdate(sb.toString());
         } catch (SQLException e) {
@@ -155,19 +164,38 @@ public class DBUpdate implements DatabaseUpdate {
         }
     }
 
-    public static void main(String[] args) {
-        Transcript t1 = new Transcript("ENST1", "ENSP1");
-        t1.addExon(new Exon(12, 32, 1));
-        t1.addExon(new Exon(412, 532, 3));
-        t1.addExon(new Exon(6122, 7232, 2));
-        Transcript t2 = new Transcript("ENST2", "ENSP2");
-        t2.addExon(new Exon(112, 232, 4));
-        t2.addExon(new Exon(516, 562, 2));
-        t2.addExon(new Exon(882, 932, 3));
-        Gene gene = new Gene("ENSG012", "12", true);
-        gene.addTranscript(t1);
-        gene.addTranscript(t2);
+    @Override
+    public void insertPDB_Transcript(HashMap<String, ArrayList<String>> map) {
+        StringBuilder insert = new StringBuilder("insert into transcript_has_pdbs(transcriptId, ) values");
+        HashMap<String, Boolean> hm = new HashMap<>();
+        for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
+            String string = entry.getKey();
+            ArrayList<String> arrayList = entry.getValue();
+            for (String string1 : arrayList) {
+                hm.put(string1, Boolean.TRUE);
+            }
+        }
+        insert = new StringBuilder("insert into PDB(pdbId) values");
+        boolean setComma = false;
+        for (Map.Entry<String, Boolean> entry : hm.entrySet()) {
+            String string = entry.getKey();
+            if (setComma) {
+                insert.append(',');
+            } else {
+                setComma = true;
+            }
+            insert.append("('").append(string).append("')");
+        }
+        try {
+            db.executeUpdate(insert.toString());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
         DBUpdate db = new DBUpdate();
-        db.insertGene(gene);
+        ShortenPDB_Mapping mapping = new ShortenPDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
+        db.insertPDB_Transcript(mapping.getENSP_PDBmap());
     }
 }
