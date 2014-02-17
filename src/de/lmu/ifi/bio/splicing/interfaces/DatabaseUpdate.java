@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.splicing.interfaces;
 
 import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,4 +22,6 @@ public interface DatabaseUpdate {
     public void insertPatternEvent(PatternEvent patternEvent);
 
     public void insertEventSet(Set<Event> events);
+    
+    public void insertPDB_Transcript(HashMap<String, ArrayList<String>> map);
 }
