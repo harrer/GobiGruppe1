@@ -18,41 +18,51 @@
                 </listhead>
             </listbox>
         </vbox>
-        <!--<listbox id="detailedview" model="@load(vm.gridlist)" rows="6" checkmark="true">-->
-            <!--<listhead>-->
-                <!--<listheader label="I1"/>-->
-                <!--<listheader label="I2"/>-->
-                <!--<listheader label="Start"/>-->
-                <!--<listheader label="Stop"/>-->
-                <!--<listheader label="Type"/>-->
-                <!--<listheader label="Pattern"/>-->
-                <!--<listheader label="SEC"/>-->
-                <!--<listheader label="ACC"/>-->
-            <!--</listhead>-->
-            <!--<template name="model">-->
-                <!--<listitem>-->
-                    <!--<listcell label="${each.i1}"/>-->
-                    <!--<listcell label="${each.i2}"/>-->
-                    <!--<listcell label="${each.start}"/>-->
-                    <!--<listcell label="${each.stop}"/>-->
-                    <!--<listcell label="${each.type}"/>-->
-                    <!--<listcell label="${each.pattern}"/>-->
-                    <!--<listcell label="${each.sec}"/>-->
-                    <!--<listcell label="${each.acc}"/>-->
-                <!--</listitem>-->
-            <!--</template>-->
-        <!--</listbox>-->
         <grid height="600px" model="@load(vm.gridlist)">
             <columns>
-                <column hflex="2">I1</column>
-                <column hflex="2">I2</column>
-                <column label="Start" width="70px"/>
-                <column label="Stop" width="70px"/>
-                <column label="T" width="20px"/>
-                <column label="Pattern" width="60px"/>
-                <column label="Secondary Structure" width="120px"/>
-                <column label="ACC" width="40px"/>
+                <column hflex="3">Isoform 1</column>
+                <column hflex="3">Isoform 2</column>
+                <column hflex="1">Start</column>
+                <column hflex="1">Stop</column>
+                <column hflex="1">Type</column>
+                <column hflex="1">Pattern</column>
+                <column hflex="3">Secondary Structure</column>
+                <column hflex="1">Acces.</column>
             </columns>
+            <auxhead sclass="category-center">
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.i1)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.i2)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.start)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.stop)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.type)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.pattern)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.sec)" onChange="@command('changeFilter')"/>
+                </auxheader>
+                <auxheader colspan="1">
+                    <textbox instant="true" width="100%"
+                             value="@bind(vm.filter.acc)" onChange="@command('changeFilter')"/>
+                </auxheader>
+            </auxhead>
             <template name="model">
                 <row>
                     <label value="${each.i1}"/>
@@ -60,7 +70,7 @@
                     <label value="${each.start}"/>
                     <label value="${each.stop}"/>
                     <label value="${each.type}"/>
-                    <label value="${each.pattern}"/>
+                    <label value="${each.pattern.id}"/>
                     <label value="${each.sec}"/>
                     <label value="${each.acc}"/>
                 </row>

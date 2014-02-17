@@ -1,15 +1,16 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
+
 import java.sql.SQLException;
 
-import de.lmu.ifi.bio.splicing.genome.Event;
-import de.lmu.ifi.bio.splicing.genome.Exon;
-import de.lmu.ifi.bio.splicing.genome.Gene;
-import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by uhligc on 12.02.14.
@@ -24,10 +25,75 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertEvent(Event event) {// acc, sec  ??
-        String insert = "insert into Event(start,stop,isoform1,isoform2,type) values(" + event.getStart() +"," + event.getStop() +",'" + event.getI1() +"','"+ event.getI2() + "','"+ event.getType() +"')";
+        String insert = "insert into Event(start,stop,isoform1,isoform2,type) values(" + event.getStart() + "," + event.getStop() + ",'" + event.getI1() + "','" + event.getI2() + "','" + event.getType() + "')";
         try {
             db.executeUpdate(insert);
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void insertPattern(Pattern pattern) {
+        String insert;
+
+        //for insert
+        boolean specialquote = false;
+        if (pattern.hasDescription()) {
+            if (pattern.getDescription().contains("'"))
+                specialquote = true;
+        }
+
+        if (!pattern.isProfile()) { //wenn kein profile
+            if (pattern.hasLink()) //contructor only link having when description too -> description must be included
+                insert = String.format("insert into Pattern values('%s','%s','%s','%s','%s', 1)", pattern.getId(), pattern.getPattern(), pattern.getDescription(), pattern.getLink(), pattern.getName());
+            else if (pattern.hasDescription())
+                if (!specialquote)
+                    insert = String.format("insert into Pattern (id,pattern,name,description, type) values('%s','%s','%s','%s',1)", pattern.getId(), pattern.getPattern(), pattern.getName(), pattern.getDescription());
+                else
+                    insert = String.format("insert into Pattern (id,pattern,name,description, type) values('%s','%s','%s',\"%s\",1)", pattern.getId(), pattern.getPattern(), pattern.getName(), pattern.getDescription());
+            else {
+                insert = String.format("insert into Pattern (id,pattern,name,type) values('%s','%s','%s',1)", pattern.getId(), pattern.getPattern(), pattern.getName());
+            }
+        } else {
+            if (pattern.hasDescription()) {
+                if (!specialquote)
+                    insert = String.format("insert into Pattern (id,name,description,type) values('%s','%s','%s',0)", pattern.getId(), pattern.getName(), pattern.getDescription());
+                else
+                    insert = String.format("insert into Pattern (id,name,description,type) values('%s','%s',\"%s\",0)", pattern.getId(), pattern.getName(), pattern.getDescription());
+            } else {
+                insert = String.format("insert into Pattern (id,name,type) values('%s','%s',0)", pattern.getId(), pattern.getName());
+            }
+        }
+
+        try {
+            db.executeUpdate(insert);
+        } catch (SQLException e) {
+            System.err.printf("[DBUpdate]: insertPattern: %s%n", insert);
+        }
+    }
+
+    @Override
+    public void insertPatternEvent(PatternEvent patternEvent) {
+        String insert = String.format("insert into PatternEvent (fk_pattern_id,transcriptid,start,stop) values('%s','%s',%s,%s)", patternEvent.getId(), patternEvent.getTranscriptid(), patternEvent.getStart(), patternEvent.getStop());
+        try {
+            db.executeUpdate(insert);
+        } catch (SQLException e) {
+            System.err.printf("[DBUpdate]: insertPatternEvent: %s%n", insert);
+        }
+    }
+
+    @Override
+    public void insertEventSet(Set<Event> eventSet) {
+        StringBuilder sb = new StringBuilder("insert into Event(start,stop,isoform1,isoform2,type) values");
+        for (Event event : eventSet) {
+            sb.append("(" + event.getStart() + "," + event.getStop() + ",'" + event.getI1() + "','" + event.getI2() + "','" + event.getType() + "'),\n");
+        }
+        sb.replace(sb.length()-2,sb.length(),"");
+        try {
+            db.executeUpdate(sb.toString());
+        } catch (SQLException e) {
+            System.err.printf("[DBUpdate]: %s%n", sb.toString());
             e.printStackTrace();
         }
     }
@@ -88,7 +154,7 @@ public class DBUpdate implements DatabaseUpdate {
             e.printStackTrace();
         }
     }
-    
+
     public static void main(String[] args) {
         Transcript t1 = new Transcript("ENST1", "ENSP1");
         t1.addExon(new Exon(12, 32, 1));
@@ -98,7 +164,7 @@ public class DBUpdate implements DatabaseUpdate {
         t2.addExon(new Exon(112, 232, 4));
         t2.addExon(new Exon(516, 562, 2));
         t2.addExon(new Exon(882, 932, 3));
-        Gene gene =  new Gene("ENSG012", "12", true);
+        Gene gene = new Gene("ENSG012", "12", true);
         gene.addTranscript(t1);
         gene.addTranscript(t2);
         DBUpdate db = new DBUpdate();

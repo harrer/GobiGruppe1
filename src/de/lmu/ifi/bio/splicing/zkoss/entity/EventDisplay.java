@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.splicing.zkoss;
+package de.lmu.ifi.bio.splicing.zkoss.entity;
 
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
@@ -8,10 +8,10 @@ import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
  */
 public class EventDisplay extends Event{
     private double acc;
-    private Pattern pattern;
+    private PatternEvent pattern;
     private SecondaryStructure sec;
 
-    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, Pattern pattern, SecondaryStructure sec) {
+    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
         super(i1, i2, start, stop, type);
         this.acc = acc;
         this.pattern = pattern;
@@ -22,7 +22,7 @@ public class EventDisplay extends Event{
         return acc;
     }
 
-    public Pattern getPattern() {
+    public PatternEvent getPattern() {
         return pattern;
     }
 
