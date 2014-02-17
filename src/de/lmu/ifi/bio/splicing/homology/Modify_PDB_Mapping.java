@@ -4,6 +4,7 @@ import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+import de.lmu.ifi.bio.splicing.jsqlDatabase.DB_Backend;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -66,12 +67,25 @@ public class Modify_PDB_Mapping {
         writer.write(sb.toString());
     }
     
-    public void createPairFile(String out){
-        
+    public void createPairFile(String out) throws IOException{
+        DB_Backend db = new DB_Backend();
+        StringBuilder sb = new StringBuilder();
+        Object[][] result = null;
+        try {
+            result = db.select("select transcriptId, pdbId from transcript_has_pdbs", 2);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        for (Object[] objects : result) {
+            sb.append((String) objects[0]).append(' ').append((String) objects[1]).append('\n');
+        }
+        FileWriter writer = new FileWriter(out);
+        writer.write(sb.toString());
     }
     
     public static void main(String[] args) throws IOException {
         Modify_PDB_Mapping map = new Modify_PDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
-        map.createENSP_seqlib("/tmp/ENST_seqlib.txt");
+        //map.createENSP_seqlib("/tmp/ENST_seqlib.txt");
+        map.createPairFile("/tmp/ENSG_PDP_pairFile.txt");
     }
 }
