@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.splicing.homology;
+package de.lmu.ifi.bio.splicing.localAli;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package de.lmu.ifi.bio.splicing.homology;
+package de.lmu.ifi.bio.splicing.localAli;
 
 import java.io.File;
 import java.io.FileWriter;

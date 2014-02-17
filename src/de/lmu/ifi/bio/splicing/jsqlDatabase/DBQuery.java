@@ -1,6 +1,5 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
-import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 
 import java.sql.SQLException;
@@ -8,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.lmu.ifi.bio.splicing.genome.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBQuery implements DatabaseQuery {
 
@@ -269,6 +270,24 @@ public class DBQuery implements DatabaseQuery {
             transcript.addExon(ex);
         }
         return transcript;
+    }
+    
+    @Override
+    public Transcript getTranscriptForProteinId(String proteinId){
+        String query = "select transcriptid from Transcript where proteinid = '" + proteinId + "'";
+        Object[] result = null;
+        try {
+            result = db.select_oneColumn(query);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        if(result.length != 1){
+            System.err.println(result.length+" transcripts found for "+proteinId);
+            return null;
+        }
+        else{
+            return getTranscript((String) result[0]);
+        }
     }
 
     public static void main(String[] args) {
