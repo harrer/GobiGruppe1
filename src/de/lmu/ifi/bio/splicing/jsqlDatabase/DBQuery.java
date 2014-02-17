@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class DBQuery implements DatabaseQuery {
 
-    private DB_Backend db;
+    public DB_Backend db;
 
     public DBQuery() {
         db = new DB_Backend();
