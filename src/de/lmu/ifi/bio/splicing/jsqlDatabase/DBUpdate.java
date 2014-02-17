@@ -7,6 +7,7 @@ import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
 import java.sql.SQLException;
 
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -202,6 +203,24 @@ public class DBUpdate implements DatabaseUpdate {
             db.executeUpdate(insert.toString());
         } catch (SQLException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void updateEvent(String isoform1, String isoform2, long start, long stop, String[] column, String[] values) {
+        StringBuilder update = new StringBuilder("update Event set ");
+        int amount = Math.min(column.length, values.length);
+        for (int i = 0; i < amount; i++) {
+            if (i < amount - 1)
+                update.append(column[i]).append(" = '").append(values[i]).append("', ");
+            else
+                update.append(column[i]).append(" = '").append(values[i]).append("' ");
+        }
+        update.append("where isoform1 = '").append(isoform1).append("' and isoform2 = '").append(isoform2)
+                .append("' and start = ").append(start).append(" and stop = ");
+        try {
+            db.executeUpdate(update.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

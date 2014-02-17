@@ -18,38 +18,88 @@ public class DSSP {
         return accessible;
     }
 
-    public static double mapAccessibility(DSSPData dssp, Map map, Event event){
+    public static double mapAccessibility(DSSPData dssp, Map map, Event event) {
         double meanAccess = 0;
         Set<Integer> affected = map.getAffectedPositions(event);
         List<Double> accessible = calcAccessiblity(dssp);
         for (Integer aff : affected) {
             meanAccess += accessible.get(aff);
         }
-        event.setAccessibility(meanAccess/affected.size());
-        return meanAccess/affected.size();
+        event.setAccessibility(meanAccess / affected.size());
+        return meanAccess / affected.size();
+    }
+/*    H	Alpha helix
+    B	Beta bridge
+    E	Strand
+    G	Helix-3
+    I	Helix-5
+    T	Turn
+    S   Bend*/
+    public static int[] mapSS(DSSPData dssp, Map map, Event event) {
+        double meanAccess = 0;
+        int[] sec = new int[8]; // 0 = default, 1 = 'H', 2 = 'B', 3 = 'E', 4 = G, 5 = I, 6 = T, 7 = S
+        Set<Integer> affected = map.getAffectedPositions(event);
+        for (Integer aff : affected) {
+            switch(dssp.getSecondarySructure()[aff]){
+                case 'H':
+                    sec[1]++;
+                    break;
+                case 'B':
+                    sec[2]++;
+                    break;
+                case 'E':
+                    sec[3]++;
+                    break;
+                case 'G':
+                    sec[4]++;
+                    break;
+                case 'I':
+                    sec[5]++;
+                    break;
+                case 'T':
+                    sec[6]++;
+                    break;
+                case 'S':
+                    sec[7]++;
+                    break;
+                default:
+                    sec[0]++;
+                    break;
+            }
+        }
+        event.setAccessibility(meanAccess / affected.size());
+        return null;
     }
 
-    public static char[] mapBordersSS(DSSPData dssp, Map map, Event event){
+    public static char[] mapBordersSS(DSSPData dssp, Map map, Event event) {
         char[] bordersSS = new char[2];
         int[] borders = map.getBoundaries(event);
-        for(int i = 0; i < borders.length; i++){
-            bordersSS[i] = dssp.getSecondarySructure()[borders[i]];
+        for (int i = 0; i < borders.length; i++) {
+            if (borders[i] == -1 || dssp.getSecondarySructure()[borders[i]] != ' ') {
+                bordersSS[i] = 'N';
+            } else {
+                bordersSS[i] = dssp.getSecondarySructure()[borders[i]];
+            }
         }
         return bordersSS;
     }
 
-    public static char[] mapBordersAcc(DSSPData dssp, Map map, Event event){
+    public static char[] mapBordersAcc(DSSPData dssp, Map map, Event event) {
         Set<Integer> affected = map.getAffectedPositions(event);
         char[] bordersAcc = new char[2];
         int[] borders = map.getBoundaries(event);
-        for(int i = 0; i < borders.length; i++){
-            double acc = calcAccessibility(dssp.getSequence(). charAt(borders[i]), dssp.getAccesibility()[borders[i]]);
-            if(acc < 0.068 ){
-                bordersAcc[i] = 'B';
-            } else if (acc < 0.36) {
-                bordersAcc[i] = 'P';
+        for (int i = 0; i < borders.length; i++) {
+            if (borders[i] == -1) {
+                bordersAcc[i] = 'N';
             } else {
-                bordersAcc[i] = 'E';
+                double acc = calcAccessibility(dssp.getSequence().charAt(borders[i]), dssp.getAccesibility()[borders[i]]);
+                if (acc < 0.069) {
+                    bordersAcc[i] = 'B';
+                } else if (acc <= 0.36) {
+                    bordersAcc[i] = 'P';
+                } else {
+                    bordersAcc[i] = 'E';
+                }
             }
         }
         return bordersAcc;

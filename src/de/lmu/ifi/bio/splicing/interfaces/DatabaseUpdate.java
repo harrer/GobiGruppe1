@@ -24,4 +24,6 @@ public interface DatabaseUpdate {
     public void insertEventSet(Set<Event> events);
     
     public void insertPDB_Transcript(HashMap<String, ArrayList<String>> map);
+
+    public void updateEvent(String isoform1, String isoform2, long start, long stop, String[] column, String[] values);
 }
