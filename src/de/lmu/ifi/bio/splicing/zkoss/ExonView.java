@@ -22,7 +22,6 @@ public class ExonView {
         for (Transcript transcript : gene.getHashmap_transcriptid().values()) {
             start = Math.min(start, transcript.getCds().get(0).getStart());
             stop = Math.min(stop, transcript.getCds().get(transcript.getCds().size()).getStop());
-            lineHeight = height / (size + 1);
         }
         length = stop - start + 1;
     }
@@ -31,6 +30,7 @@ public class ExonView {
         this.gene = gene;
         this.width = width;
         this.height = height;
+        lineHeight = height / (size + 1);
         calcOverallLength();
         size = gene.getHashmap_transcriptid().size();
     }
@@ -50,7 +50,7 @@ public class ExonView {
                 } else {
                     first = true;
                 }
-                g.drawRect((int) (exon.getStart() * size / length), (int) (exon.getStop() * size / length), lineHeight / 4 + line * lineHeight, lineHeight / 4 * 3 + line * lineHeight);
+                g.fillRect((int) (exon.getStart() * size / length), (int) (exon.getStop() * size / length), lineHeight / 4 + line * lineHeight, lineHeight / 4 * 3 + line * lineHeight);
                 cur = (int) (exon.getStop() * size / length);
                 line++;
             }

@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.structures.mapping;
 
+import com.sun.accessibility.internal.resources.accessibility;
 import de.lmu.ifi.bio.splicing.genome.Event;
 
 import java.util.*;
@@ -24,8 +25,36 @@ public class DSSP {
         for (Integer aff : affected) {
             meanAccess += accessible.get(aff);
         }
+        event.setAccessibility(meanAccess/affected.size());
         return meanAccess/affected.size();
     }
+
+    public static char[] mapBordersSS(DSSPData dssp, Map map, Event event){
+        char[] bordersSS = new char[2];
+        int[] borders = map.getBoundaries(event);
+        for(int i = 0; i < borders.length; i++){
+            bordersSS[i] = dssp.getSecondarySructure()[borders[i]];
+        }
+        return bordersSS;
+    }
+
+    public static char[] mapBordersAcc(DSSPData dssp, Map map, Event event){
+        Set<Integer> affected = map.getAffectedPositions(event);
+        char[] bordersAcc = new char[2];
+        int[] borders = map.getBoundaries(event);
+        for(int i = 0; i < borders.length; i++){
+            double acc = calcAccessibility(dssp.getSequence(). charAt(borders[i]), dssp.getAccesibility()[borders[i]]);
+            if(acc < 0.068 ){
+                bordersAcc[i] = 'B';
+            } else if (acc < 0.36) {
+                bordersAcc[i] = 'P';
+            } else {
+                bordersAcc[i] = 'E';
+            }
+        }
+        return bordersAcc;
+    }
+
 
     private static double calcAccessibility(char aa, int accessible) {
         // Values taken from: C. Chotia, The Nature of the Accessible and Buried
