@@ -1,7 +1,7 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import de.lmu.ifi.bio.splicing.genome.*;
-import de.lmu.ifi.bio.splicing.homology.ShortenPDB_Mapping;
+import de.lmu.ifi.bio.splicing.homology.Modify_PDB_Mapping;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
 
 import java.sql.SQLException;
@@ -166,17 +166,29 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertPDB_Transcript(HashMap<String, ArrayList<String>> map) {
-        StringBuilder insert = new StringBuilder("insert into transcript_has_pdbs(transcriptId, ) values");
+        StringBuilder insert = new StringBuilder("insert into transcript_has_pdbs(transcriptId, pdbId) values");
+        boolean setComma = false;
         HashMap<String, Boolean> hm = new HashMap<>();
         for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
             String string = entry.getKey();
             ArrayList<String> arrayList = entry.getValue();
             for (String string1 : arrayList) {
+                if (setComma) {
+                    insert.append(',');
+                } else {
+                    setComma = true;
+                }
                 hm.put(string1, Boolean.TRUE);
+                insert.append("('").append(string).append("','").append(string1).append("')");
             }
         }
+        try {
+            db.executeUpdate(insert.toString());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         insert = new StringBuilder("insert into PDB(pdbId) values");
-        boolean setComma = false;
+        setComma = false;
         for (Map.Entry<String, Boolean> entry : hm.entrySet()) {
             String string = entry.getKey();
             if (setComma) {
@@ -195,7 +207,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     public static void main(String[] args) throws IOException {
         DBUpdate db = new DBUpdate();
-        ShortenPDB_Mapping mapping = new ShortenPDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
+        Modify_PDB_Mapping mapping = new Modify_PDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
         db.insertPDB_Transcript(mapping.getENSP_PDBmap());
     }
 }
