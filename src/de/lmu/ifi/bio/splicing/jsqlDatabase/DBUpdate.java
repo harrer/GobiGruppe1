@@ -166,6 +166,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertPDB_Transcript(HashMap<String, ArrayList<String>> map) {
+        StringBuilder insert = new StringBuilder("insert into transcript_has_pdbs(transcriptId, ) values");
         HashMap<String, Boolean> hm = new HashMap<>();
         for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
             String string = entry.getKey();
@@ -174,7 +175,7 @@ public class DBUpdate implements DatabaseUpdate {
                 hm.put(string1, Boolean.TRUE);
             }
         }
-        StringBuilder insert = new StringBuilder("insert into PDB(pdbId) values");
+        insert = new StringBuilder("insert into PDB(pdbId) values");
         boolean setComma = false;
         for (Map.Entry<String, Boolean> entry : hm.entrySet()) {
             String string = entry.getKey();
