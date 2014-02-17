@@ -1,7 +1,6 @@
 package de.lmu.ifi.bio.splicing.homology;
 
 import de.lmu.ifi.bio.splicing.genome.Transcript;
-import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DB_Backend;
@@ -13,8 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
