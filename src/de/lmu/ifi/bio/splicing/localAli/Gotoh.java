@@ -69,9 +69,7 @@ public class Gotoh {
                     AlignmentMax result = null;
                     try {
                         result = fillMatrixLocal();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    
                     sb.append(">");
                     sb.append(pair.getS1());
                     sb.append(" ");
@@ -93,6 +91,11 @@ public class Gotoh {
                     sb.append(": ");
                     sb.append(backtrack[1]);
                     sb.append("\n");
+                    } catch (Exception e) {
+                        if(seq1 == null){System.out.println(pair.getS1());}
+                        else if(seq2 == null){System.out.println(pair.getS2());}
+                        else{e.printStackTrace();}
+                    }
                 }
             }
         }
