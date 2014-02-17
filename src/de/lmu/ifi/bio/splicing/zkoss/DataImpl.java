@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
@@ -107,7 +108,7 @@ public class DataImpl implements Data {
 
     @Override
     public RenderedImage renderImage(EventDisplay eventDisplay) {
-        dbq.getGene(eventDisplay.getI1())
+        Gene g = Setting.dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
         return null;
     }
 
