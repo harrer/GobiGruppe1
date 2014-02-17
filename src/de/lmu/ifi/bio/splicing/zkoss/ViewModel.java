@@ -35,11 +35,11 @@ public class ViewModel {
         this.renderedImage = renderedImage;
     }
 
-    public int getHeight_img() {
+    public int getHeight_img_ri() {
         return height_img_ri;
     }
 
-    public void setHeight_img(int height_img) {
+    public void setHeight_img_ri(int height_img) {
         this.height_img_ri = height_img;
     }
 
@@ -117,7 +117,7 @@ public class ViewModel {
         // ....
 
         //ExonView by selected Transcript --> Gene
-        renderedImage = data.renderImage(selectedItemGridlist);
+        renderedImage = data.renderImage(selectedItemGridlist, height_img_ri, width_img_ri);
     }
 
     @Command
