@@ -9,6 +9,7 @@ import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 
+import java.awt.image.RenderedImage;
 import java.util.*;
 
 /**
@@ -102,6 +103,12 @@ public class DataImpl implements Data {
         }
 
         return events;
+    }
+
+    @Override
+    public RenderedImage renderImage(EventDisplay eventDisplay) {
+        dbq.getGene(eventDisplay.getI1())
+        return null;
     }
 
 

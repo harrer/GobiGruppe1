@@ -42,4 +42,6 @@ public interface DatabaseQuery {
     public Gene getGene(String geneID);
 
     public Transcript getTranscript(String transcriptID);
+
+    public Gene getGeneForTranscriptID(String transcriptid);
 }

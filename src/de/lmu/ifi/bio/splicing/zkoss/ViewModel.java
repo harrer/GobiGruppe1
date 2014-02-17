@@ -18,6 +18,15 @@ public class ViewModel {
     private List<String> definedList = new LinkedList<>();
     private List<EventDisplay> gridlist = new ArrayList<>();
     private SpliceEventFilter filter = new SpliceEventFilter();
+    private EventDisplay selectedItemGridlist = new EventDisplay();
+
+    public EventDisplay getSelectedItemGridlist() {
+        return selectedItemGridlist;
+    }
+
+    public void setSelectedItemGridlist(EventDisplay selectedItemGridlist) {
+        this.selectedItemGridlist = selectedItemGridlist;
+    }
 
     public String getKeyword() {
         return keyword;
@@ -71,6 +80,14 @@ public class ViewModel {
     @NotifyChange("searchlist")
     public void search() {
         searchlist = data.search(keyword);
+    }
+
+    @Command
+    public void selectgriditem() {
+        //TODO was passiert wenn auf item in gridlist geklickt wird
+        // pattern
+        // superposition
+        // ....
     }
 
     @Command

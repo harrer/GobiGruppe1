@@ -246,8 +246,8 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
-    public Transcript getTranscript(String transcriptID) {
-        String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptID + "' order by start";
+    public Transcript getTranscript(String transcriptid) {
+        String query = "Select start, stop, frame from Exon where transcriptId = '" + transcriptid + "' order by start";
         Object[][] result = null;
         try {
             result = db.select(query, 3);
@@ -255,7 +255,7 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
-        String protId_query = "select proteinid from Transcript where transcriptid = '" + transcriptID + "'";
+        String protId_query = "select proteinid from Transcript where transcriptid = '" + transcriptid + "'";
         Object[] prot_result = null;
         try {
             prot_result = db.select_oneColumn(protId_query);
@@ -263,12 +263,29 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
-        Transcript transcript = new Transcript(transcriptID, (String) prot_result[0]);
+        Transcript transcript = new Transcript(transcriptid, (String) prot_result[0]);
         for (int i = 0; i < result.length; i++) {
             Exon ex = new Exon((long) result[i][0], (long) result[i][1], (int) result[i][2]);
             transcript.addExon(ex);
         }
         return transcript;
+    }
+
+    @Override
+    public Gene getGeneForTranscriptID(String transcriptid) {
+        String query = String.format("select geneid from Gene natural join Transcript where transcriptid = '%s'", transcriptid);
+        Object[] bla = new Object[0];
+        try {
+            bla = db.select_oneColumn(query);
+        } catch (SQLException e) {
+            System.err.printf("[DBQuery]: %s%n", query);
+        }
+
+        String geneid;
+        if (bla.length > 0) geneid = (String) bla[0];
+        else return null;
+
+        return getGene(geneid);
     }
 
     public static void main(String[] args) {
