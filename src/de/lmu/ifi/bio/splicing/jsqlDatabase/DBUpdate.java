@@ -3,8 +3,11 @@ package de.lmu.ifi.bio.splicing.jsqlDatabase;
 import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.homology.Modify_PDB_Mapping;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.*;
 
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
@@ -171,7 +174,6 @@ public class DBUpdate implements DatabaseUpdate {
         boolean setComma = false;
         HashMap<String, Boolean> hm = new HashMap<>();
         for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
-            String string = entry.getKey();
             ArrayList<String> arrayList = entry.getValue();
             for (String string1 : arrayList) {
                 if (setComma) {
@@ -180,7 +182,7 @@ public class DBUpdate implements DatabaseUpdate {
                     setComma = true;
                 }
                 hm.put(string1, Boolean.TRUE);
-                insert.append("('").append(string).append("','").append(string1).append("')");
+                insert.append("('").append(string1).append("','").append(string1).append("')");
             }
         }
         try {
@@ -226,7 +228,7 @@ public class DBUpdate implements DatabaseUpdate {
 
     public static void main(String[] args) throws IOException {
         DBUpdate db = new DBUpdate();
-        Modify_PDB_Mapping mapping = new Modify_PDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
-        db.insertPDB_Transcript(mapping.getENSP_PDBmap());
+//        ShortenPDB_Mapping mapping = new ShortenPDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
+//        db.insertPDB_Transcript(mapping.getENSP_PDBmap());
     }
 }

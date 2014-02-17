@@ -1,7 +1,7 @@
 <window width="1024px" border="normal" apply="org.zkoss.bind.BindComposer"
         title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
-    <hbox id="main">
-        <vbox width="140px" id="left">
+    <hbox id="main" vflex="1">
+        <vbox hflex="1" vflex="1" id="left">
             <hbox align="center">
                 Keyword:
                 <textbox value="@bind(vm.keyword)"/>
@@ -10,7 +10,7 @@
                     <button id="submitButton" label="Submit" onClick="@command('add')"/>
                 </vbox>
             </hbox>
-            <listbox id="searchListbox" width="200px" rows="20" emptyMessage="No gene etc. found"
+            <listbox id="searchListbox" hflex="1" vflex="1" emptyMessage="No gene etc. found"
                      model="@bind(vm.searchlist)"
                      multiple="true" checkmark="true" selectedItems="@bind(vm.selectedSearchList)">
                 <listhead>
@@ -18,7 +18,7 @@
                 </listhead>
             </listbox>
         </vbox>
-        <grid height="600px" model="@load(vm.gridlist)">
+        <grid hflex="5" vflex="1" model="@load(vm.gridlist)">
             <columns>
                 <column hflex="3">Isoform 1</column>
                 <column hflex="3">Isoform 2</column>
