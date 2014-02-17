@@ -14,5 +14,5 @@ public interface Data {
     public List<String> search(String keyword);
     public List<EventDisplay> select(List<String> keylist);
     public List<EventDisplay> filter(SpliceEventFilter sef);
-    public RenderedImage renderImage(EventDisplay eventDisplay);
+    public RenderedImage renderImage(EventDisplay eventDisplay, int heigth, int width);
 }
