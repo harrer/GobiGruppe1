@@ -1,6 +1,5 @@
 <zk>
-    <window title="optimus prime" width="1024px" height="800"
-            viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')" apply="org.zkoss.bind.BindComposer">
+    <zscript>
 
-    </window>
+    </zscript>
 </zk>

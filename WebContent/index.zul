@@ -76,5 +76,6 @@
                 </row>
             </template>
         </grid>
+        <include src="flowerpower.zul"/>
     </hbox>
 </window>
