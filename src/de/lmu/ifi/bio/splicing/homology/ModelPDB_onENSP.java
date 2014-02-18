@@ -97,4 +97,12 @@ public class ModelPDB_onENSP {
         return model;
     }
     
+    public static void main(String[] args) throws SQLException, IOException {
+        ModelPDB_onENSP model = new ModelPDB_onENSP();
+        String[] pdbs = model.getModelSequences("ENSP00000261313");
+        ArrayList<String[]> alignments = model.alignPDBs_onENSP("ENSP00000261313", pdbs);
+        ArrayList<Object[]> models = model.modelAlignmentsOnProtein(alignments, "ENSP00000261313");
+        System.out.println("");
+    }
+    
 }

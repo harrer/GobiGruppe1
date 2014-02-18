@@ -4,6 +4,8 @@ import de.lmu.ifi.bio.splicing.localAli.AlignmentMax;
 import de.lmu.ifi.bio.splicing.localAli.Parser;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -231,6 +233,11 @@ public class SingleGotoh {
 
     public void setSeq2(String seq2) {
         this.seq2 = seq2;
+        try {
+            initParams(seq1, seq2);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws IOException {
