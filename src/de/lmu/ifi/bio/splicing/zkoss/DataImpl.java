@@ -19,6 +19,7 @@ import java.util.*;
 public class DataImpl implements Data {
     List<String> searchlist;
     List<EventDisplay> eventlist;
+    ExonView ev;
     DBQuery dbq;
 
     DataImpl() {
@@ -109,7 +110,8 @@ public class DataImpl implements Data {
     @Override
     public RenderedImage renderImage(EventDisplay eventDisplay, int height, int width) {
         Gene g = Setting.dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
-        return null;
+        ev = new ExonView(g, height, width);
+        return ev.renderExonView();
     }
 
 

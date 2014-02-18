@@ -1,5 +1,17 @@
-<zk>
+<zk >
+    <image id="exonview"/>
+    <button label="Info" onClick="updateExonview()"/>
     <zscript>
-
+        <![CDATA[
+        void updateExonview() {
+        if (vm.renderedImage != null) {
+        exonview.setContent(vm.renderedImage);
+        }
+        nix.setValue("zitronenbier");
+        }
+        ]]>
     </zscript>
+    <div>
+        <label value="bier" id="nix"/>
+    </div>
 </zk>
