@@ -1,6 +1,7 @@
-package de.lmu.ifi.bio.splicing.localAli;
+package de.lmu.ifi.bio.splicing.homology;
 
-import java.io.File;
+import de.lmu.ifi.bio.splicing.localAli.AlignmentMax;
+import de.lmu.ifi.bio.splicing.localAli.Parser;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -9,16 +10,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class Gotoh {
+/**
+ *
+ * @author harrert
+ */
+public class SingleGotoh {
 
-    private HashMap<String, String> seqlib;
-    private ArrayList<SeqPair> pairfile;
     private int[][] matrix;
     private int gapopen;
     private int gapextend;
     private String mode;
-    private boolean printali;
-    private String printmatrices;
     private boolean check;
     private HashMap<Character, Integer> aminoAcids;
 
@@ -29,79 +30,13 @@ public class Gotoh {
     private String seq1;
     private String seq2;
 
-    public Gotoh(HashMap<String, String> params) throws IOException {
-        initParams(params);
+    public SingleGotoh(String seq1, String seq2) throws IOException {
+        initParams(seq1, seq2);
         //StringBuilder sb = startAlignmentLocal();
         //System.out.println(sb.toString());
     }
 
-    public StringBuilder startAlignmentLocal() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        DecimalFormat df = new DecimalFormat("0.0000");
-        df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
-        StringBuilder fail = new StringBuilder("faulty alignments:\n");
-        int checkFail = 0, emptySeq = 0;
-        if (!printali) {
-            if (!(printmatrices.equals("txt") || printmatrices.equals("html"))) {
-                for (SeqPair pair : pairfile) {
-                    seq1 = seqlib.get(pair.getS1());
-                    seq2 = seqlib.get(pair.getS2());
-                    if(seq1==null || seq2==null){emptySeq++; continue;}
-                    AlignmentMax result = fillMatrixLocal();
-                    sb.append(pair.getS1());
-                    sb.append(" ");
-                    sb.append(pair.getS2());
-                    sb.append(" ");
-                    sb.append(df.format(result.getMax()[2] / 10.0));
-                    String[] backtrack = backtrackingLocal(result);
-                    sb.append(" seqId: ").append(sequenceIdentity(backtrack)).append(" coverage: ").append(coverage(backtrack, 60, 0.6)).append("\n");
-                    if (check && !(Math.abs(result.getMax()[2] / 10.0 - checkScoreLocal(backtrack[0], backtrack[1])) < 0.0001)) {
-                        checkFail++;
-                        fail.append(backtrack[0]).append("\n");
-                        fail.append(backtrack[1]);
-                    }
-                }
-            }
-        } else {
-            if (!(printmatrices.equals("txt") || printmatrices.equals("html"))) {
-                for (SeqPair pair : pairfile) {
-                    seq1 = seqlib.get(pair.getS1());
-                    seq2 = seqlib.get(pair.getS2());
-                    if(seq1==null || seq2==null){emptySeq++; continue;}
-                    AlignmentMax result = fillMatrixLocal();
-                    sb.append(">");
-                    sb.append(pair.getS1());
-                    sb.append(" ");
-                    sb.append(pair.getS2());
-                    sb.append(" ");
-                    sb.append(df.format(result.getMax()[2] / 10.0));
-                    sb.append("\n");
-                    String[] backtrack = backtrackingLocal(result);
-                    if (check && !(Math.abs(result.getMax()[2] / 10.0 - checkScoreLocal(backtrack[0], backtrack[1])) < 0.0001)) {
-                        checkFail++;
-                        fail.append(backtrack[0]).append("\n");
-                        fail.append(backtrack[1]);
-                    }
-                    sb.append(pair.getS1());
-                    sb.append(": ");
-                    sb.append(backtrack[0]);
-                    sb.append("\n");
-                    sb.append(pair.getS2());
-                    sb.append(": ");
-                    sb.append(backtrack[1]);
-                    sb.append("\n");
-
-                }
-            }
-        }
-        FileWriter writer = new FileWriter(new File("faults.log"));
-        writer.write(fail.toString());
-        writer.close();
-        System.out.println(emptySeq+" empty strings, "+checkFail+" checksore failures");
-        return sb;
-    }
-
-    private AlignmentMax fillMatrixLocal() {
+    public AlignmentMax fillMatrixLocal() {
         int max = Integer.MIN_VALUE, max_i = 0, max_j = 0;
         for (int i = 1; i < seq1.length() + 1; i++) {
             for (int j = 1; j < seq2.length() + 1; j++) {
@@ -119,7 +54,7 @@ public class Gotoh {
         return new AlignmentMax(max_i, max_j, max, mode);
     }
 
-    private String[] backtrackingLocal(AlignmentMax max) {
+    public String[] backtrackingLocal(AlignmentMax max) {
         StringBuilder s1 = new StringBuilder();
         StringBuilder s2 = new StringBuilder();
         int i = seq1.length(), j = seq2.length();
@@ -174,7 +109,7 @@ public class Gotoh {
         return new String[]{s1.reverse().toString(), s2.reverse().toString()};
     }
 
-    private double checkScoreLocal(String s1, String s2) {
+    public double checkScoreLocal(String s1, String s2) {
         int end = -1, start = -1, score = 0;
         for (int i = 0; i < s1.length(); i++) {
             if (s1.charAt(i) != '-' && s2.charAt(i) != '-') {
@@ -204,7 +139,7 @@ public class Gotoh {
     }
 
     //Sequenzidentitat (Anteil der ubereinanderstehenden gleichen Aminosauren im Alignment) des lokalen alignierten Teils.
-    public double sequenceIdentity(String[] ali){
+    public double sequenceIdentity(String[] ali) {
         int identical = 0;
         int end = -1, start = -1;
         for (int i = 0; i < ali[0].length(); i++) {
@@ -220,14 +155,15 @@ public class Gotoh {
             }
         }
         for (int i = start; i <= end; i++) {
-            if(ali[0].charAt(i) != '-' && ali[0].charAt(i) == ali[1].charAt(i)){
+            if (ali[0].charAt(i) != '-' && ali[0].charAt(i) == ali[1].charAt(i)) {
                 identical++;
             }
         }
-        return 1.0*identical/(end-start+1);
+        return 1.0 * identical / (end - start + 1);
     }
+
     //die langer als 60 Aminosauren sind, oder  60% des Proteins abdecken
-    public boolean coverage(String[] ali, int longerThan, double coverage){
+    public boolean coverage(String[] ali, int longerThan, double coverage) {
         int end = -1, start = -1, aligned = 0, ENSP_length = 0;
         for (int i = 0; i < ali[0].length(); i++) {
             if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
@@ -242,72 +178,60 @@ public class Gotoh {
             }
         }
         for (int i = start; i <= end; i++) {
-            if(ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-'){
+            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
                 aligned++;
             }
         }
         for (int i = 0; i < ali[0].length(); i++) {
-            if(ali[0].charAt(i) != '-'){
+            if (ali[0].charAt(i) != '-') {
                 ENSP_length++;
             }
         }
-        return (aligned>=longerThan || 1.0*aligned/ENSP_length >= coverage);
+        return (aligned >= longerThan || 1.0 * aligned / ENSP_length >= coverage);
     }
-    
+
     private int g(int n) {
         return gapopen + n * gapextend;
     }
 
     private int getCost(char i, char j) {
-        if(i=='X' || j=='X'){
+        if (i == 'X' || j == 'X') {
             return -2;
-        }
-        else{
+        } else {
             return matrix[i - 65][j - 65];
         }
     }
 
-    private void initParams(HashMap<String, String> params) throws IOException {
+    private void initParams(String seq1, String seq2) throws IOException {
         Parser parser = new Parser();
-        seqlib = parser.parseSeqlib(params.get("-seqlib"));
-        pairfile = parser.parsePairFile(params.get("-pairs"));
-        matrix = params.containsKey("-m") ? parser.parseMatrix(params.get("-m"), true) : parser.parseMatrix("dayhoff", true);
-        gapopen = params.containsKey("-go") ? (new Double(Double.parseDouble(params.get("-go")) * 10)).intValue() : -120;
-        gapextend = params.containsKey("-ge") ? (new Double(Double.parseDouble(params.get("-ge")) * 10)).intValue() : -10;
-        mode = params.containsKey("-mode") ? params.get("-mode") : "freeshift";
-        printali = params.containsKey("-printali");
-        printmatrices = params.containsKey("-printmatrices") ? "txt" : "";
-        check = params.containsKey("-check");
+        matrix = parser.parseMatrix("dayhoff", true);
+        gapopen = -120;
+        gapextend = -10;
+        mode = "freeshift";
+        check = true;
         String aa = "ARNDCQEGHILKMFPSTWYV";
         aminoAcids = new HashMap<>();
+        this.seq1 = seq1;
+        this.seq2 = seq2;
         for (int i = 0; i < aa.length(); i++) {
             aminoAcids.put(aa.charAt(i), i);
         }
-        int size = Integer.parseInt(seqlib.get("_maxLength_"));
-        //size = (size > 10000) ? 10000 : size;
+        int size = Math.max(seq1.length(), seq2.length());
         A = new int[size + 1][size + 1];
         I = new int[size + 1][size + 1];
         D = new int[size + 1][size + 1];
         for (int i = 1; i < size + 1; i++) {//init
-            A[i][0] = (mode.equals("global")) ? g(i) : 0;
+            A[i][0] = 0;
             D[i][0] = -99999999;
         }
         for (int i = 1; i < size + 1; i++) {
-            A[0][i] = (mode.equals("global")) ? g(i) : 0;
+            A[0][i] = 0;
             I[0][i] = -99999999;
         }
     }
 
     public static void main(String[] args) throws IOException {
         HashMap<String, String> params = new HashMap();
-        params.put("-pairs", "/home/proj/biocluster/praktikum/genprakt-ws13/ProSAS/Gruppe1/Local Alignments/ENST_PDB.pairs");
-        params.put("-seqlib", "/home/proj/biocluster/praktikum/genprakt-ws13/ProSAS/Gruppe1/Local Alignments/ENST_PDB.seqlib");
-        //params.put("-printali", "true");
-        params.put("-check", "true");
-        Gotoh g = new Gotoh(params);
-        StringBuilder sb = g.startAlignmentLocal();
-        FileWriter writer = new FileWriter("/tmp/ali_ouTTTTTTTTT.txt");
-        writer.write(sb.toString());
-        writer.close();
+        SingleGotoh g = new SingleGotoh("asd", "sdaf");
     }
 }
