@@ -4,7 +4,6 @@ import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -21,7 +20,7 @@ public class ExonView {
         long start = Long.MAX_VALUE, stop = 0;
         for (Transcript transcript : gene.getHashmap_transcriptid().values()) {
             start = Math.min(start, transcript.getCds().get(0).getStart());
-            stop = Math.min(stop, transcript.getCds().get(transcript.getCds().size()).getStop());
+            stop = Math.min(stop, transcript.getCds().get(transcript.getCds().size() - 1).getStop());
         }
         length = stop - start + 1;
     }
@@ -30,9 +29,9 @@ public class ExonView {
         this.gene = gene;
         this.width = width;
         this.height = height;
-        lineHeight = height / (size + 1);
         calcOverallLength();
-        size = gene.getHashmap_transcriptid().size();
+        size = gene.getHashmap_transcriptid().size() + 1;
+        lineHeight = height / (size + 1);
     }
 
     public RenderedImage renderExonView() {
@@ -49,7 +48,7 @@ public class ExonView {
                 if (!first) {
                     g.drawLine(cur, (int) (exon.getStart() * size / length), lineHeight / 2 + line * lineHeight, lineHeight / 2 + line * lineHeight);
                 } else {
-                    first = true;
+                    first = false;
                 }
                 g.setColor(Color.RED);
                 g.fillRect((int) (exon.getStart() * size / length), (int) (exon.getStop() * size / length), lineHeight / 4 + line * lineHeight, lineHeight / 4 * 3 + line * lineHeight);

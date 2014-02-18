@@ -21,7 +21,7 @@ public class ViewModel {
     private SpliceEventFilter filter = new SpliceEventFilter();
     private EventDisplay selectedItemGridlist;
     private RenderedImage renderedImage; // set int und height by init
-    private int height_img_ri, width_img_ri;
+    private int height_img_ri = 400, width_img_ri = 400;
 
     public EventDisplay getSelectedItemGridlist() {
         return selectedItemGridlist;
@@ -110,6 +110,7 @@ public class ViewModel {
     }
 
     @Command
+    @NotifyChange("exonview")
     public void selectgriditem() {
         //TODO was passiert wenn auf item in gridlist geklickt wird
         // pattern
@@ -117,6 +118,7 @@ public class ViewModel {
         // ....
 
         //ExonView by selected Transcript --> Gene
+        System.out.println(height_img_ri);
         renderedImage = data.renderImage(selectedItemGridlist, height_img_ri, width_img_ri);
     }
 
