@@ -2,13 +2,8 @@ package de.lmu.ifi.bio.splicing.homology;
 
 import de.lmu.ifi.bio.splicing.localAli.AlignmentMax;
 import de.lmu.ifi.bio.splicing.localAli.Parser;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  *
@@ -228,6 +223,14 @@ public class SingleGotoh {
             A[0][i] = 0;
             I[0][i] = -99999999;
         }
+    }
+
+    public void setSeq1(String seq1) {
+        this.seq1 = seq1;
+    }
+
+    public void setSeq2(String seq2) {
+        this.seq2 = seq2;
     }
 
     public static void main(String[] args) throws IOException {
