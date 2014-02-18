@@ -6,11 +6,8 @@
 
 package de.lmu.ifi.bio.splicing.homology;
 
-import de.lmu.ifi.bio.splicing.localAli.Gotoh;
 import java.awt.Font;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
