@@ -71,7 +71,6 @@ public class GenomeSequenceExtractor {
             sb.append(getNucleotideSequence(chromosome, start, stop));
         }
 
-        //TODO Bugfix für strand - irgendwas ist hier schon wieder falsch..... /-> nur auf kleinem Datensatz testen mit strand = +
         //Strand = '-'
         if (!strand) {
             sb = new StringBuilder(GenomicUtils.convertToStrandPlus(sb.toString()));
@@ -112,7 +111,7 @@ public class GenomeSequenceExtractor {
         }
 
         StringBuilder sbaa = new StringBuilder();
-        for (int i = 0; i < sb.length() - 3; i += 3) {
+        for (int i = 0; i < sb.length() - 2; i += 3) {
             sbaa.append(AminoAcidType.get(sb.substring(i, i + 3)));
         }
 
