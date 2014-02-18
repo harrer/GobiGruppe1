@@ -1,7 +1,10 @@
 package de.lmu.ifi.bio.splicing.structures.mapping;
 
-import com.sun.accessibility.internal.resources.accessibility;
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Event;
+import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
+import de.lmu.ifi.bio.splicing.io.DSSPParser;
+import de.lmu.ifi.bio.splicing.jsqlDatabase.DBUpdate;
 
 import java.util.*;
 
@@ -9,6 +12,16 @@ import java.util.*;
  * Created by schmidtju on 14.02.14.
  */
 public class DSSP {
+    public static void updateEventWithAccAndSS(Map map, Event event){
+        DSSPData dssp = DSSPParser.getDSSPData(map.getPdb().getSequence());
+        mapAccessibility(dssp, map, event);
+
+        mapBordersAcc(dssp, map, event);
+        mapBordersSS(dssp, map, event);
+
+        Setting.dbu.fullUpdateEvent(event);
+    }
+
     public static List<Double> calcAccessiblity(DSSPData dssp) {
         List<Double> accessible = new ArrayList<>();
         for (int i = 0; i < dssp.getAccesibility().length; i++) {
@@ -35,6 +48,7 @@ public class DSSP {
     I	Helix-5
     T	Turn
     S   Bend*/
+
     public static int[] mapSS(DSSPData dssp, Map map, Event event) {
         double meanAccess = 0;
         int[] sec = new int[8]; // 0 = default, 1 = 'H', 2 = 'B', 3 = 'E', 4 = G, 5 = I, 6 = T, 7 = S
@@ -81,6 +95,7 @@ public class DSSP {
                 bordersSS[i] = dssp.getSecondarySructure()[borders[i]];
             }
         }
+        event.setBordersSS(bordersSS[0], bordersSS[1]);
         return bordersSS;
     }
 
@@ -102,6 +117,7 @@ public class DSSP {
                 }
             }
         }
+        event.setBordersAcc(bordersAcc[0], bordersAcc[1]);
         return bordersAcc;
     }
 

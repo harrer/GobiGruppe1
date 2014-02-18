@@ -24,10 +24,6 @@ public class EventAnnotation {
         eventsN = new LinkedList<>();
         List<Exon> cds1 = t1.getCds();
         List<Exon> cds2 = t2.getCds();
-//        if (!strand) {
-//            Collections.reverse(cds1);
-//            Collections.reverse(cds2);
-//        }
         i1frame = t1.getCds().get(0).getFrame();
         i2frame = t1.getCds().get(0).getFrame();
         Iterator<Exon> i1 = cds1.iterator();

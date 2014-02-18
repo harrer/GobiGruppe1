@@ -21,7 +21,7 @@ public class ViewModel {
     private SpliceEventFilter filter = new SpliceEventFilter();
     private EventDisplay selectedItemGridlist;
     private RenderedImage renderedImage; // set int und height by init
-    private int height_img_ri = 100, width_img_ri = 200;
+    private int height_img_ri, width_img_ri;
 
     public EventDisplay getSelectedItemGridlist() {
         return selectedItemGridlist;
