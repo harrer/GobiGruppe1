@@ -59,4 +59,8 @@ public class Map {
         }
         return borders;
     }
+
+    public PDBData getPdb() {
+        return pdb;
+    }
 }

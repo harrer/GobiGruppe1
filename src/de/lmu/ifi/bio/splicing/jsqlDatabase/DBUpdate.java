@@ -224,6 +224,13 @@ public class DBUpdate implements DatabaseUpdate {
         }
     }
 
+    public void fullUpdateEvent(Event event) {
+        updateEvent(event.getI1(), event.getI2(), event.getStart(), event.getStop(), new String[]{"acc", "sec", "startAcc", "stopAcc", "startSS", "stopSS"},
+                new String[]{String.valueOf(event.getAccessibility()), String.valueOf(event.getSecondaryStructure()), String.valueOf(event.getStartAcc()),
+                String.valueOf(event.getStopAcc()), String.valueOf(event.getStartSS()), String.valueOf(event.getStopSS())});
+    }
+
+
     public static void main(String[] args) throws IOException {
         DBUpdate db = new DBUpdate();
         Modify_PDB_Mapping mapping = new Modify_PDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
