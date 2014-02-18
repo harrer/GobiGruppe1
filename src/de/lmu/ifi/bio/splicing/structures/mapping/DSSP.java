@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class DSSP {
     public static void updateEventWithAccAndSS(Map map, Event event){
-        DSSPData dssp = DSSPParser.getDSSPData(map.getPdb().getSequence());
+        DSSPData dssp = DSSPParser.getDSSPData(map.getPdb().getPdbId());
         mapAccessibility(dssp, map, event);
 
         mapBordersAcc(dssp, map, event);

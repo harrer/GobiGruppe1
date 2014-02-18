@@ -35,7 +35,7 @@ public class Map {
 
     public Set<Integer> getAffectedPositions(Event event) {
         Set<Integer> affected = new HashSet<>();
-        for (long i = event.getStart(); i <= event.getStop(); i++) {
+        for (int i = (int) event.getStart(); i <= (int) event.getStop(); i++) {
             if (aligned.containsKey(i)) {
                 affected.add(aligned.get(i));
             }
@@ -44,16 +44,24 @@ public class Map {
     }
 
     public int[] getBoundaries(Event event) {
+        int range = 1;
         int[] borders = new int[2];
-
-        if (aligned.containsKey(event.getStart())) {
-            borders[0] = aligned.get(event.getStart());
+        if (aligned.containsKey((int) event.getStart())) {
+            borders[0] = aligned.get((int) event.getStart());
+        } else if (aligned.containsKey((int) event.getStart() - 1)) {
+            borders[0] = aligned.get((int) event.getStart() - 1);
+        } else if (aligned.containsKey((int) event.getStart() + 1)) {
+            borders[0] = aligned.get((int) event.getStart() + 1);
         } else {
             borders[0] = -1;
         }
 
-        if (aligned.containsKey(event.getStop())) {
-            borders[1] = aligned.get(event.getStop());
+        if (aligned.containsKey((int) event.getStop())) {
+            borders[1] = aligned.get((int) event.getStop());
+        } else if (aligned.containsKey((int) event.getStop() - 1)) {
+            borders[1] = aligned.get((int) event.getStop() - 1);
+        } else if (aligned.containsKey((int) event.getStop() + 1)) {
+            borders[1] = aligned.get((int) event.getStop() + 1);
         } else {
             borders[1] = -1;
         }
