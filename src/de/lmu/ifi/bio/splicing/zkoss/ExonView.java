@@ -45,11 +45,13 @@ public class ExonView {
             int cur = 0;
             int line = 0;
             for (Exon exon : transcript.getCds()) {
+                g.setColor(Color.BLACK);
                 if (!first) {
                     g.drawLine(cur, (int) (exon.getStart() * size / length), lineHeight / 2 + line * lineHeight, lineHeight / 2 + line * lineHeight);
                 } else {
                     first = true;
                 }
+                g.setColor(Color.RED);
                 g.fillRect((int) (exon.getStart() * size / length), (int) (exon.getStop() * size / length), lineHeight / 4 + line * lineHeight, lineHeight / 4 * 3 + line * lineHeight);
                 cur = (int) (exon.getStop() * size / length);
                 line++;
