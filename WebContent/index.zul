@@ -1,4 +1,4 @@
-<window width="1024px" border="normal" apply="org.zkoss.bind.BindComposer"
+<window width="1600px" border="normal" apply="org.zkoss.bind.BindComposer"
         title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hbox id="main" hflex="1" vflex="1">
         <vbox hflex="1" vflex="1" id="left">
@@ -18,7 +18,10 @@
                 </listhead>
             </listbox>
         </vbox>
-        <listbox id="gridlist" hflex="3" vflex="1" model="@load(vm.gridlist)" selectedItem="@bind(vm.selectedItemGridlist)">
+        <listbox id="gridlist" hflex="5" vflex="1" model="@load(vm.gridlist)" selectedItem="@bind(vm.eventDisplay)">
+            <attribute name="onSelect">
+
+            </attribute>
             <auxhead sclass="category-center">
                 <auxheader colspan="1">
                     <textbox instant="true" hflex="1"
@@ -65,29 +68,47 @@
             </listhead>
             <template name="model">
                 <listitem>
-                    <listcell><label value="${each.i1}"/></listcell>
-                    <listcell><label value="${each.i2}"/></listcell>
-                    <listcell><label value="${each.start}"/></listcell>
-                    <listcell><label value="${each.stop}"/></listcell>
-                    <listcell><label value="${each.type}"/></listcell>
-                    <listcell><label value="${each.pattern.id}"/></listcell>
-                    <listcell><label value="${each.sec}"/></listcell>
-                    <listcell><label value="${each.acc}"/></listcell>
+                    <listcell>
+                        <label value="${each.i1}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.i2}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.start}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.stop}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.type}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.pattern.id}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.sec}"/>
+                    </listcell>
+                    <listcell>
+                        <label value="${each.acc}"/>
+                    </listcell>
                 </listitem>
             </template>
         </listbox>
-        <image id="exonview" src="@load(vm.renderedImage)"/>
-        <button label="Info" onClick="@command('selectgriditem')"/>
-        <button label="krass" onClick="update(vm.renderedImage)"/>
+        <vbox>
+            <button label="Info" onClick="@command('selectgriditem')"/>
+            <button label="krass" onClick="update(vm.renderedImage)"/>
+        </vbox>
+        <image id="exonview" src="@load(vm.renderedImage)" hflex="3"/>
         <zscript>
             <![CDATA[
-            import java.awt.image.BufferedImage;
-            import java.awt.image.RenderedImage;
-                    void update(RenderedImage ri) {
-                        exonview.setContent(ri);
-                    }
-            ]]>
+        import java.awt.image.BufferedImage;
+        import java.awt.image.RenderedImage;
+
+        void update(RenderedImage ri) {
+        exonview.setContent(ri);
+        }
+        ]]>
         </zscript>
-        <!--<include src="flowerpower.zul" hflex="1"/>-->
     </hbox>
 </window>

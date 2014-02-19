@@ -1,14 +1,14 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
 import de.lmu.ifi.bio.splicing.config.Setting;
-import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
-import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
-import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
+import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
 import java.awt.image.RenderedImage;
 import java.util.*;
@@ -21,6 +21,9 @@ public class DataImpl implements Data {
     List<EventDisplay> eventlist;
     ExonView ev;
     DBQuery dbq;
+    Gene g;
+    EventDisplay selectedEvent;
+    RenderedImage bi;
 
     DataImpl() {
         dbq = new DBQuery();
@@ -109,9 +112,20 @@ public class DataImpl implements Data {
 
     @Override
     public RenderedImage renderImage(EventDisplay eventDisplay, int height, int width) {
-        Gene g = Setting.dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
-        ev = new ExonView(g, height, width);
-        return ev.renderExonView();
+        if (selectedEvent == null || !eventDisplay.equals(selectedEvent)) {
+            g = dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
+            ev = new ExonView(g, height, width);
+            bi = ev.renderExonView();
+        }
+        return bi;
+    }
+
+    @Override
+    public Gene getSelectedGene(EventDisplay eventDisplay) {
+        if (selectedEvent == null || !eventDisplay.equals(selectedEvent)) {
+            g = dbq.getGeneForTranscriptID(eventDisplay.getI1());
+        }
+        return g;
     }
 
 
