@@ -142,7 +142,7 @@ public class SingleGotoh {
     }
 
     //Sequenzidentitat (Anteil der ubereinanderstehenden gleichen Aminosauren im Alignment) des lokalen alignierten Teils.
-    public double sequenceIdentity(String[] ali) {
+    public static double sequenceIdentity(String[] ali) {
         int identical = 0;
         int[] startEnd = getAli_StartEnd(ali);
         for (int i = startEnd[0]; i <= startEnd[1]; i++) {

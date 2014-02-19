@@ -66,20 +66,7 @@ public class ModelPDB_onENSP {
 
     private ArrayList<Object[]> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id) {
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
-        ArrayList<Object[]> models = new ArrayList<>();//Object[5]: int start_ofModel, int end_ofModel, String pdbId, int startPDB, int endPDB
-        int pdbPos = -1, enspPos = -1;//indicates the pos. of the PDB/ENSP sequence in the alignment ENSP -> PDB
-//        for (int i = 0; i < alignments.get(0)[0].length(); i++) {//iterate over the first alignment
-//            if (alignments.get(0)[0].charAt(i) != '-') {//if upper ENSP != '-'
-//                enspPos++;
-//                if (alignments.get(0)[1].charAt(i) != '-') {//if lower PDB != '-' ==> two aligned AAs
-//                    pdbPos++;
-//                    boolean exactMatch = (alignments.get(0)[0].charAt(i) == alignments.get(0)[1].charAt(i));
-//                    models.add(new Object[]{alignments.get(0)[2], pdbPos, exactMatch});
-//                } else {
-//                    models.add(new Object[]{});
-//                }
-//            }
-//        }
+        ArrayList<Object[]> models = new ArrayList<>();//Object[6]: int ENSPstart, int ENSPend, String pdbId, int PDBstart, int PDBend, double seqIdentity
         for (String[] ali : alignments) {//iterate over all alignements ENSP -> PDB
             int[] ali_StartEnd = SingleGotoh.getAli_StartEnd(ali);
             int enspStart = -1, pdbStart = -1;
@@ -88,24 +75,21 @@ public class ModelPDB_onENSP {
                 if(ali[1].charAt(i) != '-'){pdbStart++;}
             }
             int enspEnd = proteinSeq.length(), pdbEnd = this.pdbSequences.get(ali[2]).length();
-            for (int i = ali[0].length(); i >= ali_StartEnd[1]; i++) {
+            for (int i = ali[0].length()-1; i >= ali_StartEnd[1]; i--) {
                 if(ali[0].charAt(i) != '-'){enspEnd--;}
                 if(ali[1].charAt(i) != '-'){pdbEnd--;}
             }
-//            for (int i = 0; i < ali[0].length(); i++) {
-//                if (ali[0].charAt(i) != '-') {//if upper ENSP != '-'
-//                    enspPos++;
-//                    if (ali[1].charAt(i) != '-') {//if lower PDB != '-' ==> two aligned AAs
-//                        pdbPos++;
-//                        boolean exactMatch = (ali[0].charAt(i) == ali[1].charAt(i));
-//                        if (models.get(enspPos).length == 0) {//position has not been modeled yet
-//                            models.set(enspPos, new Object[]{ali[2], pdbPos, exactMatch});
-//                        }
-//                    }
-//                }
-//            }
+            models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
         }
         return models;
+    }
+    
+    public String displayModels(ArrayList<Object[]> models, String ENSP_id){
+        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
+        StringBuilder sb = new StringBuilder("        "+proteinSeq+'\n');
+        for(Object[] model : models){
+            boolean[] b = new boolean[proteinSeq.length()];
+        }
     }
 
     public static void main(String[] args) throws SQLException, IOException {
