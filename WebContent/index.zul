@@ -1,5 +1,5 @@
-<window width="1024px" border="normal" apply="org.zkoss.bind.BindComposer"
-        title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
+<window width="1920px" border="normal" apply="org.zkoss.bind.BindComposer"
+        title="ProSAS" height="1000px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hbox id="main" hflex="1" vflex="1">
         <vbox hflex="1" vflex="1" id="left">
             <hbox align="center">
@@ -76,7 +76,7 @@
                 </listitem>
             </template>
         </listbox>
-        <image id="exonview" src="@load(vm.renderedImage)"/>
+        <image id="exonview" src="@load(vm.renderedImage)" hflex="3"/>
         <button label="Info" onClick="@command('selectgriditem')"/>
         <button label="krass" onClick="update(vm.renderedImage)"/>
         <zscript>
@@ -84,7 +84,10 @@
             import java.awt.image.BufferedImage;
             import java.awt.image.RenderedImage;
                     void update(RenderedImage ri) {
-                        exonview.setContent(ri);
+                        if(ri != null)
+                            exonview.setContent(ri);
+                        else
+                            System.out.println("No fucking IMage");
                     }
             ]]>
         </zscript>
