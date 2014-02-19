@@ -88,8 +88,14 @@ public class ModelPDB_onENSP {
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
         StringBuilder sb = new StringBuilder("        "+proteinSeq+'\n');
         for(Object[] model : models){
-            boolean[] b = new boolean[proteinSeq.length()];
+            sb.append(model[2]).append(": ");
+            for (int i = 0; i < proteinSeq.length(); i++) {
+                String append = (i >= (int)model[0] && i<= (int)model[1])? "+" : "|";
+                sb.append(append);
+            }
+            sb.append('\n');
         }
+        return sb.toString();
     }
 
     public static void main(String[] args) throws SQLException, IOException {
@@ -98,7 +104,7 @@ public class ModelPDB_onENSP {
         String[] pdbs = model.getModelSequences(enspSeq);
         ArrayList<String[]> alignments = model.alignPDBs_onENSP(enspSeq, pdbs, 0.6, 60, 0.4);
         ArrayList<Object[]> models = model.modelAlignmentsOnProtein(alignments, enspSeq);
-        System.out.println("");
+        System.out.println(model.displayModels(models, enspSeq));
     }
 
 }

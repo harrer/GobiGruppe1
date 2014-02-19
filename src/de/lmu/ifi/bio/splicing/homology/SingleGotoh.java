@@ -4,9 +4,6 @@ import de.lmu.ifi.bio.splicing.localAli.AlignmentMax;
 import de.lmu.ifi.bio.splicing.localAli.Parser;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author harrert
