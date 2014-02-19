@@ -4,9 +4,6 @@ import de.lmu.ifi.bio.splicing.localAli.AlignmentMax;
 import de.lmu.ifi.bio.splicing.localAli.Parser;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author harrert
@@ -105,22 +102,28 @@ public class SingleGotoh {
         }
         return new String[]{s1.reverse().toString(), s2.reverse().toString()};
     }
-
-    public double checkScoreLocal(String s1, String s2) {
-        int end = -1, start = -1, score = 0;
-        for (int i = 0; i < s1.length(); i++) {
-            if (s1.charAt(i) != '-' && s2.charAt(i) != '-') {
+    
+    public static int[] getAli_StartEnd(String[] ali){
+        int end = -1, start = -1;
+        for (int i = 0; i < ali[0].length(); i++) {
+            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
                 start = i;
                 break;
             }
         }
-        for (int i = s1.length() - 1; i >= 0; i--) {
-            if (s1.charAt(i) != '-' && s2.charAt(i) != '-') {
+        for (int i = ali[0].length() - 1; i >= 0; i--) {
+            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
                 end = i;
                 break;
             }
         }
-        for (int i = start; i <= end; i++) {
+        return new int[]{start, end};
+    }
+
+    public double checkScoreLocal(String s1, String s2) {
+        int[] startEnd = getAli_StartEnd(new String[]{s1,s2});
+        int score = 0;
+        for (int i = startEnd[0]; i <= startEnd[1]; i++) {
             if (s1.charAt(i) != '-' && s2.charAt(i) != '-') {
                 score += getCost(s1.charAt(i), s2.charAt(i));
             } else {
@@ -136,45 +139,22 @@ public class SingleGotoh {
     }
 
     //Sequenzidentitat (Anteil der ubereinanderstehenden gleichen Aminosauren im Alignment) des lokalen alignierten Teils.
-    public double sequenceIdentity(String[] ali) {
+    public static double sequenceIdentity(String[] ali) {
         int identical = 0;
-        int end = -1, start = -1;
-        for (int i = 0; i < ali[0].length(); i++) {
-            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
-                start = i;
-                break;
-            }
-        }
-        for (int i = ali[0].length() - 1; i >= 0; i--) {
-            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
-                end = i;
-                break;
-            }
-        }
-        for (int i = start; i <= end; i++) {
+        int[] startEnd = getAli_StartEnd(ali);
+        for (int i = startEnd[0]; i <= startEnd[1]; i++) {
             if (ali[0].charAt(i) != '-' && ali[0].charAt(i) == ali[1].charAt(i)) {
                 identical++;
             }
         }
-        return 1.0 * identical / (end - start + 1);
+        return 1.0 * identical / (startEnd[1] - startEnd[0] + 1);
     }
 
     //die langer als 60 Aminosauren sind, oder  60% des Proteins abdecken
     public boolean coverage(String[] ali, int longerThan, double coverage) {
-        int end = -1, start = -1, aligned = 0, ENSP_length = 0;
-        for (int i = 0; i < ali[0].length(); i++) {
-            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
-                start = i;
-                break;
-            }
-        }
-        for (int i = ali[0].length() - 1; i >= 0; i--) {
-            if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
-                end = i;
-                break;
-            }
-        }
-        for (int i = start; i <= end; i++) {
+        int[] startEnd = getAli_StartEnd(ali);
+        int aligned = 0, ENSP_length = 0;
+        for (int i = startEnd[0]; i <= startEnd[1]; i++) {
             if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
                 aligned++;
             }
