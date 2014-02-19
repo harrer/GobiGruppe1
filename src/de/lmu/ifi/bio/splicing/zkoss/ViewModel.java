@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 import org.zkoss.bind.annotation.Command;
@@ -19,12 +20,21 @@ public class ViewModel {
     private List<String> definedList = new LinkedList<>();
     private List<EventDisplay> gridlist = new ArrayList<>();
     private SpliceEventFilter filter = new SpliceEventFilter();
-    private EventDisplay selectedItemGridlist;
+    private EventDisplay eventDisplay;
     private RenderedImage renderedImage; // set int und height by init
     private int height_img_ri = 400, width_img_ri = 400;
+    private Gene selectedGene;
 
-    public EventDisplay getSelectedItemGridlist() {
-        return selectedItemGridlist;
+    public Gene getSelectedGene() {
+        return selectedGene;
+    }
+
+    public void setSelectedGene(Gene selectedGene) {
+        this.selectedGene = selectedGene;
+    }
+
+    public EventDisplay getEventDisplay() {
+        return eventDisplay;
     }
 
     public RenderedImage getRenderedImage() {
@@ -51,8 +61,8 @@ public class ViewModel {
         this.width_img_ri = width_img_ri;
     }
 
-    public void setSelectedItemGridlist(EventDisplay selectedItemGridlist) {
-        this.selectedItemGridlist = selectedItemGridlist;
+    public void setEventDisplay(EventDisplay eventDisplay) {
+        this.eventDisplay = eventDisplay;
     }
 
     public String getKeyword() {
@@ -118,8 +128,8 @@ public class ViewModel {
         // ....
 
         //ExonView by selected Transcript --> Gene
-        System.out.println(height_img_ri);
-        renderedImage = data.renderImage(selectedItemGridlist, height_img_ri, width_img_ri);
+        renderedImage = data.renderImage(eventDisplay, height_img_ri, width_img_ri);
+        selectedGene = data.getSelectedGene(eventDisplay);
     }
 
     @Command

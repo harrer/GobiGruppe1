@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
@@ -15,4 +16,6 @@ public interface Data {
     public List<EventDisplay> select(List<String> keylist);
     public List<EventDisplay> filter(SpliceEventFilter sef);
     public RenderedImage renderImage(EventDisplay eventDisplay, int heigth, int width);
+
+    public Gene getSelectedGene(EventDisplay eventDisplay);
 }

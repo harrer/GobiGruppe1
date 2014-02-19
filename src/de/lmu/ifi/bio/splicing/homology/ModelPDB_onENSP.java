@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -39,13 +37,14 @@ public class ModelPDB_onENSP {
         br.close();
         return map;
     }
-    
+
+    //returns an array of PDBids that are modelable on the given ENSP protein
     private String[] getModelSequences(String ENSP_id) throws SQLException{
         String query = "select pdbId from transcript_has_pdbs where transcriptId = '"+ ENSP_id +"'";
         Object[] result = dbq.db.select_oneColumn(query);
         String[] s = new String[result.length];
         for (int i = 0; i < s.length; i++) {
-            s[i] = this.pdbSequences.get((String) result[i]);
+            s[i] = (String) result[i];
         }
         return s;
     }
@@ -54,15 +53,56 @@ public class ModelPDB_onENSP {
         Transcript t = dbq.getTranscriptForProteinId(ENSP_id);
         SingleGotoh gotoh = new SingleGotoh(GenomeSequenceExtractor.getProteinSequence(t), "");
         ArrayList<String[]> alignments = new ArrayList<>();
-        for (String sequence : seq) {
-            gotoh.setSeq2(sequence);
-            alignments.add(gotoh.backtrackingLocal(gotoh.fillMatrixLocal()));
+        for (String PDBid : seq) {
+            gotoh.setSeq2(this.pdbSequences.get(PDBid));
+            String[] ali = gotoh.backtrackingLocal(gotoh.fillMatrixLocal());
+            alignments.add(new String[]{ali[0], ali[1], PDBid});
         }
         return alignments;
     }
     
-    private void modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id){
+    private ArrayList<Object[]> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id){
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
+        ArrayList<Object[]> model = new ArrayList<>();//Object[3]: String, Integer, Boolean
+        int pdbPos = -1, enspPos = -1;//indicates the pos. of the PDB/ENSP sequence in the alignment ENSP -> PDB
+            for (int i = 0; i < alignments.get(0)[0].length(); i++) {//iterate over the first alignment
+                if(alignments.get(0)[0].charAt(i) != '-'){//if upper ENSP != '-'
+                    enspPos++;
+                    if(alignments.get(0)[1].charAt(i) != '-'){//if lower PDB != '-' ==> two aligned AAs
+                        pdbPos++;
+                        boolean exactMatch = (alignments.get(0)[0].charAt(i) == alignments.get(0)[1].charAt(i));
+                        model.add(new Object[]{alignments.get(0)[2], pdbPos, exactMatch});
+                    }
+                    else{
+                        model.add(new Object[]{});
+                    }
+                }
+            }
+        for (int j=1; j<alignments.size(); j++) {//iterate over all other alignements ENSP -> PDB
+            String[] ali = alignments.get(j);
+            pdbPos = -1; enspPos = -1;
+            for(int i=0; i<ali[0].length(); i++){
+                if(ali[0].charAt(i) != '-'){//if upper ENSP != '-'
+                    enspPos++;
+                    if(ali[1].charAt(i) != '-'){//if lower PDB != '-' ==> two aligned AAs
+                        pdbPos++;
+                        boolean exactMatch = (ali[0].charAt(i) == ali[1].charAt(i));
+                        if(model.get(enspPos).length==0){//position has not been modeled yet
+                            model.set(enspPos, new Object[]{ali[2], pdbPos, exactMatch});
+                        }
+                    }
+                }
+            }
+        }
+        return model;
+    }
+    
+    public static void main(String[] args) throws SQLException, IOException {
+        ModelPDB_onENSP model = new ModelPDB_onENSP();
+        String[] pdbs = model.getModelSequences("ENSP00000261313");
+        ArrayList<String[]> alignments = model.alignPDBs_onENSP("ENSP00000261313", pdbs);
+        ArrayList<Object[]> models = model.modelAlignmentsOnProtein(alignments, "ENSP00000261313");
+        System.out.println("");
     }
     
 }

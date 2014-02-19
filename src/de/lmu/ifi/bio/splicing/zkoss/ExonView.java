@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
 /**
- * Created by schmidtju on 16.02.14.
+ * Created by Carsten Uhlig on 16.02.14.
  */
 public class ExonView {
     Gene gene;

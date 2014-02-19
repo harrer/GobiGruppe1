@@ -1,7 +1,7 @@
-<window width="1920px" border="normal" apply="org.zkoss.bind.BindComposer"
-        title="ProSAS" height="1000px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
+<window width="1024px" border="normal" apply="org.zkoss.bind.BindComposer"
+        title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hbox id="main" hflex="1" vflex="1">
-        <vbox hflex="1" vflex="1" id="left">
+        <vbox width="200px" vflex="1" id="left">
             <hbox align="center">
                 Keyword:
                 <textbox value="@bind(vm.keyword)"/>
@@ -12,13 +12,13 @@
             </hbox>
             <listbox id="searchListbox" hflex="1" vflex="1" emptyMessage="No gene etc. found"
                      model="@bind(vm.searchlist)"
-                     multiple="true" checkmark="true" selectedItems="@bind(vm.selectedSearchList)">
+                     multiple="true" checkmark="true" selectedItems="@bind(vm.selectedSearchList)" onSelect="@command('add')">
                 <listhead>
                     <listheader label="Entity"/>
                 </listhead>
             </listbox>
         </vbox>
-        <listbox id="gridlist" hflex="3" vflex="1" model="@load(vm.gridlist)" selectedItem="@bind(vm.selectedItemGridlist)">
+        <listbox id="gridlist" width="600px" vflex="1" model="@load(vm.gridlist)" selectedItem="@bind(vm.eventDisplay)" onSelect="@command('selectgriditem')">
             <auxhead sclass="category-center">
                 <auxheader colspan="1">
                     <textbox instant="true" hflex="1"
@@ -76,21 +76,18 @@
                 </listitem>
             </template>
         </listbox>
-        <image id="exonview" src="@load(vm.renderedImage)" hflex="3"/>
+        <image id="exonview" src="@load(vm.renderedImage)"/>
         <button label="Info" onClick="@command('selectgriditem')"/>
         <button label="krass" onClick="update(vm.renderedImage)"/>
         <zscript>
             <![CDATA[
-            import java.awt.image.BufferedImage;
-            import java.awt.image.RenderedImage;
-                    void update(RenderedImage ri) {
-                        if(ri != null)
-                            exonview.setContent(ri);
-                        else
-                            System.out.println("No fucking IMage");
-                    }
-            ]]>
+        import java.awt.image.BufferedImage;
+        import java.awt.image.RenderedImage;
+
+        void update() {
+        exonview.setContent(vm.getRenderedImage());
+        }
+        ]]>
         </zscript>
-        <!--<include src="flowerpower.zul" hflex="1"/>-->
     </hbox>
 </window>
