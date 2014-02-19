@@ -66,7 +66,7 @@ public class ModelPDB_onENSP {
 
     private ArrayList<Object[]> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id) {
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
-        ArrayList<Object[]> models = new ArrayList<>();//Object[6]: int ENSPstart, int ENSPend, String pdbId, int PDBstart, int PDBend, double seqIdentity
+        ArrayList<Object[]> models = new ArrayList<>();//Object[7]: int ENSPstart, int ENSPend, String pdbId, int PDBstart, int PDBend, double seqIdentity HashMap<int,int> alignedPos
         for (String[] ali : alignments) {//iterate over all alignements ENSP -> PDB
             int[] ali_StartEnd = SingleGotoh.getAli_StartEnd(ali);
             int enspStart = -1, pdbStart = -1;
@@ -79,6 +79,7 @@ public class ModelPDB_onENSP {
                 if(ali[0].charAt(i) != '-'){enspEnd--;}
                 if(ali[1].charAt(i) != '-'){pdbEnd--;}
             }
+            
             models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
         }
         return models;
@@ -90,7 +91,7 @@ public class ModelPDB_onENSP {
         for(Object[] model : models){
             sb.append(model[2]).append(": ");
             for (int i = 0; i < proteinSeq.length(); i++) {
-                String append = (i >= (int)model[0] && i<= (int)model[1])? "+" : "|";
+                char append = (i >= (int)model[0] && i<= (int)model[1])? '+' : '\'';
                 sb.append(append);
             }
             sb.append('\n');
@@ -100,11 +101,12 @@ public class ModelPDB_onENSP {
 
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP model = new ModelPDB_onENSP();
-        String enspSeq = "ENSP00000215939";
+        String enspSeq = "ENSP00000338562";
         String[] pdbs = model.getModelSequences(enspSeq);
         ArrayList<String[]> alignments = model.alignPDBs_onENSP(enspSeq, pdbs, 0.6, 60, 0.4);
         ArrayList<Object[]> models = model.modelAlignmentsOnProtein(alignments, enspSeq);
         System.out.println(model.displayModels(models, enspSeq));
+        System.out.println("");
     }
 
 }
