@@ -11,7 +11,7 @@ public class EventDisplay extends Event{
     private PatternEvent pattern;
     private SecondaryStructure sec;
 
-    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
+    public EventDisplay(String i1, String i2, int start, int stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
         super(i1, i2, start, stop, type);
         this.acc = acc;
         this.pattern = pattern;
