@@ -128,7 +128,6 @@ public class ViewModel {
         // ....
 
         //ExonView by selected Transcript --> Gene
-        System.out.println(height_img_ri);
         renderedImage = data.renderImage(eventDisplay, height_img_ri, width_img_ri);
         selectedGene = data.getSelectedGene(eventDisplay);
     }

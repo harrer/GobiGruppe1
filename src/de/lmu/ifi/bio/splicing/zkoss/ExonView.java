@@ -5,6 +5,8 @@ import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
@@ -13,14 +15,15 @@ import java.awt.image.RenderedImage;
  */
 public class ExonView {
     Gene gene;
-    long length;
+    long start, length;
     int width, height, size, lineHeight;
 
     private void calcOverallLength() {
-        long start = Long.MAX_VALUE, stop = 0;
+        long stop = 0;
+        start = Long.MAX_VALUE;
         for (Transcript transcript : gene.getHashmap_transcriptid().values()) {
             start = Math.min(start, transcript.getCds().get(0).getStart());
-            stop = Math.min(stop, transcript.getCds().get(transcript.getCds().size() - 1).getStop());
+            stop = Math.max(stop, transcript.getCds().get(transcript.getCds().size() - 1).getStop());
         }
         length = stop - start + 1;
     }
@@ -30,7 +33,7 @@ public class ExonView {
         this.width = width;
         this.height = height;
         calcOverallLength();
-        size = gene.getHashmap_transcriptid().size() + 1;
+        size = gene.getHashmap_transcriptid().size();
         lineHeight = height / (size + 1);
     }
 
@@ -38,23 +41,27 @@ public class ExonView {
         BufferedImage bufferedImage = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = createGraphics2D(bufferedImage);
+        int line = 0;
         for (Transcript transcript : gene.getHashmap_transcriptid().values()) {
-            //print transcript.getTranscriptId()
+            g.setColor(Color.BLACK);
+            g.drawString(transcript.getTranscriptId(), 0, lineHeight/4 + lineHeight * line);
             boolean first = true;
             int cur = 0;
-            int line = 0;
             for (Exon exon : transcript.getCds()) {
-                g.setColor(Color.BLACK);
-                if (!first) {
-                    g.drawLine(cur, (int) (exon.getStart() * size / length), lineHeight / 2 + line * lineHeight, lineHeight / 2 + line * lineHeight);
-                } else {
+                if(first){
                     first = false;
+                } else {
+                    g.setColor(Color.BLACK);
+                    g.drawLine(cur, lineHeight/2 + lineHeight * line, (int) (((exon.getStart() - start) * width) / length - 1),  lineHeight/2 + lineHeight * line);
+                    System.out.println("drawLine: " + cur + "\t" + (lineHeight / 2 + lineHeight * line) + "\t" + ((int) (((exon.getStart() - start) * width) / length)) + "\t" + (lineHeight / 2 + lineHeight * line));
                 }
                 g.setColor(Color.RED);
-                g.fillRect((int) (exon.getStart() * size / length), (int) (exon.getStop() * size / length), lineHeight / 4 + line * lineHeight, lineHeight / 4 * 3 + line * lineHeight);
-                cur = (int) (exon.getStop() * size / length);
-                line++;
+                g.fillRoundRect((int) (((exon.getStart() - start) * width) / length), lineHeight/4 + lineHeight * line, (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, lineHeight/2 + 1, 10, 10);
+                System.out.println("fillRect: " + (((exon.getStart() - start) * width) / length) + "\t" + (lineHeight/4 + lineHeight * line) + "\t" + (((exon.getStop() - exon.getStart()) * width) / length) + "\t" + (lineHeight/2));
+                cur = (int) (((exon.getStop() - start) * width) / length);
             }
+            line++;
+
         }
         g.dispose();
         return bufferedImage;
