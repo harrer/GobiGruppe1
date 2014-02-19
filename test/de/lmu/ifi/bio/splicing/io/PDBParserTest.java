@@ -12,8 +12,8 @@ public class PDBParserTest extends TestCase {
 
     @Test
     public void testAddGenes() throws Exception {
-        PDBData pdb = PDBParser.getPDBFile("1a0a.A");
-        PDBData pdb2 = PDBParser.getPDBFile("1a0a.A");
+        String pdb = PDBParser.getPDBFile("1a0a.A");
+        String pdb2 = PDBParser.getPDBFile("1a0a.A");
     }
 
 
