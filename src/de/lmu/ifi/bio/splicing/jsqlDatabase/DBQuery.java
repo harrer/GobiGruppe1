@@ -216,9 +216,25 @@ public class DBQuery implements DatabaseQuery {
             return null;
         }
         if (result.length > 0)
-            return new Event(isoform1, isoform2, (long) (int) result[0][0], (long) (int) result[0][1], ((String) result[0][2]).charAt(0));
+            return new Event(isoform1, isoform2, (int) result[0][0], (int) result[0][1], ((String) result[0][2]).charAt(0));
         else
             return null;
+    }
+
+    public List<Event> getEvents(String geneid){
+        List<Event> events = new LinkedList<>();
+        String query = "Select isoform1, isoform2, start, stop, type from Event, Transcript where isoform1 = transcriptid and geneid = '" + geneid + "'";
+        Object[][] result = null;
+        try {
+            result = db.select(query, 5);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        for (Object[] object : result) {
+            events.add(new Event((String) object[0], (String) object[1], (int) object[2], (int) object[3], ((String) object[4]).charAt(0)));
+        }
+        return events;
     }
 
     @Override

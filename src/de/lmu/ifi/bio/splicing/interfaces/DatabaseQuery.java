@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.splicing.interfaces;
 import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 
+
 import java.util.List;
 
 public interface DatabaseQuery {
@@ -38,6 +39,8 @@ public interface DatabaseQuery {
      * @return new Event()
      */
     public Event getEvent(String isoform1, String isoform2);
+
+    public List<Event> getEvents(String geneid);
 
     public Gene getGene(String geneID);
 
