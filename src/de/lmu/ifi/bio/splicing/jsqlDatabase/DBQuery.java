@@ -265,8 +265,8 @@ public class DBQuery implements DatabaseQuery{
             }
         }
 
-        return new EventDisplay(isoform1, isoform2, (long) (int) result[0][0],
-                (long) (int) result[0][1],
+        return new EventDisplay(isoform1, isoform2,(int) result[0][0],
+                (int) result[0][1],
                 ((String) result[0][2]).charAt(0),
                 result[0][5] != null ? Double.parseDouble((String) result[0][5]) : 0.0, list,
                 result[0][6] != null ? Double.parseDouble((String) result[0][6]) : 0.0);
