@@ -2,8 +2,10 @@ package de.lmu.ifi.bio.splicing.zkoss;
 
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
 import java.awt.image.RenderedImage;
@@ -13,13 +15,14 @@ import java.util.*;
  * Created by Carsten on 13.02.14.
  */
 public class DataImpl implements Data {
-    List<String> searchlist;
-    List<EventDisplay> eventlist;
-    ExonView ev;
-    DBQuery dbq;
-    Gene g;
-    EventDisplay selectedEvent;
-    RenderedImage bi;
+    private List<String> searchlist;
+    private List<EventDisplay> eventlist;
+    private ExonView ev;
+    private DBQuery dbq;
+    private Gene g;
+    private EventDisplay selectedEvent;
+    private RenderedImage bi;
+    private SequenceEntity seqEntity;
 
     DataImpl() {
         dbq = new DBQuery();
@@ -155,6 +158,30 @@ public class DataImpl implements Data {
     }
 
     @Override
+    public SequenceEntity prepareSequences(EventDisplay eventDisplay) {
+        if (eventDisplay == null || !eventDisplay.equals(selectedEvent)) {
+            setSelectedEvent(eventDisplay);
+
+        } else
+            return seqEntity;
+
+        return null;
+    }
+
+    private void calcSeqEntity() {
+        //get transcripts i1 and i2 | t1 and t2
+        String i1 = selectedEvent.getI1();
+        String i2 = selectedEvent.getI2();
+        Transcript t1 = g.getTranscriptByTranscriptId(i1);
+        Transcript t2 = g.getTranscriptByTranscriptId(i2);
+
+        String aa1 = GenomeSequenceExtractor.getProteinSequence(t1, g.getChromosome(), g.getStrand());
+        String aa2 = GenomeSequenceExtractor.getProteinSequence(t2, g.getChromosome(), g.getStrand());
+
+
+    }
+
+    @Override
     public Gene getSelectedGene(EventDisplay eventDisplay) {
         if (selectedEvent == null || !eventDisplay.equals(selectedEvent)) {
             if (g == null || !g.hasTranscriptID(eventDisplay.getI1()))
@@ -164,6 +191,11 @@ public class DataImpl implements Data {
                 selectedEvent = eventDisplay;
         }
         return g;
+    }
+
+    private void setSelectedEvent(EventDisplay eventDisplay) {
+        g = eventDisplay.getCurGene();
+        selectedEvent = eventDisplay;
     }
 
     private List<EventDisplay> getEventsPerGene(Gene agene) {
