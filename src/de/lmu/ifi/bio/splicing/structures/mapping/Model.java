@@ -8,10 +8,10 @@ import java.util.*;
  * Created by schmidtju on 13.02.14.
  */
 public class Model {
-    private String pdbId;
-    private HashMap<Integer, Integer> aligned;
-    private int start, stop;
-    private double quality;
+    private final String pdbId;
+    private final HashMap<Integer, Integer> aligned;
+    private final int start, stop;
+    private final double quality;
 
 
     public Model(String pdb, HashMap<Integer, Integer> aligned, int start, int stop, double quality) {
@@ -79,4 +79,17 @@ public class Model {
     public double getQuality() {
         return quality;
     }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getStop() {
+        return stop;
+    }
+
+    public HashMap<Integer, Integer> getAligned() {
+        return aligned;
+    }
+    
 }

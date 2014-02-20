@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.splicing.homology;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -64,9 +65,9 @@ public class ModelPDB_onENSP {
         return alignments;
     }
 
-    private ArrayList<Object[]> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id) {
+    private ArrayList<Model> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id) {
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
-        ArrayList<Object[]> models = new ArrayList<>();//Object[7]: int ENSPstart, int ENSPend, String pdbId, int PDBstart, int PDBend, double seqIdentity HashMap<int,int> alignedPos
+        ArrayList<Model> models = new ArrayList<>();//Object[7]: int ENSPstart, int ENSPend, String pdbId, int PDBstart, int PDBend, double seqIdentity HashMap<int,int> alignedPos
         for (String[] ali : alignments) {//iterate over all alignements ENSP -> PDB
             int[] ali_StartEnd = SingleGotoh.getAli_StartEnd(ali);
             int enspStart = -1, pdbStart = -1;
@@ -79,19 +80,29 @@ public class ModelPDB_onENSP {
                 if(ali[0].charAt(i) != '-'){enspEnd--;}
                 if(ali[1].charAt(i) != '-'){pdbEnd--;}
             }
-            
-            models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
+            HashMap<Integer, Integer> alignedPos = new HashMap<>();
+            int ensp=-1, pdb=-1;
+            for (int i = ali_StartEnd[0]; i <= ali_StartEnd[1]; i++) {
+                if(ali[0].charAt(i) != '-'){ensp++;}
+                if(ali[1].charAt(i) != '-'){pdb++;}
+                if(ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-'){
+                    alignedPos.put(ensp, pdb);
+                }
+            }
+            //models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
+            models.add(new Model(ali[2], alignedPos, enspStart, enspEnd, SingleGotoh.sequenceIdentity(ali)));
         }
         return models;
     }
     
-    public String displayModels(ArrayList<Object[]> models, String ENSP_id){
+    public String displayModels(ArrayList<Model> models, String ENSP_id){
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
         StringBuilder sb = new StringBuilder("        "+proteinSeq+'\n');
-        for(Object[] model : models){
-            sb.append(model[2]).append(": ");
+        for(Model model : models){
+            sb.append(model.getPdbId()).append(": ");
+            HashMap<Integer, Integer> aligned = model.getAligned();
             for (int i = 0; i < proteinSeq.length(); i++) {
-                char append = (i >= (int)model[0] && i<= (int)model[1])? '+' : '\'';
+                char append = (i >= model.getStart() && i<= model.getStop() && aligned.containsKey(i-model.getStart()))? '+' : '\'';//&& model.getAligned().containsKey(i)
                 sb.append(append);
             }
             sb.append('\n');
@@ -104,7 +115,7 @@ public class ModelPDB_onENSP {
         String enspSeq = "ENSP00000338562";
         String[] pdbs = model.getModelSequences(enspSeq);
         ArrayList<String[]> alignments = model.alignPDBs_onENSP(enspSeq, pdbs, 0.6, 60, 0.4);
-        ArrayList<Object[]> models = model.modelAlignmentsOnProtein(alignments, enspSeq);
+        ArrayList<Model> models = model.modelAlignmentsOnProtein(alignments, enspSeq);
         System.out.println(model.displayModels(models, enspSeq));
         System.out.println("");
     }
