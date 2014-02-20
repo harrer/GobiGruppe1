@@ -24,13 +24,28 @@ public class Model {
         this.quality = quality;
     }
 
-    public String createColoringJmolScript(Set<Event> events) {
+    public String createColoringJmolScript(List<Event> events) {
         StringBuilder jmolScript = new StringBuilder();
         for (Event event : events) {
-            if (event.getType() == 'D') {
-                jmolScript.append("select ").append(aligned.get(event.getStart())).append("-").append(aligned.get(event.getStop())).append("; color red; ");
-            } else if (event.getType() == 'R') {
-                jmolScript.append("select ").append(aligned.get(event.getStop())).append("-").append(aligned.get(event.getStop())).append("; color green; ");
+            long start = -1, stop = -1, i = 0;
+            while (start == -1) {
+                if (aligned.containsKey(event.getStart() + i)) {
+                    start = aligned.get(event.getStart() + i);
+                }
+                i++;
+            }
+            i = 0;
+            while (stop == -1) {
+                if (aligned.containsKey(event.getStop() - i)) {
+                    stop = aligned.get(event.getStop() - i);
+                }
+                i++;
+            }
+            if (start >= stop) {
+                if (event.getType() == 'D')
+                    jmolScript.append("select ").append(start).append("-").append(stop).append("; color red;");
+                else if (event.getType() == 'R')
+                    jmolScript.append("select ").append(start).append("-").append(stop).append("; color green;");
             }
         }
         return jmolScript.toString();
@@ -70,8 +85,12 @@ public class Model {
         return borders;
     }
 
-    public boolean contains(int estart, int estop){
+    public boolean contains(int estart, int estop) {
         return estart >= start && estop <= stop;
+    }
+
+    public String getEnspId() {
+        return enspId;
     }
 
     public String getPdbId() {
@@ -93,5 +112,5 @@ public class Model {
     public HashMap<Integer, Integer> getAligned() {
         return aligned;
     }
-    
+
 }
