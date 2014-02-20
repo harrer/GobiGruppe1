@@ -253,8 +253,7 @@ public class EventAnnotation {
             } else {
                 if (a[0] == 1) {
                     dels = a[2] - a[1] + 1;
-                }
-                if (a[0] == 2) {
+                } else if (a[0] == 2) {
                     ins = a[2] - a[1] + 1;
                 }
                 if (ins > 0 && dels > 0) {
@@ -268,14 +267,12 @@ public class EventAnnotation {
         if (reps1 != 0) {
             eventsP1.add(new long[]{3, cur1, cur1 + reps1 + dels - 1});
             eventsP2.add(new long[]{3, cur1, cur1 + reps2 + ins - 1});
-        } else {
-            if (dels != 0) {
-                eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
-                eventsP2.add(new long[]{2, cur1, cur1 - 1});
-            } else if (ins != 0) {
-                eventsP1.add(new long[]{2, cur1, cur1 - 1});
-                eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});
-            }
+        } else if (dels != 0) {
+            eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
+            eventsP2.add(new long[]{2, cur1, cur1 - 1});
+        } else if (ins != 0) {
+            eventsP1.add(new long[]{2, cur1, cur1 - 1});
+            eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});
         }
     }
 

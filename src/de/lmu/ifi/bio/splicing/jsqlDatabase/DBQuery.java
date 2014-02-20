@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.lmu.ifi.bio.splicing.genome.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DBQuery implements DatabaseQuery {
 
