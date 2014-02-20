@@ -110,6 +110,8 @@ public class ModelPDB_onENSP {
         }
         return sb.toString();
     }
+    
+    public void modelToStructure
 
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP model = new ModelPDB_onENSP();
