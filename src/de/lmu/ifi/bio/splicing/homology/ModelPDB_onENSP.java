@@ -169,6 +169,14 @@ public class ModelPDB_onENSP {
             }
         }
     }
+    
+    /**
+     * @param overlap the overlap
+     * @return double[] contains the rmsd and the gtd-ts sccores
+     */
+    public double[] superimposeOverlap(Overlap overlap){
+        return new double[]{};
+    }
 
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
