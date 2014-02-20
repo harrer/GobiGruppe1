@@ -1,32 +1,91 @@
 package de.lmu.ifi.bio.splicing.zkoss.entity;
 
 import de.lmu.ifi.bio.splicing.genome.Event;
-import de.lmu.ifi.bio.splicing.genome.SecondaryStructure;
+import de.lmu.ifi.bio.splicing.genome.Gene;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by uhligc on 13.02.14.
  */
-public class EventDisplay extends Event{
+public class EventDisplay extends Event {
     private double acc;
-    private PatternEvent pattern;
-    private SecondaryStructure sec;
+    private List<PatternEvent> pattern;
+    private double sec;
+    private String patternids;
+    private Gene curGene;
 
-    public EventDisplay(String i1, String i2, int start, int stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
+    public Gene getCurGene() {
+        return curGene;
+    }
+
+    public void setCurGene(Gene curGene) {
+        this.curGene = curGene;
+    }
+
+    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, List<PatternEvent> pattern, double sec) {
         super(i1, i2, start, stop, type);
         this.acc = acc;
         this.pattern = pattern;
         this.sec = sec;
+        patternids = calcpatternids();
+    }
+
+<<<<<<< HEAD
+    public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, List<PatternEvent> pattern, double sec, Gene gene) {
+=======
+    public EventDisplay(String i1, String i2, int start, int stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
+>>>>>>> 67b691716faef9295d318c99687a0b56d4c7c95c
+        super(i1, i2, start, stop, type);
+        this.acc = acc;
+        this.pattern = pattern;
+        this.sec = sec;
+        curGene = gene;
+        patternids = calcpatternids();
+    }
+
+    public String getPatternids() {
+        return patternids;
     }
 
     public double getAcc() {
         return acc;
     }
 
-    public PatternEvent getPattern() {
+    public List<PatternEvent> getPattern() {
         return pattern;
     }
 
-    public SecondaryStructure getSec() {
+    public double getSec() {
         return sec;
+    }
+
+    private String calcpatternids() {
+        Set<String> dada = new HashSet<>();
+        for (PatternEvent patternEvent : pattern) {
+            if (!dada.contains(patternEvent.getId()))
+                dada.add(patternEvent.getId());
+        }
+
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        for (String s : dada) {
+            sb.append(prefix);
+            prefix = "\n";
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "EventDisplay{" + super.toString() +
+                "acc=" + acc +
+                ", pattern=" + pattern +
+                ", sec=" + sec +
+                '}';
     }
 }

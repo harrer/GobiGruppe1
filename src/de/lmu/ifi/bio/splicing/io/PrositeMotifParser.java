@@ -38,7 +38,6 @@ public class PrositeMotifParser {
                     split = line.split("   ");
                     description = split[1].replace(";", "");
                 } else if (line.startsWith("MA") && line.contains("")) {
-                    //TODO was soll ich mit profiles anfangen auch einspeichern?
                 } else if (line.startsWith("//")) {
                     if (id != null) {
                         addPattern(id, name, pattern, description.substring(0, description.length() - 1));

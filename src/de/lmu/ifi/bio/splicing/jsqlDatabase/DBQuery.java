@@ -7,10 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.lmu.ifi.bio.splicing.genome.*;
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
-public class DBQuery implements DatabaseQuery {
-
-    public DB_Backend db;
+public class DBQuery implements DatabaseQuery{
+    DB_Backend db = new DB_Backend();
 
     public DBQuery() {
         db = new DB_Backend();
@@ -29,11 +30,14 @@ public class DBQuery implements DatabaseQuery {
         if (keyword.isEmpty())
             return findAllGenes();
 
+        //case-insensitivity
+        keyword = keyword.toLowerCase();
+
         String query;
         Object[] result;
         List<String> liste = new LinkedList<>();
 
-        query = "SELECT geneid FROM gobi1.Gene WHERE geneid LIKE '%" + keyword + "%';";
+        query = "SELECT geneid FROM Gene WHERE lower(geneid) REGEXP '" + keyword + "';";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -48,7 +52,7 @@ public class DBQuery implements DatabaseQuery {
         }
 
         db = new DB_Backend();
-        query = "SELECT transcriptid FROM gobi1.Transcript WHERE transcriptid LIKE '%" + keyword + "%';";
+        query = "SELECT transcriptid FROM Transcript WHERE lower(transcriptid) REGEXP '" + keyword + "';";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -62,7 +66,7 @@ public class DBQuery implements DatabaseQuery {
             }
         }
 
-        query = "SELECT proteinid FROM gobi1.Transcript WHERE proteinid LIKE '%" + keyword + "%';";
+        query = "SELECT proteinid FROM Transcript WHERE lower(proteinid) REGEXP '" + keyword + "';";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -165,7 +169,7 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<String> findTranscriptIDsForKeyword(String keyword) {
-        String query = "SELECT transcriptid FROM Transcript WHERE transcriptid LIKE '%" + keyword + "%'";
+        String query = "SELECT transcriptid FROM Transcript WHERE transcriptid REGEXP '" + keyword + "'";
         Object[] results;
         try {
             results = db.select_oneColumn(query);
@@ -236,6 +240,39 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
+    public EventDisplay getEventDisplay(String isoform1, String isoform2) {
+        String query = "select `Event`.start, `Event`.stop, type, `PatternEvent`.start, `PatternEvent`.stop, acc, sec, PatternEvent.fk_pattern_id\n" +
+                " from Event inner join Transcript on `Event`.isoform1 = Transcript.transcriptid\n" +
+                " left outer join PatternEvent on Transcript.transcriptid = PatternEvent.transcriptid\n" +
+                " where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
+        Object[][] result = null;
+        try {
+            result = db.select(query, 8);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        if (result.length == 0)
+            return null;
+
+        List<PatternEvent> list = new LinkedList<>();
+
+        if (result[0][3] != null) {
+            for (int i = 0; i < result.length; i++) {
+                Object[] objects = result[i];
+                list.add(new PatternEvent((String) result[0][7], isoform1, (int) (long) result[0][3], (int) (long) result[0][4]));
+            }
+        }
+
+        return new EventDisplay(isoform1, isoform2, (long) (int) result[0][0],
+                (long) (int) result[0][1],
+                ((String) result[0][2]).charAt(0),
+                result[0][5] != null ? Double.parseDouble((String) result[0][5]) : 0.0, list,
+                result[0][6] != null ? Double.parseDouble((String) result[0][6]) : 0.0);
+    }
+
+    @Override
     public Gene getGene(String geneID) {
         String query = "select chromosome, strand from Gene where geneId = '" + geneID + "'";
         Object[][] result = null;
@@ -285,9 +322,9 @@ public class DBQuery implements DatabaseQuery {
         }
         return transcript;
     }
-    
+
     @Override
-    public Transcript getTranscriptForProteinId(String proteinId){
+    public Transcript getTranscriptForProteinId(String proteinId) {
         String query = "select transcriptid from Transcript where proteinid = '" + proteinId + "'";
         Object[] result = null;
         try {
@@ -295,11 +332,10 @@ public class DBQuery implements DatabaseQuery {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(result.length != 1){
-            System.err.println(result.length+" transcripts found for "+proteinId);
+        if (result.length != 1) {
+            System.err.println(result.length + " transcripts found for " + proteinId);
             return null;
-        }
-        else{
+        } else {
             return getTranscript((String) result[0]);
         }
     }
@@ -319,6 +355,22 @@ public class DBQuery implements DatabaseQuery {
         else return null;
 
         return getGene(geneid);
+    }
+
+    @Override
+    public String getGeneIDForTranscriptID(String transcriptid) {
+        String query = "select geneid from Gene natural join Transcript where transcriptid = '" + transcriptid + "'";
+
+        Object[] result = new Object[0];
+
+        try {
+            result = db.select_oneColumn(query);
+        } catch (SQLException e) {
+            System.err.println("[DBQuery]: " + query);
+        }
+
+        if (result.length > 0) return (String) result[0];
+        return null;
     }
 
     public static void main(String[] args) {

@@ -11,16 +11,18 @@ public class Model {
     private final String enspId;
     private final String pdbId;
     private final HashMap<Integer, Integer> aligned;
-    private final int start, stop;
+    private final int enspStart, enspStop, pdbStart, pdbStop;
     private final double quality;
 
 
-    public Model(String enspId, String pdb, HashMap<Integer, Integer> aligned, int start, int stop, double quality) {
+    public Model(String enspId, int enspStart, int enspStop, String pdb, int pdbStart, int pdbStop, HashMap<Integer, Integer> aligned,  double quality) {
         this.enspId = enspId;
+        this.enspStart = enspStart;
+        this.enspStop = enspStop;
         this.pdbId = pdb;
+        this.pdbStart = pdbStart;
+        this.pdbStop = pdbStop;
         this.aligned = aligned;
-        this.start = start;
-        this.stop = stop;
         this.quality = quality;
     }
 
@@ -85,12 +87,8 @@ public class Model {
         return borders;
     }
 
-    public boolean contains(int estart, int estop) {
-        return estart >= start && estop <= stop;
-    }
-
-    public String getEnspId() {
-        return enspId;
+    public boolean contains(int estart, int estop){
+        return estart >= enspStart && estop <= enspStop;
     }
 
     public String getPdbId() {
@@ -101,16 +99,29 @@ public class Model {
         return quality;
     }
 
-    public int getStart() {
-        return start;
+    public int getEnspStart() {
+        return enspStart;
     }
 
-    public int getStop() {
-        return stop;
+    public int getEnspStop() {
+        return enspStop;
     }
+
+    public int getPdbStart() {
+        return pdbStart;
+    }
+
+    public int getPdbStop() {
+        return pdbStop;
+    }
+
+    public String getEnspId() {
+        return enspId;
+    }
+    
 
     public HashMap<Integer, Integer> getAligned() {
         return aligned;
     }
-
+    
 }

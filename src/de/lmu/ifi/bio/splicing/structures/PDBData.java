@@ -6,10 +6,10 @@ import java.util.List;
  * Created by schmidtju on 13.02.14.
  */
 public class PDBData {
-    private String pdbId, sequence;
-    private double[][] coordinates;
-    private List<String> atomType;
-    private List<Character> chain;
+    private final String pdbId, sequence;
+    private final double[][] coordinates;
+    private final List<String> atomType;
+    private final List<Character> chain;
 
     public PDBData(String pdbId, String sequence, double[][] coordinates, List<String> atomType, List<Character> chain) {
         this.pdbId = pdbId;

@@ -1,8 +1,12 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import org.zkoss.bind.annotation.BindingParam;
+import org.zkoss.bind.annotation.Init;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -24,6 +28,16 @@ public class ExonView {
             stop = Math.max(stop, transcript.getCds().get(transcript.getCds().size() - 1).getStop());
         }
         length = stop - start + 1;
+    }
+
+    @Init
+    public void init(@BindingParam("event") EventDisplay eventDisplay, @BindingParam("w") int width, @BindingParam("h") int height) {
+        this.gene = Setting.dbq.getGeneForTranscriptID(eventDisplay.getI1());
+        this.width = width;
+        this.height = height;
+        calcOverallLength();
+        size = gene.getHashmap_transcriptid().size();
+        lineHeight = height / (size + 1);
     }
 
     public ExonView(Gene gene, int width, int height) {
@@ -84,5 +98,29 @@ public class ExonView {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         return g;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public Gene getGene() {
+        return gene;
+    }
+
+    public void setGene(Gene gene) {
+        this.gene = gene;
     }
 }

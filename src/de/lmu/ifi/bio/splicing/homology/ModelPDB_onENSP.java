@@ -2,7 +2,9 @@ package de.lmu.ifi.bio.splicing.homology;
 
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
+import de.lmu.ifi.bio.splicing.io.PDBParser;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+import de.lmu.ifi.bio.splicing.structures.PDBData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -41,8 +43,9 @@ public class ModelPDB_onENSP {
     }
 
     //returns an array of PDBids that are modelable on the given ENSP protein
-    private String[] getModelSequences(String ENSP_id) throws SQLException {
-        String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ENSP_id + "'";
+    private String[] getModelSequences(String ENST_id) throws SQLException {
+        String ensp_id = (String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '"+ ENST_id +"'")[0];
+        String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
         Object[] result = dbq.db.select_oneColumn(query);
         String[] s = new String[result.length];
         for (int i = 0; i < s.length; i++) {
@@ -91,7 +94,7 @@ public class ModelPDB_onENSP {
                 }
             }
             //models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
-            models.add(new Model(ENSP_id, ali[2], alignedPos, enspStart, enspEnd, SingleGotoh.sequenceIdentity(ali)));
+            models.add(new Model(ENSP_id, enspStart, enspEnd, ali[2], pdbStart, pdbEnd, alignedPos, SingleGotoh.sequenceIdentity(ali)));
         }
         return models;
     }
@@ -103,7 +106,7 @@ public class ModelPDB_onENSP {
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();
             for (int i = 0; i < proteinSeq.length(); i++) {
-                char append = (i >= model.getStart() && i<= model.getStop() && aligned.containsKey(i-model.getStart()))? '+' : '\'';//&& model.getAligned().containsKey(i)
+                char append = (i >= model.getEnspStart() && i<= model.getEnspStop() && aligned.containsKey(i-model.getEnspStart()))? '+' : '\'';//&& model.getAligned().containsKey(i)
                 sb.append(append);
             }
             sb.append('\n');
@@ -111,7 +114,17 @@ public class ModelPDB_onENSP {
         return sb.toString();
     }
     
-    public void modelToStructure
+    public PDBData modelToStructure(Model model){
+        PDBData pdb = PDBParser.getPDBFile(model.getPdbId());
+        //filter modelled structure
+        
+    }
+    
+    public ArrayList<Model> getModelsForENSP(String enstId) throws SQLException, IOException{
+        String[] pdbs = getModelSequences(enstId);
+        ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, 0.6, 60, 0.4);
+        return modelAlignmentsOnProtein(alignments, enstId);
+    }
 
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP model = new ModelPDB_onENSP();
