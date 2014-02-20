@@ -1,12 +1,15 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import com.oracle.jrockit.jfr.ValueDefinition;
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import org.zkoss.bind.annotation.BindingParam;
+import org.zkoss.bind.annotation.Init;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
@@ -28,6 +31,16 @@ public class ExonView {
         length = stop - start + 1;
     }
 
+    @Init
+    public void init(@BindingParam("event") EventDisplay eventDisplay, @BindingParam("w") int width, @BindingParam("h") int height) {
+        this.gene = Setting.dbq.getGeneForTranscriptID(eventDisplay.getI1());
+        this.width = width;
+        this.height = height;
+        calcOverallLength();
+        size = gene.getHashmap_transcriptid().size();
+        lineHeight = height / (size + 1);
+    }
+
     public ExonView(Gene gene, int width, int height) {
         this.gene = gene;
         this.width = width;
@@ -44,20 +57,20 @@ public class ExonView {
         int line = 0;
         for (Transcript transcript : gene.getHashmap_transcriptid().values()) {
             g.setColor(Color.BLACK);
-            g.drawString(transcript.getTranscriptId(), 0, lineHeight/4 + lineHeight * line);
+            g.drawString(transcript.getTranscriptId(), 0, lineHeight / 4 + lineHeight * line);
             boolean first = true;
             int cur = 0;
             for (Exon exon : transcript.getCds()) {
-                if(first){
+                if (first) {
                     first = false;
                 } else {
                     g.setColor(Color.BLACK);
-                    g.drawLine(cur, lineHeight/2 + lineHeight * line, (int) (((exon.getStart() - start) * width) / length - 1),  lineHeight/2 + lineHeight * line);
+                    g.drawLine(cur, lineHeight / 2 + lineHeight * line, (int) (((exon.getStart() - start) * width) / length - 1), lineHeight / 2 + lineHeight * line);
                     System.out.println("drawLine: " + cur + "\t" + (lineHeight / 2 + lineHeight * line) + "\t" + ((int) (((exon.getStart() - start) * width) / length)) + "\t" + (lineHeight / 2 + lineHeight * line));
                 }
                 g.setColor(Color.RED);
-                g.fillRoundRect((int) (((exon.getStart() - start) * width) / length), lineHeight/4 + lineHeight * line, (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, lineHeight/2 + 1, 10, 10);
-                System.out.println("fillRect: " + (((exon.getStart() - start) * width) / length) + "\t" + (lineHeight/4 + lineHeight * line) + "\t" + (((exon.getStop() - exon.getStart()) * width) / length) + "\t" + (lineHeight/2));
+                g.fillRoundRect((int) (((exon.getStart() - start) * width) / length), lineHeight / 4 + lineHeight * line, (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, lineHeight / 2 + 1, 10, 10);
+                System.out.println("fillRect: " + (((exon.getStart() - start) * width) / length) + "\t" + (lineHeight / 4 + lineHeight * line) + "\t" + (((exon.getStop() - exon.getStart()) * width) / length) + "\t" + (lineHeight / 2));
                 cur = (int) (((exon.getStop() - start) * width) / length);
             }
             line++;
@@ -74,5 +87,29 @@ public class ExonView {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         return g;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public Gene getGene() {
+        return gene;
+    }
+
+    public void setGene(Gene gene) {
+        this.gene = gene;
     }
 }

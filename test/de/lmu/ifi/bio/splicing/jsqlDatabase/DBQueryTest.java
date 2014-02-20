@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -50,5 +51,13 @@ public class DBQueryTest {
         assertEquals("5", dbq.getChrForTranscriptID(id));
         id = "ENST00000221233";
         assertTrue("Strand '-' wurde erkannt", !dbq.getStrandForTranscriptID(id));
+    }
+
+    @Test
+    public void testGetEventDisplay() throws Exception {
+        String i1 = "ENST00000547791";
+        String i2 = "ENST00000551103";
+        EventDisplay ev = dbq.getEventDisplay(i1, i2);
+        System.out.println(ev);
     }
 }

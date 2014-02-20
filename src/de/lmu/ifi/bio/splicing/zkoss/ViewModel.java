@@ -22,7 +22,7 @@ public class ViewModel {
     private SpliceEventFilter filter = new SpliceEventFilter();
     private EventDisplay eventDisplay;
     private RenderedImage renderedImage; // set int und height by init
-    private int height_img_ri = 400, width_img_ri = 400;
+    private int height_img_ri = 600, width_img_ri = 400;
     private Gene selectedGene;
 
     public Gene getSelectedGene() {
@@ -116,13 +116,15 @@ public class ViewModel {
     @Command
     @NotifyChange("searchlist")
     public void search() {
+        selectedSearchList = new ArrayList<>();
         searchlist = data.search(keyword);
     }
 
+    //deprecated
+    //wird nicht wirklich genutzt da zk bug bei @load(vm.image) hat
     @Command
     @NotifyChange("exonview")
     public void selectgriditem() {
-        //TODO was passiert wenn auf item in gridlist geklickt wird
         // pattern
         // superposition
         // ....
@@ -132,13 +134,24 @@ public class ViewModel {
         selectedGene = data.getSelectedGene(eventDisplay);
     }
 
+    public void selectgriditem(EventDisplay ev) {
+        //TODO was passiert wenn auf item in gridlist geklickt wird
+        // pattern
+        // superposition
+        // ....
+
+        //ExonView by selected Transcript --> Gene
+        renderedImage = data.renderImage(ev, height_img_ri, width_img_ri);
+        selectedGene = data.getSelectedGene(ev);
+    }
+
     @Command
     @NotifyChange("gridlist")
     public void add() {
         gridlist = new ArrayList<>();
         definedList = new LinkedList<>();
         definedList.addAll(selectedSearchList);
-        selectedSearchList = new ArrayList<>();
+//        selectedSearchList = new ArrayList<>();
         gridlist = data.select(definedList);
     }
 

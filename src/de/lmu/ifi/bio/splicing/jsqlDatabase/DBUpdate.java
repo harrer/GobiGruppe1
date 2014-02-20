@@ -161,6 +161,7 @@ public class DBUpdate implements DatabaseUpdate {
                 insert.append("('").append(exon.getStart()).append("','").append(exon.getStop()).append("','").append(exon.getFrame()).append("','").append(string).append("')");
             }
         }
+
         try {
             db.executeUpdate(insert.toString());
         } catch (SQLException e) {
