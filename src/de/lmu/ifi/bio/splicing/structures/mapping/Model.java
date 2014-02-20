@@ -8,13 +8,15 @@ import java.util.*;
  * Created by schmidtju on 13.02.14.
  */
 public class Model {
+    private final String enspId;
     private final String pdbId;
     private final HashMap<Integer, Integer> aligned;
     private final int start, stop;
     private final double quality;
 
 
-    public Model(String pdb, HashMap<Integer, Integer> aligned, int start, int stop, double quality) {
+    public Model(String enspId, String pdb, HashMap<Integer, Integer> aligned, int start, int stop, double quality) {
+        this.enspId = enspId;
         this.pdbId = pdb;
         this.aligned = aligned;
         this.start = start;

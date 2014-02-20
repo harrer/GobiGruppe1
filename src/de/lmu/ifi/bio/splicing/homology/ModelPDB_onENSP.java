@@ -83,14 +83,15 @@ public class ModelPDB_onENSP {
             HashMap<Integer, Integer> alignedPos = new HashMap<>();
             int ensp=-1, pdb=-1;
             for (int i = ali_StartEnd[0]; i <= ali_StartEnd[1]; i++) {
-                if(ali[0].charAt(i) != '-'){ensp++;}
-                if(ali[1].charAt(i) != '-'){pdb++;}
-                if(ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-'){
+                boolean noUpperDash = ali[0].charAt(i) != '-', noLowerDash = ali[1].charAt(i) != '-';
+                if(noUpperDash){ensp++;}
+                if(noLowerDash){pdb++;}
+                if(noUpperDash && noLowerDash){
                     alignedPos.put(ensp, pdb);
                 }
             }
             //models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
-            models.add(new Model(ali[2], alignedPos, enspStart, enspEnd, SingleGotoh.sequenceIdentity(ali)));
+            models.add(new Model(ENSP_id, ali[2], alignedPos, enspStart, enspEnd, SingleGotoh.sequenceIdentity(ali)));
         }
         return models;
     }
