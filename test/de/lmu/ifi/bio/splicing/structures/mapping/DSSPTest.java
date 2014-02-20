@@ -21,10 +21,9 @@ public class DSSPTest extends TestCase {
         for(int i = 10; i < 479; i++){
             aligned.put(i, i - 10);
         }
-        String pdb = PDBParser.getPDBFile("1bj4.A");
-        Model model = new Model(pdb, aligned);
-        Event event = new Event("ENST00000316694", "ENST00000582653", 166, 481, 'D');
-        int[] borders = model.getBoundaries(event);
-        DSSP.updateEventWithAccAndSS(model, event);
+//        Model model = new Model("1bj4.A", aligned);
+//        Event event = new Event("ENST00000316694", "ENST00000582653", 166, 481, 'D');
+//        int[] borders = model.getBoundaries(event);
+//        DSSP.updateEventWithAccAndSS(model, event);
     }
 }

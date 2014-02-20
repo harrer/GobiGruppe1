@@ -4,13 +4,12 @@ import de.lmu.ifi.bio.splicing.genome.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class EventDetector {
 
     public static Set<Event> getEvents(Gene g){
-        Set<Event> events = new HashSet<Event>();
+        Set<Event> events = new HashSet<>();
         HashMap<String, Transcript> hashmap = g.getHashmap_transcriptid();
         Transcript[] t = new Transcript[hashmap.size()];
         int counter = 0;
@@ -25,16 +24,6 @@ public class EventDetector {
         }
         return events;
     }
-	
-	public static Set<Event> getEvents(Transcript t1, Transcript t2, boolean strand){
-		EventAnnotation ea = new EventAnnotation(t1, t2, strand);
-		return makeEventSet(ea);
-	}
-	
-	public static List<long[]> getEventList(Transcript t1, Transcript t2, boolean strand){
-		EventAnnotation ea = new EventAnnotation(t1, t2, strand);
-		return ea.getEventsP1();
-	}
 	
 	public static Set<Event> makeEventSet(EventAnnotation ea){
 		Set<Event> events = new HashSet<>();
