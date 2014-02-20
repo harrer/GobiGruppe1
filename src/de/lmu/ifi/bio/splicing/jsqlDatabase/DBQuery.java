@@ -11,7 +11,7 @@ import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
 public class DBQuery implements DatabaseQuery{
-    DB_Backend db = new DB_Backend();
+    public DB_Backend db = new DB_Backend();
 
     public DBQuery() {
         db = new DB_Backend();
