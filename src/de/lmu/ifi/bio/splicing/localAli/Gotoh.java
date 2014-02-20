@@ -104,6 +104,7 @@ public class Gotoh {
     private AlignmentMax fillMatrixLocal() {
         int max = Integer.MIN_VALUE, max_i = 0, max_j = 0;
         for (int i = 1; i < seq1.length() + 1; i++) {
+            
             for (int j = 1; j < seq2.length() + 1; j++) {
                 I[i][j] = Math.max(A[i - 1][j] + g(1), I[i - 1][j] + gapextend);
                 D[i][j] = Math.max(A[i][j - 1] + g(1), D[i][j - 1] + gapextend);
