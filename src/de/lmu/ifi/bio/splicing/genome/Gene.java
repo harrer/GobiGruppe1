@@ -15,8 +15,8 @@ public class Gene implements Search{
         this.geneId = geneId;
         this.strand = strand;
         this.chromosome = chromosome;
-        hashmap_proteinid = new HashMap<String, Transcript>();
-        hashmap_transcriptid = new HashMap<String, Transcript>();
+        hashmap_proteinid = new HashMap<>();
+        hashmap_transcriptid = new HashMap<>();
     }
 
 
@@ -82,6 +82,22 @@ public class Gene implements Search{
     public List<String> search(String keyword) {
         //TODO implement search through Gene
         return null;
+    }
+
+    public boolean hasTranscriptID(String transcriptid) {
+        for (String s : hashmap_transcriptid.keySet()) {
+            if (s.equals(transcriptid))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean hasProteinID(String proteinid) {
+        for (String s : hashmap_proteinid.keySet()) {
+            if (s.equals(proteinid))
+                return true;
+        }
+        return false;
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.splicing.interfaces;
 
 import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 
 
 import java.util.List;
@@ -40,6 +41,8 @@ public interface DatabaseQuery {
      */
     public Event getEvent(String isoform1, String isoform2);
 
+    public EventDisplay getEventDisplay(String isoform1, String isoform2);
+
     public List<Event> getEvents(String geneid);
 
     public Gene getGene(String geneID);
@@ -47,6 +50,8 @@ public interface DatabaseQuery {
     public Transcript getTranscript(String transcriptID);
 
     public Gene getGeneForTranscriptID(String transcriptid);
-    
+
+    public String getGeneIDForTranscriptID(String transcriptid);
+
     public Transcript getTranscriptForProteinId(String proteinId);
 }

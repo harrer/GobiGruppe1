@@ -84,4 +84,21 @@ public class Event {
     public char getStartSS() {
         return startSS;
     }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "i1='" + i1 + '\'' +
+                ", i2='" + i2 + '\'' +
+                ", start=" + start +
+                ", stop=" + stop +
+                ", type=" + type +
+                ", secondaryStructure=" + secondaryStructure +
+                ", startSS=" + startSS +
+                ", stopSS=" + stopSS +
+                ", startAcc=" + startAcc +
+                ", stopAcc=" + stopAcc +
+                ", accessibility=" + accessibility +
+                '}';
+    }
 }
