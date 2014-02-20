@@ -77,11 +77,11 @@ public class ExonView {
                         first = false;
                     } else {
                         g.setColor(Color.BLACK);
-                        g.drawLine(width - cur, width - lineHeight / 2 + lineHeight * line, width - (int) (((exon.getStart() - start) * width) / length - 1), width - lineHeight / 2 + lineHeight * line);
+                        g.drawLine(width - cur, lineHeight / 2 + lineHeight * line, width - (int) (((exon.getStart() - start) * width) / length - 1), lineHeight / 2 + lineHeight * line);
                     }
                     g.setColor(Color.RED);
-                    g.fillRoundRect(width -  (int) (((exon.getStart() - start) * width) / length), width - lineHeight / 4 + lineHeight * line, width - (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, width - lineHeight / 2 + 1, 10, 10);
-                    cur = width - (int) (((exon.getStop() - start) * width) / length);
+                    g.fillRoundRect(width -  (int) (((exon.getStop() - start) * width) / length), lineHeight / 4 + lineHeight * line, (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, lineHeight / 2 + 1, 10, 10);
+                    cur = (int) (((exon.getStop() - start) * width) / length);
                 }
             }
             line++;
