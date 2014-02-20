@@ -113,7 +113,7 @@ public class ModelPDB_onENSP {
     }
     
     public String displayModels(ArrayList<Model> models, String ENST_id){
-        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENST_id));
+        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id));
         StringBuilder sb = new StringBuilder("        "+proteinSeq+'\n');
         for(Model model : models){
             sb.append(model.getPdbId()).append(": ");
@@ -152,16 +152,16 @@ public class ModelPDB_onENSP {
         }
         else{
             if(m2.getEnspStart() < m1.getEnspStart()){//partly overlap of m1(start), m2(end)
-                return new Overlap(m1.getPdbId(), m2.getPdbId(), m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "partly overlap of m1(start), m2(end)",m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
             }
             else if(m2.getEnspStop() > m1.getEnspStop()){//partly overlap of m1(end), m2(start)
-                return new Overlap(m1.getPdbId(), m2.getPdbId(), m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "partly overlap of m1(end), m2(start)", m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
             }
-            else if(m1.getEnspStart() < m2.getEnspStart() && m1.getEnspStop() > m2.getEnspStop()){//m2 is "included" in m1
-                return new Overlap(m1.getPdbId(), m2.getPdbId(), m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
+            else if(m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()){//m2 is "included" in m1
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "m2 is included in m1", m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
             }
-            else if(m2.getEnspStart() < m1.getEnspStart() && m2.getEnspStop() > m1.getEnspStop()){//m1 is "included" in m2
-                return new Overlap(m1.getPdbId(), m2.getPdbId(), m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
+            else if(m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()){//m1 is "included" in m2
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "m1 is included in m2", m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
             }
             else{
                 System.out.println("### overlap available, but not found! ###");
@@ -173,7 +173,9 @@ public class ModelPDB_onENSP {
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
         ArrayList<Model> models = m.getModelsForENSP("ENST00000358662");
-        PDBData pdb = m.modelToStructure(models.get(0));
+        System.out.println(m.displayModels(models, "ENST00000358662"));
+        //PDBData pdb = m.modelToStructure(models.get(0));
+        Overlap overlap = m.findModelOverlap(models.get(0), models.get(1));
         System.out.println("");
     }
 
