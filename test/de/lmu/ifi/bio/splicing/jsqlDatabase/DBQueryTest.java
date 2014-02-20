@@ -1,11 +1,16 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+<<<<<<< HEAD
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+=======
+import de.lmu.ifi.bio.splicing.genome.Event;
+>>>>>>> 67b691716faef9295d318c99687a0b56d4c7c95c
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -42,6 +47,11 @@ public class DBQueryTest {
     @Test
     public void testFindAllProteins() throws Exception {
         assertTrue(dbq.findAllProteins().size() > 0);
+    }
+
+    @Test
+    public void testGetEvents() throws Exception {
+        List<Event> events = dbq.getEvents("ENSG00000123405");
     }
 
     @Test

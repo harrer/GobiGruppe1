@@ -2,11 +2,10 @@ package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
 import de.lmu.ifi.bio.splicing.eventdetection.EventDetector;
 import de.lmu.ifi.bio.splicing.genome.Event;
+import de.lmu.ifi.bio.splicing.structures.mapping.DSSP;
+import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by uhligc on 14.02.14.
@@ -21,6 +20,38 @@ public class DBUpdateRoutine {
             Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(s));
             for (Event event : eventSet) {
                 dbu.insertEvent(event);
+            }
+        }
+    }
+
+    public static void updateEvents(){
+        List<String> geneids = dbq.findAllGenes();
+        for(String geneid : geneids){
+            List<Event> events = dbq.getEvents(geneid);
+            HashMap<String, List<Model>> mapModels = new HashMap<>();
+            for (Event event : events) {
+                Model used = null;
+                double quality = 0;
+                if(mapModels.containsKey(event.getI1())){
+                    List<Model> models = mapModels.get(event.getI1());
+                    for (Model model : models) {
+                        if(model.contains(event.getStart(), event.getStop()) && model.getQuality() > quality){
+
+                            used = model;
+                        }
+                    }
+                    if(used == null){
+//                        used = modelling.getModel(int start, int stop);
+                        models.add(used);
+                    }
+                } else {
+                    List<Model> models = new LinkedList<>();
+//                    used = modelling.getModel(int start, int stop);
+                    models.add(used);
+                    mapModels.put(event.getI1(), models);
+                }
+                DSSP.updateEventWithAccAndSS(used, event);
+                dbu.fullUpdateEvent(event);
             }
         }
     }

@@ -6,7 +6,7 @@ package de.lmu.ifi.bio.splicing.genome;
 public class Event {
     //i1 und i2 sind transcript ids (keine protein ids)
     String i1, i2;
-    long start, stop;
+    int start, stop;
     char type;
     char secondaryStructure = 'N';
     char startSS = 'N';
@@ -15,7 +15,7 @@ public class Event {
     char stopAcc = 'N';
     double accessibility = -1;
 
-    public Event(String i1, String i2, long start, long stop, char type) {
+    public Event(String i1, String i2, int start, int stop, char type) {
         this.i1 = i1;
         this.i2 = i2;
         this.start = start;
@@ -31,11 +31,11 @@ public class Event {
         return i2;
     }
 
-    public long getStart() {
+    public int getStart() {
         return start;
     }
 
-    public long getStop() {
+    public int getStop() {
         return stop;
     }
 

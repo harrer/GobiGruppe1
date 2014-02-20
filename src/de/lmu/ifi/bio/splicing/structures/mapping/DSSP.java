@@ -2,9 +2,7 @@ package de.lmu.ifi.bio.splicing.structures.mapping;
 
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Event;
-import de.lmu.ifi.bio.splicing.interfaces.DatabaseUpdate;
 import de.lmu.ifi.bio.splicing.io.DSSPParser;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.DBUpdate;
 
 import java.util.*;
 
@@ -12,12 +10,12 @@ import java.util.*;
  * Created by schmidtju on 14.02.14.
  */
 public class DSSP {
-    public static void updateEventWithAccAndSS(Map map, Event event){
-        DSSPData dssp = DSSPParser.getDSSPData(map.getPdb().getPdbId());
-        mapAccessibility(dssp, map, event);
+    public static void updateEventWithAccAndSS(Model model, Event event){
+        DSSPData dssp = DSSPParser.getDSSPData(model.getPdbId());
+        mapAccessibility(dssp, model, event);
 
-        mapBordersAcc(dssp, map, event);
-        mapBordersSS(dssp, map, event);
+        mapBordersAcc(dssp, model, event);
+        mapBordersSS(dssp, model, event);
 
         Setting.dbu.fullUpdateEvent(event);
     }
@@ -31,9 +29,9 @@ public class DSSP {
         return accessible;
     }
 
-    public static double mapAccessibility(DSSPData dssp, Map map, Event event) {
+    public static double mapAccessibility(DSSPData dssp, Model model, Event event) {
         double meanAccess = 0;
-        Set<Integer> affected = map.getAffectedPositions(event);
+        List<Integer> affected = model.getAffectedPositions(event);
         List<Double> accessible = calcAccessiblity(dssp);
         for (Integer aff : affected) {
             meanAccess += accessible.get(aff);
@@ -49,10 +47,10 @@ public class DSSP {
     T	Turn
     S   Bend*/
 
-    public static int[] mapSS(DSSPData dssp, Map map, Event event) {
+    public static int[] mapSS(DSSPData dssp, Model model, Event event) {
         double meanAccess = 0;
         int[] sec = new int[8]; // 0 = default, 1 = 'H', 2 = 'B', 3 = 'E', 4 = G, 5 = I, 6 = T, 7 = S
-        Set<Integer> affected = map.getAffectedPositions(event);
+        List<Integer> affected = model.getAffectedPositions(event);
         for (Integer aff : affected) {
             switch(dssp.getSecondarySructure()[aff]){
                 case 'H':
@@ -85,9 +83,9 @@ public class DSSP {
         return null;
     }
 
-    public static char[] mapBordersSS(DSSPData dssp, Map map, Event event) {
+    public static char[] mapBordersSS(DSSPData dssp, Model model, Event event) {
         char[] bordersSS = new char[2];
-        int[] borders = map.getBoundaries(event);
+        int[] borders = model.getBoundaries(event);
         for (int i = 0; i < borders.length; i++) {
             if (borders[i] == -1 || dssp.getSecondarySructure()[borders[i]] != ' ') {
                 bordersSS[i] = 'N';
@@ -99,10 +97,9 @@ public class DSSP {
         return bordersSS;
     }
 
-    public static char[] mapBordersAcc(DSSPData dssp, Map map, Event event) {
-        Set<Integer> affected = map.getAffectedPositions(event);
+    public static char[] mapBordersAcc(DSSPData dssp, Model model, Event event) {
         char[] bordersAcc = new char[2];
-        int[] borders = map.getBoundaries(event);
+        int[] borders = model.getBoundaries(event);
         for (int i = 0; i < borders.length; i++) {
             if (borders[i] == -1) {
                 bordersAcc[i] = 'N';

@@ -4,6 +4,7 @@ import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 
+
 import java.util.List;
 
 public interface DatabaseQuery {
@@ -40,7 +41,11 @@ public interface DatabaseQuery {
      */
     public Event getEvent(String isoform1, String isoform2);
 
+<<<<<<< HEAD
     public EventDisplay getEventDisplay(String isoform1, String isoform2);
+=======
+    public List<Event> getEvents(String geneid);
+>>>>>>> 67b691716faef9295d318c99687a0b56d4c7c95c
 
     public Gene getGene(String geneID);
 

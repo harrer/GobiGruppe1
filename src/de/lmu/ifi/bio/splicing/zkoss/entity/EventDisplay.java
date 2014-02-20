@@ -34,7 +34,11 @@ public class EventDisplay extends Event {
         patternids = calcpatternids();
     }
 
+<<<<<<< HEAD
     public EventDisplay(String i1, String i2, long start, long stop, char type, double acc, List<PatternEvent> pattern, double sec, Gene gene) {
+=======
+    public EventDisplay(String i1, String i2, int start, int stop, char type, double acc, PatternEvent pattern, SecondaryStructure sec) {
+>>>>>>> 67b691716faef9295d318c99687a0b56d4c7c95c
         super(i1, i2, start, stop, type);
         this.acc = acc;
         this.pattern = pattern;
