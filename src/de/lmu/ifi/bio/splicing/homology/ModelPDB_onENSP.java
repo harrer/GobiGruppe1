@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -46,10 +48,16 @@ public class ModelPDB_onENSP {
     }
 
     //returns an array of PDBids that are modelable on the given ENSP protein
-    private String[] getModelSequences(String ENST_id) throws SQLException {
-        String ensp_id = (String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '"+ ENST_id +"'")[0];
-        String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
-        Object[] result = dbq.db.select_oneColumn(query);
+    private String[] getModelSequences(String ENST_id) {
+        String ensp_id;
+        Object[] result = null;
+        try {
+            ensp_id = (String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '"+ ENST_id +"'")[0];
+            String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
+        result = dbq.db.select_oneColumn(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(ModelPDB_onENSP.class.getName()).log(Level.SEVERE, null, ex);
+        }
         String[] s = new String[result.length];
         for (int i = 0; i < s.length; i++) {
             s[i] = (String) result[i];
@@ -57,7 +65,7 @@ public class ModelPDB_onENSP {
         return s;
     }
 
-    private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity) throws IOException {
+    private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity)  {
         ArrayList<String[]> alignments = new ArrayList<>();
         gotoh.setSeq1(GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id)));
         for (String PDBid : seq) {
@@ -101,13 +109,13 @@ public class ModelPDB_onENSP {
         return models;
     }
     
-    public ArrayList<Model> getModelsForENSP(String enstId) throws SQLException, IOException{
+    public ArrayList<Model> getModelsForENSP(String enstId) {
         String[] pdbs = getModelSequences(enstId);
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, 0.6, 60, 0.4);
         return modelAlignmentsOnProtein(alignments, enstId);
     }
     
-    public ArrayList<Model> getModelsForENSP(String enstId, double coverage, int longerThan, double seqIdentity) throws SQLException, IOException{
+    public ArrayList<Model> getModelsForENSP(String enstId, double coverage, int longerThan, double seqIdentity){
         String[] pdbs = getModelSequences(enstId);
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, coverage, longerThan, seqIdentity);
         return modelAlignmentsOnProtein(alignments, enstId);
