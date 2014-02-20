@@ -1,6 +1,5 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
-import com.oracle.jrockit.jfr.ValueDefinition;
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Exon;
 import de.lmu.ifi.bio.splicing.genome.Gene;
@@ -60,18 +59,30 @@ public class ExonView {
             g.drawString(transcript.getTranscriptId(), 0, lineHeight / 4 + lineHeight * line);
             boolean first = true;
             int cur = 0;
-            for (Exon exon : transcript.getCds()) {
-                if (first) {
-                    first = false;
-                } else {
-                    g.setColor(Color.BLACK);
-                    g.drawLine(cur, lineHeight / 2 + lineHeight * line, (int) (((exon.getStart() - start) * width) / length - 1), lineHeight / 2 + lineHeight * line);
-                    System.out.println("drawLine: " + cur + "\t" + (lineHeight / 2 + lineHeight * line) + "\t" + ((int) (((exon.getStart() - start) * width) / length)) + "\t" + (lineHeight / 2 + lineHeight * line));
+            if (gene.getStrand()) {
+                for (Exon exon : transcript.getCds()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        g.setColor(Color.BLACK);
+                        g.drawLine(cur, lineHeight / 2 + lineHeight * line, (int) (((exon.getStart() - start) * width) / length - 1), lineHeight / 2 + lineHeight * line);
+                    }
+                    g.setColor(Color.RED);
+                    g.fillRoundRect((int) (((exon.getStart() - start) * width) / length), lineHeight / 4 + lineHeight * line, (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, lineHeight / 2 + 1, 10, 10);
+                    cur = (int) (((exon.getStop() - start) * width) / length);
                 }
-                g.setColor(Color.RED);
-                g.fillRoundRect((int) (((exon.getStart() - start) * width) / length), lineHeight / 4 + lineHeight * line, (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, lineHeight / 2 + 1, 10, 10);
-                System.out.println("fillRect: " + (((exon.getStart() - start) * width) / length) + "\t" + (lineHeight / 4 + lineHeight * line) + "\t" + (((exon.getStop() - exon.getStart()) * width) / length) + "\t" + (lineHeight / 2));
-                cur = (int) (((exon.getStop() - start) * width) / length);
+            } else {
+                for (Exon exon : transcript.getCds()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        g.setColor(Color.BLACK);
+                        g.drawLine(width - cur, width - lineHeight / 2 + lineHeight * line, width - (int) (((exon.getStart() - start) * width) / length - 1), width - lineHeight / 2 + lineHeight * line);
+                    }
+                    g.setColor(Color.RED);
+                    g.fillRoundRect(width -  (int) (((exon.getStart() - start) * width) / length), width - lineHeight / 4 + lineHeight * line, width - (int) (((exon.getStop() - exon.getStart()) * width) / length) + 1, width - lineHeight / 2 + 1, 10, 10);
+                    cur = width - (int) (((exon.getStop() - start) * width) / length);
+                }
             }
             line++;
 

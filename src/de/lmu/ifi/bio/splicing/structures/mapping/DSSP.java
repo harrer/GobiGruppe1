@@ -10,8 +10,7 @@ import java.util.*;
  * Created by schmidtju on 14.02.14.
  */
 public class DSSP {
-    public static void updateEventWithAccAndSS(Model model, Event event){
-        DSSPData dssp = DSSPParser.getDSSPData(model.getPdbId());
+    public static void updateEventWithAccAndSS(Model model, Event event, DSSPData dssp){
         mapAccessibility(dssp, model, event);
 
         mapBordersAcc(dssp, model, event);
@@ -144,5 +143,30 @@ public class DSSP {
         surface.put('Y', 230);
         surface.put('V', 155);
         return (double) accessible / (double) surface.get(aa);
+    }
+
+    public static int[] calcSecondaryStructureDistribution(Collection<DSSPData> dsspData){
+        int[] ssCount = new int[3]; //ssCount[0]: Helix, ssCount[1]: Extended, ssCount[2]: Coil
+        for (DSSPData data : dsspData) {
+            for (char ss : data.getSecondarySructure()) {
+                switch(ss) {
+                    case 'H':
+                    case 'G':
+                    case 'I':
+                        ssCount[0]++;
+                        break;
+                    case 'B':
+                    case 'E':
+                        ssCount[1]++;
+                        break;
+                    case 'T':
+                    case 'S':
+                    default:
+                        ssCount[2]++;
+                        break;
+                }
+            }
+        }
+        return ssCount;
     }
 }
