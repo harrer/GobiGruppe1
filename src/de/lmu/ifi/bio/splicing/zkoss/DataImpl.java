@@ -191,7 +191,6 @@ public class DataImpl implements Data {
         //Clustering
         for (Transcript transcript : liste) {
             curgeneid = dbq.getGeneIDForTranscriptID(transcript.getTranscriptId());
-            //TODO neue Gen-Objekte für Transkript/Protein-Clustering -> nur dann Sinn wenn ExonView dann auch auf diese Gen-Objekte zugreift
             Gene tmpGene = tmpGenes.get(curgeneid);
             if (tmpGene == null) {
                 tmpGene = new Gene(curgeneid, dbq.getChrForTranscriptID(transcript.getTranscriptId()), dbq.getStrandForTranscriptID(transcript.getTranscriptId()));
