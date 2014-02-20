@@ -22,6 +22,7 @@ public class ModelPDB_onENSP {
 
     private DBQuery dbq;
     private HashMap<String, String> pdbSequences;
+    private SingleGotoh gotoh;
 
     public ModelPDB_onENSP() {
         dbq = new DBQuery();
@@ -29,6 +30,7 @@ public class ModelPDB_onENSP {
             pdbSequences = readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
         } catch (IOException ex) {
         }
+        this.gotoh = new SingleGotoh();
     }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
@@ -56,9 +58,8 @@ public class ModelPDB_onENSP {
     }
 
     private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity) throws IOException {
-        Transcript t = dbq.getTranscript(ENST_id);
-        SingleGotoh gotoh = new SingleGotoh(GenomeSequenceExtractor.getProteinSequence(t), "");
         ArrayList<String[]> alignments = new ArrayList<>();
+        gotoh.setSeq1(GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id)));
         for (String PDBid : seq) {
             gotoh.setSeq2(this.pdbSequences.get(PDBid));
             String[] ali = gotoh.backtrackingLocal(gotoh.fillMatrixLocal());
