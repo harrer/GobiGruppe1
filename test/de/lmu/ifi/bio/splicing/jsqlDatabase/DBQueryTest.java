@@ -1,10 +1,7 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
-<<<<<<< HEAD
-import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
-=======
 import de.lmu.ifi.bio.splicing.genome.Event;
->>>>>>> 67b691716faef9295d318c99687a0b56d4c7c95c
+import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
