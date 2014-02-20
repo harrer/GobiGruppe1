@@ -4,6 +4,7 @@ import de.lmu.ifi.bio.splicing.localAli.AlignmentMax;
 import de.lmu.ifi.bio.splicing.localAli.Parser;
 import java.io.IOException;
 import java.util.HashMap;
+
 /**
  *
  * @author harrert
@@ -17,18 +18,12 @@ public class SingleGotoh {
     private boolean check;
     private HashMap<Character, Integer> aminoAcids;
 
-    private int[][] A;
-    private int[][] I;
-    private int[][] D;
+    private int[][] A = new int[][]{};
+    private int[][] I = new int[][]{};
+    private int[][] D = new int[][]{};
 
     private String seq1;
     private String seq2;
-
-    public SingleGotoh(String seq1, String seq2) throws IOException {
-        initParams(seq1, seq2);
-        //StringBuilder sb = startAlignmentLocal();
-        //System.out.println(sb.toString());
-    }
 
     public AlignmentMax fillMatrixLocal() {
         int max = Integer.MIN_VALUE, max_i = 0, max_j = 0;
@@ -102,8 +97,8 @@ public class SingleGotoh {
         }
         return new String[]{s1.reverse().toString(), s2.reverse().toString()};
     }
-    
-    public static int[] getAli_StartEnd(String[] ali){
+
+    public static int[] getAli_StartEnd(String[] ali) {
         int end = -1, start = -1;
         for (int i = 0; i < ali[0].length(); i++) {
             if (ali[0].charAt(i) != '-' && ali[1].charAt(i) != '-') {
@@ -121,7 +116,7 @@ public class SingleGotoh {
     }
 
     public double checkScoreLocal(String s1, String s2) {
-        int[] startEnd = getAli_StartEnd(new String[]{s1,s2});
+        int[] startEnd = getAli_StartEnd(new String[]{s1, s2});
         int score = 0;
         for (int i = startEnd[0]; i <= startEnd[1]; i++) {
             if (s1.charAt(i) != '-' && s2.charAt(i) != '-') {
@@ -194,16 +189,18 @@ public class SingleGotoh {
             aminoAcids.put(aa.charAt(i), i);
         }
         int size = Math.max(seq1.length(), seq2.length());
-        A = new int[size + 1][size + 1];
-        I = new int[size + 1][size + 1];
-        D = new int[size + 1][size + 1];
-        for (int i = 1; i < size + 1; i++) {//init
-            A[i][0] = 0;
-            D[i][0] = -99999999;
-        }
-        for (int i = 1; i < size + 1; i++) {
-            A[0][i] = 0;
-            I[0][i] = -99999999;
+        if (size >= A.length) {
+            A = new int[size + 1][size + 1];
+            I = new int[size + 1][size + 1];
+            D = new int[size + 1][size + 1];
+            for (int i = 1; i < size + 1; i++) {//init
+                A[i][0] = 0;
+                D[i][0] = -99999999;
+            }
+            for (int i = 1; i < size + 1; i++) {
+                A[0][i] = 0;
+                I[0][i] = -99999999;
+            }
         }
     }
 
@@ -222,6 +219,6 @@ public class SingleGotoh {
 
     public static void main(String[] args) throws IOException {
         HashMap<String, String> params = new HashMap();
-        SingleGotoh g = new SingleGotoh("asd", "sdaf");
+        //SingleGotoh g = new SingleGotoh("asd", "sdaf");
     }
 }

@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,6 +24,7 @@ public class ModelPDB_onENSP {
 
     private DBQuery dbq;
     private HashMap<String, String> pdbSequences;
+    private SingleGotoh gotoh;
 
     public ModelPDB_onENSP() {
         dbq = new DBQuery();
@@ -29,6 +32,7 @@ public class ModelPDB_onENSP {
             pdbSequences = readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
         } catch (IOException ex) {
         }
+        this.gotoh = new SingleGotoh();
     }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
@@ -44,10 +48,16 @@ public class ModelPDB_onENSP {
     }
 
     //returns an array of PDBids that are modelable on the given ENSP protein
-    private String[] getModelSequences(String ENST_id) throws SQLException {
-        String ensp_id = (String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '"+ ENST_id +"'")[0];
-        String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
-        Object[] result = dbq.db.select_oneColumn(query);
+    private String[] getModelSequences(String ENST_id) {
+        String ensp_id;
+        Object[] result = null;
+        try {
+            ensp_id = (String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '"+ ENST_id +"'")[0];
+            String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
+        result = dbq.db.select_oneColumn(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(ModelPDB_onENSP.class.getName()).log(Level.SEVERE, null, ex);
+        }
         String[] s = new String[result.length];
         for (int i = 0; i < s.length; i++) {
             s[i] = (String) result[i];
@@ -55,10 +65,9 @@ public class ModelPDB_onENSP {
         return s;
     }
 
-    private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity) throws IOException {
-        Transcript t = dbq.getTranscript(ENST_id);
-        SingleGotoh gotoh = new SingleGotoh(GenomeSequenceExtractor.getProteinSequence(t), "");
+    private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity)  {
         ArrayList<String[]> alignments = new ArrayList<>();
+        gotoh.setSeq1(GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id)));
         for (String PDBid : seq) {
             gotoh.setSeq2(this.pdbSequences.get(PDBid));
             String[] ali = gotoh.backtrackingLocal(gotoh.fillMatrixLocal());
@@ -100,20 +109,20 @@ public class ModelPDB_onENSP {
         return models;
     }
     
-    public ArrayList<Model> getModelsForENSP(String enstId) throws SQLException, IOException{
+    public ArrayList<Model> getModelsForENSP(String enstId) {
         String[] pdbs = getModelSequences(enstId);
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, 0.6, 60, 0.4);
         return modelAlignmentsOnProtein(alignments, enstId);
     }
     
-    public ArrayList<Model> getModelsForENSP(String enstId, double coverage, int longerThan, double seqIdentity) throws SQLException, IOException{
+    public ArrayList<Model> getModelsForENSP(String enstId, double coverage, int longerThan, double seqIdentity){
         String[] pdbs = getModelSequences(enstId);
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, coverage, longerThan, seqIdentity);
         return modelAlignmentsOnProtein(alignments, enstId);
     }
     
     public String displayModels(ArrayList<Model> models, String ENST_id){
-        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENST_id));
+        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id));
         StringBuilder sb = new StringBuilder("        "+proteinSeq+'\n');
         for(Model model : models){
             sb.append(model.getPdbId()).append(": ");
@@ -146,14 +155,44 @@ public class ModelPDB_onENSP {
         return new PDBData(pdb.getPdbId(), sequence, coord.toArray(new double[][]{}), atoms, chain_model);
     }
     
-    public void findModelOverlap(Model m1, Model m2){
-        
+    public Overlap findModelOverlap(Model m1, Model m2){
+        if(m1.getEnspStart() > m2.getEnspStop() || m1.getEnspStop() < m2.getEnspStart()){//models do not overlap
+            return null;
+        }
+        else{
+            if(m2.getEnspStart() < m1.getEnspStart()){//partly overlap of m1(start), m2(end)
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "partly overlap of m1(start), m2(end)",m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
+            }
+            else if(m2.getEnspStop() > m1.getEnspStop()){//partly overlap of m1(end), m2(start)
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "partly overlap of m1(end), m2(start)", m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
+            }
+            else if(m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()){//m2 is "included" in m1
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "m2 is included in m1", m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
+            }
+            else if(m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()){//m1 is "included" in m2
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), "m1 is included in m2", m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
+            }
+            else{
+                System.out.println("### overlap available, but not found! ###");
+                return null;//should not happen
+            }
+        }
+    }
+    
+    /**
+     * @param overlap the overlap
+     * @return double[] contains the rmsd and the gtd-ts sccores
+     */
+    public double[] superimposeOverlap(Overlap overlap){
+        return new double[]{};
     }
 
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
         ArrayList<Model> models = m.getModelsForENSP("ENST00000358662");
-        PDBData pdb = m.modelToStructure(models.get(0));
+        System.out.println(m.displayModels(models, "ENST00000358662"));
+        //PDBData pdb = m.modelToStructure(models.get(0));
+        Overlap overlap = m.findModelOverlap(models.get(0), models.get(1));
         System.out.println("");
     }
 

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.lmu.ifi.bio.splicing.homology;
 
 import java.awt.Font;
@@ -153,11 +152,9 @@ public class SingleLocalAli extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         SingleGotoh gotoh = null;
-        try {
-            gotoh = new SingleGotoh(jTextField1.getText(), jTextField2.getText());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        gotoh = new SingleGotoh();
+        gotoh.setSeq1(jTextField1.getText());
+        gotoh.setSeq2(jTextField2.getText());
         String[] ali = gotoh.backtrackingLocal(gotoh.fillMatrixLocal());
         StringBuilder sb = new StringBuilder();
         try {
@@ -169,7 +166,9 @@ public class SingleLocalAli extends javax.swing.JFrame {
         jTextArea1.setText(sb.toString());
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    /**1
+    /**
+     * 1
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {
