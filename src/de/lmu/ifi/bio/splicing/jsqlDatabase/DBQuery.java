@@ -8,15 +8,6 @@ import java.util.List;
 
 import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
-import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class DBQuery implements DatabaseQuery {
-
-    public DB_Backend db;
-
     public DBQuery() {
         db = new DB_Backend();
     }
@@ -37,6 +28,9 @@ public class DBQuery implements DatabaseQuery {
         //case-insensitivity
         keyword = keyword.toLowerCase();
 
+        String query;
+        Object[] result;
+        List<String> liste = new LinkedList<>();
         String query;
         Object[] result;
         List<String> liste = new LinkedList<>();
