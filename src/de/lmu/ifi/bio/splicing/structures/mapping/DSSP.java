@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class DSSP {
     public static void updateEventWithAccAndSS(Model model, Event event){
-        DSSPData dssp = DSSPParser.getDSSPData(model.getPdb().getPdbId());
+        DSSPData dssp = DSSPParser.getDSSPData(model.getPdbId());
         mapAccessibility(dssp, model, event);
 
         mapBordersAcc(dssp, model, event);
@@ -31,7 +31,7 @@ public class DSSP {
 
     public static double mapAccessibility(DSSPData dssp, Model model, Event event) {
         double meanAccess = 0;
-        Set<Integer> affected = model.getAffectedPositions(event);
+        List<Integer> affected = model.getAffectedPositions(event);
         List<Double> accessible = calcAccessiblity(dssp);
         for (Integer aff : affected) {
             meanAccess += accessible.get(aff);
@@ -50,7 +50,7 @@ public class DSSP {
     public static int[] mapSS(DSSPData dssp, Model model, Event event) {
         double meanAccess = 0;
         int[] sec = new int[8]; // 0 = default, 1 = 'H', 2 = 'B', 3 = 'E', 4 = G, 5 = I, 6 = T, 7 = S
-        Set<Integer> affected = model.getAffectedPositions(event);
+        List<Integer> affected = model.getAffectedPositions(event);
         for (Integer aff : affected) {
             switch(dssp.getSecondarySructure()[aff]){
                 case 'H':
@@ -98,7 +98,6 @@ public class DSSP {
     }
 
     public static char[] mapBordersAcc(DSSPData dssp, Model model, Event event) {
-        Set<Integer> affected = model.getAffectedPositions(event);
         char[] bordersAcc = new char[2];
         int[] borders = model.getBoundaries(event);
         for (int i = 0; i < borders.length; i++) {

@@ -1,7 +1,6 @@
 package de.lmu.ifi.bio.splicing.structures.mapping;
 
 import de.lmu.ifi.bio.splicing.genome.Event;
-import de.lmu.ifi.bio.splicing.structures.PDBData;
 
 import java.util.*;
 
@@ -9,15 +8,14 @@ import java.util.*;
  * Created by schmidtju on 13.02.14.
  */
 public class Model {
-    //    private Set<Event> events;
-    private PDBData pdb;
+    private String pdbId;
     private HashMap<Integer, Integer> aligned;
     private int start, stop;
     private double quality;
 
 
-    public Model(PDBData pdb, HashMap<Integer, Integer> aligned, int start, int stop, double quality) {
-        this.pdb = pdb;
+    public Model(String pdb, HashMap<Integer, Integer> aligned, int start, int stop, double quality) {
+        this.pdbId = pdb;
         this.aligned = aligned;
         this.start = start;
         this.stop = stop;
@@ -74,8 +72,8 @@ public class Model {
         return estart >= start && estop <= stop;
     }
 
-    public PDBData getPdb() {
-        return pdb;
+    public String getPdbId() {
+        return pdbId;
     }
 
     public double getQuality() {

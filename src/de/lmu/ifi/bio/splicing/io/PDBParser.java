@@ -13,7 +13,7 @@ import java.util.List;
  * Created by schmidtju on 13.02.14.
  */
 public class PDBParser {
-    public static PDBData getPDBFile(String pdbId){
+    public static String getPDBFile(String pdbId){
         List<String> atoms = new ArrayList<>();
         List<String> atomType = new ArrayList<>();
         List<Character> chain = new ArrayList<>();
