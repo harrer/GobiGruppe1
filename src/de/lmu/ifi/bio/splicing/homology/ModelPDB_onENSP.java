@@ -146,8 +146,28 @@ public class ModelPDB_onENSP {
         return new PDBData(pdb.getPdbId(), sequence, coord.toArray(new double[][]{}), atoms, chain_model);
     }
     
-    public void findModelOverlap(Model m1, Model m2){
-        
+    public Overlap findModelOverlap(Model m1, Model m2){
+        if(m1.getEnspStart() > m2.getEnspStop() || m1.getEnspStop() < m2.getEnspStart()){//models do not overlap
+            return null;
+        }
+        else{
+            if(m2.getEnspStart() < m1.getEnspStart()){//partly overlap of m1(start), m2(end)
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
+            }
+            else if(m2.getEnspStop() > m1.getEnspStop()){//partly overlap of m1(end), m2(start)
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
+            }
+            else if(m1.getEnspStart() < m2.getEnspStart() && m1.getEnspStop() > m2.getEnspStop()){//m2 is "included" in m1
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
+            }
+            else if(m2.getEnspStart() < m1.getEnspStart() && m2.getEnspStop() > m1.getEnspStop()){//m1 is "included" in m2
+                return new Overlap(m1.getPdbId(), m2.getPdbId(), m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
+            }
+            else{
+                System.out.println("### overlap available, but not found! ###");
+                return null;//should not happen
+            }
+        }
     }
 
     public static void main(String[] args) throws SQLException, IOException {
