@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -54,8 +55,8 @@ public class ModelPDB_onENSP {
         return s;
     }
 
-    private ArrayList<String[]> alignPDBs_onENSP(String ENSP_id, String[] seq, double coverage, int longerThan, double seqIdentity) throws IOException {
-        Transcript t = dbq.getTranscriptForProteinId(ENSP_id);
+    private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity) throws IOException {
+        Transcript t = dbq.getTranscript(ENST_id);
         SingleGotoh gotoh = new SingleGotoh(GenomeSequenceExtractor.getProteinSequence(t), "");
         ArrayList<String[]> alignments = new ArrayList<>();
         for (String PDBid : seq) {
@@ -68,8 +69,8 @@ public class ModelPDB_onENSP {
         return alignments;
     }
 
-    private ArrayList<Model> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENSP_id) {
-        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
+    private ArrayList<Model> modelAlignmentsOnProtein(ArrayList<String[]> alignments, String ENST_id) {
+        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id));
         ArrayList<Model> models = new ArrayList<>();//Object[7]: int ENSPstart, int ENSPend, String pdbId, int PDBstart, int PDBend, double seqIdentity HashMap<int,int> alignedPos
         for (String[] ali : alignments) {//iterate over all alignements ENSP -> PDB
             int[] ali_StartEnd = SingleGotoh.getAli_StartEnd(ali);
@@ -94,13 +95,25 @@ public class ModelPDB_onENSP {
                 }
             }
             //models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
-            models.add(new Model(ENSP_id, enspStart, enspEnd, ali[2], pdbStart, pdbEnd, alignedPos, SingleGotoh.sequenceIdentity(ali)));
+            models.add(new Model(ENST_id, enspStart, enspEnd, ali[2], pdbStart, pdbEnd, alignedPos, SingleGotoh.sequenceIdentity(ali)));
         }
         return models;
     }
     
-    public String displayModels(ArrayList<Model> models, String ENSP_id){
-        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENSP_id));
+    public ArrayList<Model> getModelsForENSP(String enstId) throws SQLException, IOException{
+        String[] pdbs = getModelSequences(enstId);
+        ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, 0.6, 60, 0.4);
+        return modelAlignmentsOnProtein(alignments, enstId);
+    }
+    
+    public ArrayList<Model> getModelsForENSP(String enstId, double coverage, int longerThan, double seqIdentity) throws SQLException, IOException{
+        String[] pdbs = getModelSequences(enstId);
+        ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, coverage, longerThan, seqIdentity);
+        return modelAlignmentsOnProtein(alignments, enstId);
+    }
+    
+    public String displayModels(ArrayList<Model> models, String ENST_id){
+        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscriptForProteinId(ENST_id));
         StringBuilder sb = new StringBuilder("        "+proteinSeq+'\n');
         for(Model model : models){
             sb.append(model.getPdbId()).append(": ");
@@ -116,23 +129,31 @@ public class ModelPDB_onENSP {
     
     public PDBData modelToStructure(Model model){
         PDBData pdb = PDBParser.getPDBFile(model.getPdbId());
+        String sequence = pdb.getSequence(); StringBuilder sb = new StringBuilder();
+        double[][] coordinates = pdb.getCACoordinates(); ArrayList<double[]> coord = new ArrayList<>();
+        List<String> atoms = new ArrayList<>();
+        List<Character> chain = pdb.getChain(); List<Character> chain_model = new ArrayList<>();
         //filter modelled structure
-        
+        HashMap<Integer, Integer> aligned = model.getAligned();
+        for (int i = model.getPdbStart(); i <= model.getPdbStop(); i++) {
+            if(aligned.containsValue(i-model.getPdbStart())){
+                sb.append(sequence.charAt(i));
+                coord.add(coordinates[i]);
+                atoms.add("CA");
+                chain_model.add(chain.get(i));
+            }
+        }
+        return new PDBData(pdb.getPdbId(), sequence, coord.toArray(new double[][]{}), atoms, chain_model);
     }
     
-    public ArrayList<Model> getModelsForENSP(String enstId) throws SQLException, IOException{
-        String[] pdbs = getModelSequences(enstId);
-        ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, 0.6, 60, 0.4);
-        return modelAlignmentsOnProtein(alignments, enstId);
+    public void findModelOverlap(Model m1, Model m2){
+        
     }
 
     public static void main(String[] args) throws SQLException, IOException {
-        ModelPDB_onENSP model = new ModelPDB_onENSP();
-        String enspSeq = "ENSP00000338562";
-        String[] pdbs = model.getModelSequences(enspSeq);
-        ArrayList<String[]> alignments = model.alignPDBs_onENSP(enspSeq, pdbs, 0.6, 60, 0.4);
-        ArrayList<Model> models = model.modelAlignmentsOnProtein(alignments, enspSeq);
-        System.out.println(model.displayModels(models, enspSeq));
+        ModelPDB_onENSP m = new ModelPDB_onENSP();
+        ArrayList<Model> models = m.getModelsForENSP("ENST00000358662");
+        PDBData pdb = m.modelToStructure(models.get(0));
         System.out.println("");
     }
 

@@ -8,7 +8,7 @@ import java.util.*;
  * Created by schmidtju on 13.02.14.
  */
 public class Model {
-    private final String enspId;
+    private final String enstId;
     private final String pdbId;
     private final HashMap<Integer, Integer> aligned;
     private final int enspStart, enspStop, pdbStart, pdbStop;
@@ -16,7 +16,7 @@ public class Model {
 
 
     public Model(String enspId, int enspStart, int enspStop, String pdb, int pdbStart, int pdbStop, HashMap<Integer, Integer> aligned,  double quality) {
-        this.enspId = enspId;
+        this.enstId = enspId;
         this.enspStart = enspStart;
         this.enspStop = enspStop;
         this.pdbId = pdb;
@@ -115,8 +115,8 @@ public class Model {
         return pdbStop;
     }
 
-    public String getEnspId() {
-        return enspId;
+    public String getEnstId() {
+        return enstId;
     }
     
 
