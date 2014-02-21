@@ -1,14 +1,17 @@
 package de.lmu.ifi.bio.splicing.homology;
 
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
+import de.lmu.ifi.bio.splicing.superimpose.Superposition;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,14 +25,16 @@ import java.util.logging.Logger;
  */
 public class ModelPDB_onENSP {
 
-    private DBQuery dbq;
-    private HashMap<String, String> pdbSequences;
-    private SingleGotoh gotoh;
+    private final DBQuery dbq;
+    private final HashMap<String, String> pdbSequences;
+    private final SingleGotoh gotoh;
+    private final Superposition superposition;
 
     public ModelPDB_onENSP() {
         dbq = new DBQuery();
         pdbSequences = new HashMap<>();//readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
         this.gotoh = new SingleGotoh();
+        superposition = new Superposition();
     }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
@@ -43,8 +48,23 @@ public class ModelPDB_onENSP {
         br.close();
         return map;
     }
+    
+    private String[] getModelSequencesForENSP(String ensp_id) {
+        Object[] result = null;
+        try {
+            String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
+            result = dbq.db.select_oneColumn(query);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        String[] s = new String[result.length];
+        for (int i = 0; i < s.length; i++) {
+            s[i] = (String) result[i];
+        }
+        return s;
+    }
 
-    //returns an array of PDBids that are modelable on the given ENSP protein
+    //returns an array of PDBids that are modelable on the given ENST transcript
     private String[] getModelSequences(String ENST_id) {
         String ensp_id;
         Object[] result = null;
@@ -53,7 +73,7 @@ public class ModelPDB_onENSP {
             String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
             result = dbq.db.select_oneColumn(query);
         } catch (SQLException ex) {
-            Logger.getLogger(ModelPDB_onENSP.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         String[] s = new String[result.length];
         for (int i = 0; i < s.length; i++) {
@@ -66,7 +86,13 @@ public class ModelPDB_onENSP {
         ArrayList<String[]> alignments = new ArrayList<>();
         gotoh.setSeq1(GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id)));
         for (String PDBid : seq) {
-            String str = pdbSequences.containsKey(PDBid)? pdbSequences.get(PDBid) : PDBParser.getPDBSequence(PDBid);
+            String str;
+            if (pdbSequences.containsKey(PDBid)) {
+                str = pdbSequences.get(PDBid);
+            } else {
+                str = PDBParser.getPDBSequence(PDBid);
+                pdbSequences.put(PDBid, str);
+            }
             gotoh.setSeq2(str);
             String[] ali = gotoh.backtrackingLocal(gotoh.fillMatrixLocal());
             if (gotoh.sequenceIdentity(ali) >= seqIdentity && gotoh.coverage(ali, longerThan, coverage)) {//if alignment is significant given the 3 paramsz
@@ -90,7 +116,7 @@ public class ModelPDB_onENSP {
                     pdbStart++;
                 }
             }
-            int enspEnd = proteinSeq.length(), pdbEnd = (pdbSequences.containsKey(ali[2]))? pdbSequences.get(ali[2]).length() : PDBParser.getPDBSequence(ali[2]).length();
+            int enspEnd = proteinSeq.length(), pdbEnd = pdbSequences.get(ali[2]).length();
             for (int i = ali[0].length() - 1; i >= ali_StartEnd[1]; i--) {
                 if (ali[0].charAt(i) != '-') {
                     enspEnd--;
@@ -103,25 +129,35 @@ public class ModelPDB_onENSP {
             int ensp = enspStart, pdb = pdbStart;
             for (int i = ali_StartEnd[0]; i <= ali_StartEnd[1]; i++) {
                 boolean noUpperDash = ali[0].charAt(i) != '-', noLowerDash = ali[1].charAt(i) != '-';
-                if(noUpperDash && noLowerDash){
+                if (noUpperDash && noLowerDash) {
                     alignedPos.put(ensp, pdb);
                 }
-                if(noUpperDash){ensp++;}
-                if(noLowerDash){pdb++;}
+                if (noUpperDash) {
+                    ensp++;
+                }
+                if (noLowerDash) {
+                    pdb++;
+                }
             }
             //models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
             models.add(new Model(ENST_id, enspStart, enspEnd, ali[2], pdbStart, pdbEnd, alignedPos, SingleGotoh.sequenceIdentity(ali)));
         }
         return models;
     }
+    
+    public ArrayList<Model> getModelsForENSP(String enspId, double coverage, int longerThan, double seqIdentity){
+        String[] pdbs = getModelSequencesForENSP(enspId);
+        ArrayList<String[]> alignments = alignPDBs_onENSP(enspId, pdbs, 0.6, 60, 0.4);
+        return modelAlignmentsOnProtein(alignments, enspId);
+    }
 
-    public ArrayList<Model> getModelsForENSP(String enstId) {
+    public ArrayList<Model> getModelsForENST(String enstId) {
         String[] pdbs = getModelSequences(enstId);
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, 0.6, 60, 0.4);
         return modelAlignmentsOnProtein(alignments, enstId);
     }
 
-    public ArrayList<Model> getModelsForENSP(String enstId, double coverage, int longerThan, double seqIdentity) {
+    public ArrayList<Model> getModelsForENST(String enstId, double coverage, int longerThan, double seqIdentity) {
         String[] pdbs = getModelSequences(enstId);
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, coverage, longerThan, seqIdentity);
         return modelAlignmentsOnProtein(alignments, enstId);
@@ -182,26 +218,79 @@ public class ModelPDB_onENSP {
             }
         }
     }
+    
+    public ArrayList<Overlap> findOverlapForAllModels(ArrayList<Model> models){
+        ArrayList<Overlap> overlaps = new ArrayList<>();
+        for (int i = 0; i < models.size(); i++) {
+            for (int j = i; j < models.size(); j++) {
+                Overlap overlap = findModelOverlap(models.get(i), models.get(j));
+                if(overlap != null && j != i){
+                    overlaps.add(overlap);
+                }
+            }
+        }
+        return overlaps;
+    }
 
     /**
      * @param overlap the overlap
      * @return double[] contains the rmsd and the gtd-ts sccores
      */
     public double[] superimposeOverlap(Overlap overlap) {
-        String pdb1 = this.pdbSequences.get(overlap.getModel1().getPdbId()); StringBuilder s1 = new StringBuilder();
-        String pdb2 = this.pdbSequences.get(overlap.getModel2().getPdbId()); StringBuilder s2 = new StringBuilder();
+        Model model = overlap.getModel1();
+        HashMap<Integer, Integer> aligned = model.getAligned();
+        double[][] pdb = PDBParser.getPDBFile(model.getPdbId()).getCACoordinates();
+        ArrayList<double[]> coord1 = new ArrayList<>();
+        for (int i = model.getEnspStart(); i <= model.getEnspStop(); i++) {
+            if(aligned.containsKey(i)){
+                coord1.add(pdb[aligned.get(i)]);
+            }
+        }
+        model = overlap.getModel2();
+        aligned = model.getAligned();
+        pdb = PDBParser.getPDBFile(model.getPdbId()).getCACoordinates();
+        ArrayList<double[]> coord2 = new ArrayList<>();
+        for (int i = model.getEnspStart(); i <= model.getEnspStop(); i++) {
+            if(aligned.containsKey(i)){
+                coord2.add(pdb[aligned.get(i)]);
+            }
+        }
+        Object[] sp = superposition.superimpose(new DenseDoubleMatrix2D(coord1.toArray(new double[][]{})), new DenseDoubleMatrix2D(coord2.toArray(new double[][]{})), null);
         
-        return new double[]{};
+        return new double[]{(double) sp[2], (double) sp[3]};
     }
-
+    
+    public void run(String fileOut, double coverage, int longerThan, double seqIdentity) throws IOException{
+        PrintWriter writer = new PrintWriter(fileOut);
+        Object[] templates = null;
+        writer.write("rmsd\tgtd-ts\tpdb1\tpdb2\n");
+        try {
+            templates = dbq.db.select_oneColumn("select transcriptid from transcript_has_pdbs");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        int c = 1;
+        for (Object object : templates) {
+            System.out.println(c+" templates processed");
+            ArrayList<Model> models = getModelsForENSP((String) object, coverage, longerThan, seqIdentity);
+            ArrayList<Overlap> overlaps = findOverlapForAllModels(models);
+            for (Overlap overlap : overlaps) {
+                double[] scores = superimposeOverlap(overlap);
+                writer.printf("%f\t%f\t%s\t%s\n", scores[0], scores[1], overlap.getModel1().getPdbId(), overlap.getModel2().getPdbId());
+            }
+        }
+        writer.close();
+    }
+    
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
-        ArrayList<Model> models = m.getModelsForENSP("ENST00000380952");
-        System.out.println(m.displayModels(models, "ENST00000380952"));
-        //PDBData pdb = m.modelToStructure(models.get(0));
-        Overlap overlap = m.findModelOverlap(models.get(0), models.get(1));
-        Overlap o2 = m.findModelOverlap(models.get(1), models.get(2));
-        System.out.println("");
+//        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
+//        System.out.println(m.displayModels(models, "ENST00000380952"));
+//        //PDBData pdb = m.modelToStructure(models.get(0));
+//        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
+//        //double[] sPose = m.superimposeOverlap(overlap);
+//        System.out.println("");
+        m.run("/tmp/superimposeAllModelsSSSSSSSSSSSSSS.txt", 0.6, 60, 0.4);
     }
 
 }
