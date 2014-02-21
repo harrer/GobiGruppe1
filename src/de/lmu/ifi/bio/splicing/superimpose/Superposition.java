@@ -25,7 +25,7 @@ public class Superposition {
         DoubleMatrix2D covar = covarMatrix(cP, cQ);
         DoubleMatrix2D R = rotate(covar);
         DoubleMatrix1D t = T(R, centP, centQ);
-        Q = move_Q_onto_P(Q_full, R, t);
+        Q = move_Q_onto_P(Q, R, t);//move_Q_onto_P(Q_full, R, t);
         return new Object[]{Q, readOffRMSD(P, Q), RMSD(covar, initError(cP, cQ), P.rows()), gdt_ts(P, Q)};
     }
     

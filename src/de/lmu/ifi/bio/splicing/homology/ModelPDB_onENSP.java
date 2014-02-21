@@ -1,11 +1,13 @@
 package de.lmu.ifi.bio.splicing.homology;
 
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
+import de.lmu.ifi.bio.splicing.superimpose.Superposition;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,14 +24,16 @@ import java.util.logging.Logger;
  */
 public class ModelPDB_onENSP {
 
-    private DBQuery dbq;
-    private HashMap<String, String> pdbSequences;
-    private SingleGotoh gotoh;
+    private final DBQuery dbq;
+    private final HashMap<String, String> pdbSequences;
+    private final SingleGotoh gotoh;
+    private final Superposition superposition;
 
     public ModelPDB_onENSP() {
         dbq = new DBQuery();
         pdbSequences = new HashMap<>();//readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
         this.gotoh = new SingleGotoh();
+        superposition = new Superposition();
     }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
@@ -192,19 +196,46 @@ public class ModelPDB_onENSP {
             }
         }
     }
+    
+    public ArrayList<Overlap> findOverlapForAllModels(ArrayList<Model> models){
+        ArrayList<Overlap> overlaps = new ArrayList<>();
+        for (int i = 0; i < models.size(); i++) {
+            for (int j = i; j < models.size(); j++) {
+                Overlap overlap = findModelOverlap(models.get(i), models.get(j));
+                if(overlap != null && j != i){
+                    overlaps.add(overlap);
+                }
+            }
+        }
+        return overlaps;
+    }
 
     /**
      * @param overlap the overlap
      * @return double[] contains the rmsd and the gtd-ts sccores
      */
     public double[] superimposeOverlap(Overlap overlap) {
-        double[][] pdb1 = PDBParser.getPDBFile(overlap.getModel1().getPdbId()).getCACoordinates(); ArrayList<double[][]> coord1 = new ArrayList<>();
-        double[][] pdb2 = PDBParser.getPDBFile(overlap.getModel2().getPdbId()).getCACoordinates(); ArrayList<double[][]> coord2 = new ArrayList<>();
-        for (int i = overlap.getModel1().getEnspStart(); i <= overlap.getModel1().getEnspStop(); i++) {
-            
+        Model model = overlap.getModel1();
+        HashMap<Integer, Integer> aligned = model.getAligned();
+        double[][] pdb = PDBParser.getPDBFile(model.getPdbId()).getCACoordinates();
+        ArrayList<double[]> coord1 = new ArrayList<>();
+        for (int i = model.getEnspStart(); i <= model.getEnspStop(); i++) {
+            if(aligned.containsKey(i)){
+                coord1.add(pdb[aligned.get(i)]);
+            }
         }
-
-        return new double[]{};
+        model = overlap.getModel2();
+        aligned = model.getAligned();
+        pdb = PDBParser.getPDBFile(model.getPdbId()).getCACoordinates();
+        ArrayList<double[]> coord2 = new ArrayList<>();
+        for (int i = model.getEnspStart(); i <= model.getEnspStop(); i++) {
+            if(aligned.containsKey(i)){
+                coord2.add(pdb[aligned.get(i)]);
+            }
+        }
+        Object[] sp = superposition.superimpose(new DenseDoubleMatrix2D(coord1.toArray(new double[][]{})), new DenseDoubleMatrix2D(coord2.toArray(new double[][]{})), null);
+        
+        return new double[]{(double) sp[2], (double) sp[3]};
     }
 
     public static void main(String[] args) throws SQLException, IOException {
@@ -212,8 +243,8 @@ public class ModelPDB_onENSP {
         ArrayList<Model> models = m.getModelsForENSP("ENST00000380952");
         System.out.println(m.displayModels(models, "ENST00000380952"));
         //PDBData pdb = m.modelToStructure(models.get(0));
-        Overlap overlap = m.findModelOverlap(models.get(0), models.get(1));
-        Overlap o2 = m.findModelOverlap(models.get(1), models.get(2));
+        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
+        //double[] sPose = m.superimposeOverlap(overlap);
         System.out.println("");
     }
 

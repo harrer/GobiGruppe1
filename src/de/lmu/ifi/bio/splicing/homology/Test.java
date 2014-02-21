@@ -38,8 +38,13 @@ public class Test {
     
     
     public static void main(String[] args) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-        System.out.println(map.get(2));
+        for (int i = 0; i < 10; i++) {
+            for (int j = i; j < 10; j++) {
+                if(i != j){
+                    System.out.println("("+i+","+j+")\n");
+                }
+            }
+        }
         //DatabaseQuery db = new DBQuery();
         //Transcript t = db.getTranscriptForProteinId("ENSP00000261313");
         //System.out.println(GenomeSequenceExtractor.getProteinSequence(t));

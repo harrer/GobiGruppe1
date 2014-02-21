@@ -26,7 +26,7 @@ public class PDBParser {
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("ATOM")) {
                     atoms.add(line);
-                    atomType.add(line.substring(13, 16));
+                    atomType.add(line.substring(13, 15));
                     chain.add(line.charAt(21));
                     if (line.substring(13, 15).equalsIgnoreCase("CA")) {
                         CAcount++;
