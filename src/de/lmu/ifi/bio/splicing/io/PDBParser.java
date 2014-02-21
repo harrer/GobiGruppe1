@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.splicing.io;
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
 import de.lmu.ifi.bio.splicing.util.AAConversion;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,14 +14,14 @@ import java.util.List;
  * Created by schmidtju on 13.02.14.
  */
 public class PDBParser {
-    public static PDBData getPDBFile(String pdbId){
+    public static PDBData getPDBFile(String pdbId) {
         List<String> atoms = new ArrayList<>();
         List<String> atomType = new ArrayList<>();
         List<Character> chain = new ArrayList<>();
         StringBuilder sequence = new StringBuilder();
         int CAcount = 0;
         try {
-            BufferedReader reader =  new BufferedReader(new FileReader(Setting.PDBREPCCHAINSDIR + pdbId + ".pdb"));
+            BufferedReader reader = new BufferedReader(new FileReader(Setting.PDBREPCCHAINSDIR + pdbId + ".pdb"));
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("ATOM")) {
@@ -35,7 +36,7 @@ public class PDBParser {
                 }
             }
             reader.close();
-        } catch (IOException ioe){
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
         double[][] coordinates = new double[atoms.size()][3];
@@ -43,8 +44,25 @@ public class PDBParser {
             double x = Double.parseDouble(atoms.get(i).substring(30, 38));
             double y = Double.parseDouble(atoms.get(i).substring(38, 46));
             double z = Double.parseDouble(atoms.get(i).substring(46, Math.min(55, atoms.get(i).length())));
-            coordinates[i] = new double[] { x, y, z };
+            coordinates[i] = new double[]{x, y, z};
         }
         return new PDBData(pdbId, sequence.toString(), coordinates, atomType, chain);
+    }
+
+    public static String getPDBSequence(String pdbId) {
+        StringBuilder sequence = new StringBuilder();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(Setting.PDBREPCCHAINSDIR + pdbId + ".pdb"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("ATOM") && line.substring(13, 15).equalsIgnoreCase("CA")) {
+                    sequence.append(AAConversion.getOneLetter(line
+                            .substring(17, 20)));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sequence.toString();
     }
 }

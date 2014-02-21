@@ -28,4 +28,9 @@ public class DBUpdateRoutineTest {
     public void testAll() throws Exception {
         DBUpdateRoutine.insertEvents();
     }
+
+    @Test
+    public void testUpdateEvents() throws Exception {
+        DBUpdateRoutine.updateEvents();
+    }
 }
