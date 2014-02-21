@@ -9,7 +9,6 @@ import junit.framework.TestCase;
  */
 public class DSSPParserTest extends TestCase {
     public void testGetDSSPData() throws Exception {
-        DSSPData d = DSSPParser.runDSSP("1a7i.A", Setting.PDBREPCCHAINSDIR);
-        System.out.println();
+//        DSSPData d = DSSPParser.runDSSP("1a7i.A", Setting.PDBREPCCHAINSDIR);
     }
 }

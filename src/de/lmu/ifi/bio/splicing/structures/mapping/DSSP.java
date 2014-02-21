@@ -11,11 +11,12 @@ import java.util.*;
  */
 public class DSSP {
     public static void updateEventWithAccAndSS(Model model, Event event, DSSPData dssp){
-        mapAccessibility(dssp, model, event);
-
-        mapBordersAcc(dssp, model, event);
-        mapBordersSS(dssp, model, event);
-
+        event.setAccessibility(mapAccessibility(dssp, model, event));
+        event.setSecondaryStructure(mapSS(dssp, model, event));
+        char[] bordersAcc = mapBordersAcc(dssp, model, event);
+        event.setBordersAcc(bordersAcc[0], bordersAcc[1]);
+        char[] bordersSS = mapBordersSS(dssp, model, event);
+        event.setBordersSS(bordersSS[0], bordersSS[1]);
         Setting.dbu.fullUpdateEvent(event);
     }
 
@@ -35,9 +36,26 @@ public class DSSP {
         for (Integer aff : affected) {
             meanAccess += accessible.get(aff);
         }
-        event.setAccessibility(meanAccess / affected.size());
         return meanAccess / affected.size();
     }
+
+    public static char mapAccessibility2(DSSPData dssp, Model model, Event event) {
+        List<Integer> affected = model.getAffectedPositions(event);
+        List<Double> accessible = calcAccessiblity(dssp);
+        int buried = 0;
+        boolean interior = false;
+        for (Integer aff : affected) {
+            if (accessible.get(aff) < 0.069) {
+                buried++;
+            }
+            if(buried > 3){
+                interior = true;
+                break;
+            }
+        }
+        return interior ? 'M' : 'S';
+    }
+
 /*    H	Alpha helix
     B	Beta bridge
     E	Strand
@@ -45,41 +63,35 @@ public class DSSP {
     I	Helix-5
     T	Turn
     S   Bend*/
-
-    public static int[] mapSS(DSSPData dssp, Model model, Event event) {
-        double meanAccess = 0;
-        int[] sec = new int[8]; // 0 = default, 1 = 'H', 2 = 'B', 3 = 'E', 4 = G, 5 = I, 6 = T, 7 = S
+        public static char mapSS(DSSPData dssp, Model model, Event event) {
+        int[] sec = new int[8]; // 0 = H (H, G, I), 1 = E (E, B), 2 = C (T, S, ' ')
         List<Integer> affected = model.getAffectedPositions(event);
         for (Integer aff : affected) {
             switch(dssp.getSecondarySructure()[aff]){
                 case 'H':
-                    sec[1]++;
+                case 'G':
+                case 'I':
+                    sec[0]++;
                     break;
                 case 'B':
-                    sec[2]++;
-                    break;
                 case 'E':
-                    sec[3]++;
-                    break;
-                case 'G':
-                    sec[4]++;
-                    break;
-                case 'I':
-                    sec[5]++;
+                    sec[1]++;
                     break;
                 case 'T':
-                    sec[6]++;
-                    break;
                 case 'S':
-                    sec[7]++;
-                    break;
-                default:
-                    sec[0]++;
+                case ' ':
+                    sec[2]++;
                     break;
             }
         }
-        event.setAccessibility(meanAccess / affected.size());
-        return null;
+        if((double) sec[0] / affected.size() > 0.8){
+            return 'H';
+        } else if((double) sec[1] / affected.size() > 0.8){
+            return 'E';
+        } else if((double) sec[0] / affected.size() > 0.8){
+            return 'C';
+        }
+        return 'M';
     }
 
     public static char[] mapBordersSS(DSSPData dssp, Model model, Event event) {
@@ -89,10 +101,24 @@ public class DSSP {
             if (borders[i] == -1 || dssp.getSecondarySructure()[borders[i]] != ' ') {
                 bordersSS[i] = 'N';
             } else {
-                bordersSS[i] = dssp.getSecondarySructure()[borders[i]];
+                switch(dssp.getSecondarySructure()[borders[i]]) {
+                    case 'H':
+                    case 'G':
+                    case 'I':
+                        bordersSS[i] = 'H';
+                        break;
+                    case 'B':
+                    case 'E':
+                        bordersSS[i] = 'E';
+                        break;
+                    case 'T':
+                    case 'S':
+                    case ' ':
+                        bordersSS[i] = 'C';
+                        break;
+                }
             }
         }
-        event.setBordersSS(bordersSS[0], bordersSS[1]);
         return bordersSS;
     }
 
@@ -113,7 +139,6 @@ public class DSSP {
                 }
             }
         }
-        event.setBordersAcc(bordersAcc[0], bordersAcc[1]);
         return bordersAcc;
     }
 
@@ -142,7 +167,10 @@ public class DSSP {
         surface.put('W', 255);
         surface.put('Y', 230);
         surface.put('V', 155);
-        return (double) accessible / (double) surface.get(aa);
+        if(surface.containsKey(aa))
+            return (double) accessible / (double) surface.get(aa);
+        else
+            return 0;
     }
 
     public static int[] calcSecondaryStructureDistribution(Collection<DSSPData> dsspData){

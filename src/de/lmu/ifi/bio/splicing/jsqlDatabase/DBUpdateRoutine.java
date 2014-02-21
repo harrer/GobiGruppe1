@@ -33,7 +33,6 @@ public class DBUpdateRoutine {
         ModelPDB_onENSP modelling = new ModelPDB_onENSP();
         List<String> geneIds = dbq.findAllGenes();
         HashMap<String, DSSPData> dsspData = new HashMap<>();
-        int stopper = 0;
         for (String geneId : geneIds) {
             List<Event> events = dbq.getEvents(geneId);
             HashMap<String, List<Model>> mapModels = new HashMap<>();
@@ -46,6 +45,9 @@ public class DBUpdateRoutine {
                 } else {
                     models = modelling.getModelsForENSP(event.getI1());
                     mapModels.put(event.getI1(), models);
+                    if(models.size() == 0){
+                        System.out.println("No models meeting constraints for " + event.getI1());
+                    }
                 }
                 for (Model model : models) {
                     if (model.contains(event.getStart(), event.getStop()) && model.getQuality() > quality) {
@@ -61,12 +63,18 @@ public class DBUpdateRoutine {
                         dssp = DSSPParser.getDSSPData(used.getPdbId());
                         dsspData.put(used.getPdbId(), dssp);
                     }
-                    DSSP.updateEventWithAccAndSS(used, event, dssp);
-                } else
-                    System.out.println("No models meeting constraints for " + event.getI1());
-                stopper++;
-                if (stopper > 10)
-                    break;
+                    if(dssp != null) {
+                        System.out.println("Model " + used.getPdbId() + " applied for " + event.getI1());
+                        try{
+                        DSSP.updateEventWithAccAndSS(used, event, dssp);
+                        } catch (Exception e){
+                            System.out.println("Exception while using Model " + used.getPdbId() + " for " + event.getI1());
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                        System.out.println("No dssp attainable for " + used.getPdbId() + " (" + event.getI1() + ")");
+                }
             }
         }
     }

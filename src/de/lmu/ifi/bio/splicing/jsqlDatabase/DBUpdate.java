@@ -220,12 +220,11 @@ public class DBUpdate implements DatabaseUpdate {
         }
         update.append("where isoform1 = '").append(isoform1).append("' and isoform2 = '").append(isoform2)
                 .append("' and start = ").append(start).append(" and stop = ").append(stop);
-        System.out.println(update);
-//        try {
-//            db.executeUpdate(update.toString());
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            db.executeUpdate(update.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void fullUpdateEvent(Event event) {

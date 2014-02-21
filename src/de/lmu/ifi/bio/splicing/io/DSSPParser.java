@@ -27,8 +27,8 @@ public class DSSPParser {
             error.join(3000);
             output.join(3000);
             exitVal = proc.waitFor();
-			System.out.println("Output: " + output.message + "\nError: "
-					+ error.message);
+            if(error.message == null || error.message.length() > 0)
+                return null;
             out = output.message;
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class DSSPParser {
         StringBuilder sequence = new StringBuilder();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 if (acids) {
                     if (line.length() > 1) {
@@ -94,7 +94,8 @@ public class DSSPParser {
                 return parseDSSPFile(file, proteinId);
             }
         }
-        return runDSSP(proteinId, Setting.PDBREPCCHAINSDIR);
+//        return runDSSP(proteinId, Setting.PDBREPCCHAINSDIR);
+        return null;
     }
 
     static class StreamWrapper extends Thread {
