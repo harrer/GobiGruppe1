@@ -66,8 +66,7 @@ public class ModelPDB_onENSP {
 
     //returns an array of PDBids that are modelable on the given ENST transcript
     private String[] getModelSequences(String ENST_id) {
-        String ensp_id;
-                    ensp_id = dbq.db.getEnsp(ENST_id);//(String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '" + ENST_id + "'")[0];
+        String ensp_id = dbq.db.getEnsp(ENST_id);//(String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '" + ENST_id + "'")[0];
 
 //        ArrayList<String> result = null;
 //        try {

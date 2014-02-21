@@ -36,7 +36,7 @@ public class DSSP {
         for (Integer aff : affected) {
             meanAccess += accessible.get(aff);
         }
-        return meanAccess / affected.size();
+        return Math.round(meanAccess / affected.size() * 1000)/1000.0;
     }
 
     public static char mapAccessibility2(DSSPData dssp, Model model, Event event) {
