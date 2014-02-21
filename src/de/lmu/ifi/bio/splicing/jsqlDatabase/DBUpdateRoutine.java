@@ -44,7 +44,7 @@ public class DBUpdateRoutine {
                 if (mapModels.containsKey(event.getI1())) {
                     models = mapModels.get(event.getI1());
                 } else {
-                    models = modelling.getModelsForENSP(event.getI1());
+                    models = modelling.getModelsForENST(event.getI1());
                     mapModels.put(event.getI1(), models);
                 }
                 for (Model model : models) {
