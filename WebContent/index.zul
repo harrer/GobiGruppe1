@@ -1,89 +1,123 @@
-<window width="1400px" border="normal" apply="org.zkoss.bind.BindComposer"
+<window width="1280px" border="normal" apply="org.zkoss.bind.BindComposer"
         title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
-    <hbox id="main" hflex="1" vflex="1">
-        <vbox width="200px" vflex="1" id="left">
-            <hbox align="center">
+    <hlayout id="main" hflex="1" vflex="1">
+        <vlayout width="200px" vflex="1" id="left">
+            <vlayout>
                 Keyword:
                 <textbox value="@bind(vm.keyword)"/>
-                <vbox>
-                    <button id="searchButton" label="Search" onClick="@command('search')"/>
-                    <!--<button id="submitButton" label="Submit" onClick="@command('add')"/>-->
-                </vbox>
-            </hbox>
+                <button id="searchButton" label="Search" onClick="@command('search')"/>
+            </vlayout>
             <listbox id="searchListbox" hflex="1" vflex="1" emptyMessage="No gene etc. found"
                      model="@bind(vm.searchlist)"
-                     multiple="true" checkmark="true" selectedItems="@save(vm.selectedSearchList)" onSelect="@command('add')">
+                     multiple="true" checkmark="true" selectedItems="@save(vm.selectedSearchList)"
+                     onSelect="@command('add')">
                 <listhead>
                     <listheader label="Entity"/>
                 </listhead>
             </listbox>
-        </vbox>
-        <listbox id="gridlist" width="600px" vflex="1" model="@load(vm.gridlist)" onSelect="update()">
-            <auxhead sclass="category-center">
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.i1)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.i2)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.start)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.stop)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.type)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.pattern)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.sec)" onChange="@command('changeFilter')"/>
-                </auxheader>
-                <auxheader colspan="1">
-                    <textbox instant="true" hflex="1"
-                             value="@bind(vm.filter.acc)" onChange="@command('changeFilter')"/>
-                </auxheader>
-            </auxhead>
-            <listhead>
-                <listheader hflex="3">Isoform 1</listheader>
-                <listheader hflex="3">Isoform 2</listheader>
-                <listheader hflex="1">Start</listheader>
-                <listheader hflex="1">Stop</listheader>
-                <listheader hflex="1">Type</listheader>
-                <listheader hflex="1">Pattern</listheader>
-                <listheader hflex="3">Secondary Structure</listheader>
-                <listheader hflex="1">Acces.</listheader>
-            </listhead>
-            <template name="model">
-                <listitem>
-                    <listcell><label value="${each.i1}"/></listcell>
-                    <listcell><label value="${each.i2}"/></listcell>
-                    <listcell><label value="${each.start}"/></listcell>
-                    <listcell><label value="${each.stop}"/></listcell>
-                    <listcell><label value="${each.type}"/></listcell>
-                    <listcell><label value="${each.patternids}" onSelect="alert("/></listcell>
-                    <listcell><label value="${each.sec}"/></listcell>
-                    <listcell><label value="${each.acc}"/></listcell>
-                </listitem>
-            </template>
-        </listbox>
-        <image id="exonview" content="@load(vm.renderedImage)"/>
-        <zscript>
-        import java.awt.image.BufferedImage;
-        import java.awt.image.RenderedImage;
-        void update() {
-        vm.selectgriditem(gridlist.getSelectedItem().getValue());
-        exonview.setContent(vm.getRenderedImage());
-        }
-        </zscript>
-    </hbox>
+        </vlayout>
+        <vlayout hflex="3">
+            <groupbox hflex="1" mold="3d" closable="true">
+                <caption label="DetailedView"/>
+                <listbox id="gridlist" hflex="1" height="250px" model="@load(vm.gridlist)" onSelect="update()">
+                    <auxhead sclass="category-center">
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.i1)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.i2)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.start)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.stop)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.type)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.pattern)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.sec)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.acc)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                    </auxhead>
+                    <listhead>
+                        <listheader hflex="3">Isoform 1</listheader>
+                        <listheader hflex="3">Isoform 2</listheader>
+                        <listheader hflex="1">Start</listheader>
+                        <listheader hflex="1">Stop</listheader>
+                        <listheader hflex="1">Type</listheader>
+                        <listheader hflex="2">Pattern</listheader>
+                        <listheader hflex="1">Secondary Structure</listheader>
+                        <listheader hflex="1">Acces.</listheader>
+                    </listhead>
+                    <template name="model">
+                        <listitem>
+                            <listcell>
+                                <label value="${each.i1}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.i2}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.start}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.stop}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.type}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.patternids}" onSelect="alert('flash')"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.sec}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.acc}"/>
+                            </listcell>
+                        </listitem>
+                    </template>
+                </listbox>
+            </groupbox>
+            <groupbox hflex="1" mold="3d" closable="true" open="false">
+                <caption label="ExonView"/>
+                <image id="exonview" content="@load(vm.renderedImage)"/>
+                <zscript>
+                    import java.awt.image.BufferedImage;
+                    import java.awt.image.RenderedImage;
+                    void update() {
+                    vm.selectgriditem(gridlist.getSelectedItem().getValue());
+                    exonview.setContent(vm.getRenderedImage());
+                    }
+                </zscript>
+            </groupbox>
+            <groupbox hflex="1" mold="3d" closable="true" open="false">
+                <caption label="SequenceView"/>
+                <label value="stub"/>
+            </groupbox>
+            <groupbox hflex="1" mold="3d" closable="true" open="false">
+                <caption label="3DView"/>
+                <label value="stub"/>
+            </groupbox>
+            <groupbox hflex="1" mold="3d" closable="true" open="false">
+                <caption label="Statistiken"/>
+                <label value="stub"/>
+            </groupbox>
+        </vlayout>
+    </hlayout>
 </window>
