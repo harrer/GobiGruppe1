@@ -55,7 +55,6 @@ public class DSSPParser {
     }
 
     public static DSSPData parseDSSPFile(File file, String proteinId) {
-
         boolean acids = false;
         List<Integer> accessibility = new ArrayList<>();
         List<Character> secondaryStructure = new ArrayList<>();

@@ -161,7 +161,7 @@ public class DSSP {
                         break;
                     case 'T':
                     case 'S':
-                    default:
+                    case ' ':
                         ssCount[2]++;
                         break;
                 }
