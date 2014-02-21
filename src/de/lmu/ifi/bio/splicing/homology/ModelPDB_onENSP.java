@@ -240,7 +240,20 @@ public class ModelPDB_onENSP {
     public double[] superimposeOverlap(Overlap overlap) {
         ArrayList<double[]> coord1 = new ArrayList<>(), coord2 = new ArrayList<>();
         int start = -1, stop = -1;
-        if(overlap.getType().)
+        if(overlap.getType().equals(OverlapType.m1_included_in_m2)){
+            start = overlap.getModel1().getEnspStart();
+            stop = overlap.getModel1().getEnspStop();
+        }
+        else if(overlap.getType().equals(OverlapType.m2_included_in_m1)){
+            start = overlap.getModel2().getEnspStart();
+            stop = overlap.getModel2().getEnspStop();
+        }
+//        else if(){}// other 2 overlap types
+//        else if(){}
+        
+        for (int i = start; i < stop; i++) {
+            //fill coord1/2
+        }
         
         Object[] sp = null;
         try {
