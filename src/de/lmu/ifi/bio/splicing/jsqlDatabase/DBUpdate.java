@@ -98,6 +98,8 @@ public class DBUpdate implements DatabaseUpdate {
 
     @Override
     public void insertEventSet(Set<Event> eventSet) {
+        if (eventSet.size() == 0)
+            return;
         StringBuilder sb = new StringBuilder("insert into Event(start,stop,isoform1,isoform2,type) values");
         for (Event event : eventSet) {
             sb.append("(" + event.getStart() + "," + event.getStop() + ",'" + event.getI1() + "','" + event.getI2() + "','" + event.getType() + "'),\n");

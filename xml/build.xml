@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="all" default="stub" basedir="..">
+    <property file="xml/build.properties"/>
+    <property file="xml/credentials.properties"/>
+    <propertyfile file="xml/build.properties">
+        <entry key="built.nr" default="0" type="int" operation="+"/>
+        <entry key="last_exec.date" type="date" value="now" default="now" pattern="DD.MM.YY HH.mm"/>
+    </propertyfile>
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean-database">
+        <sql
+                driver="${mysql.driver}"
+                url="jdbc:mysql://${mysql.server}"
+                userid="${mysql.username}"
+                password="${mysql.password}"
+                classpathref="classpath"
+                >
+            use gobi1;
+            set FOREIGN_KEY_CHECKS=0;
+            truncate PatternEvent;
+            truncate Event;
+            set FOREIGN_KEY_CHECKS=1;
+        </sql>
+    </target>
+
+    <target name="fill-database" depends="clean-database">
+        <echo>=====InsertSpliceEvents=====</echo>
+        <java jar="${events.jar}" fork="true"/>
+        <echo>=====InsertPatternEvents=====</echo>
+        <java jar="${patternevents.jar}" fork="true">
+            <arg value="${psscan.result.file}"/>
+        </java>
+        <echo>=====FINISH-INSERT=====</echo>
+    </target>
+
+    <target name="results-database">
+        <echo>=====getAllSpliceEvents=====</echo>
+        <sql
+                driver="${mysql.driver}"
+                url="jdbc:mysql://${mysql.server}"
+                userid="${mysql.username}"
+                password="${mysql.password}"
+                output="${res.dir}${mysql.all.file}"
+                print="yes"
+                classpathref="classpath"
+                delimiter=" "
+                >
+            use gobi1;
+            SELECT se.stop - se.start + 1 AS length, COUNT(se.id) AS `all` FROM `Event` se WHERE se.type != 'I' GROUP BY
+            se.stop - se.start;
+        </sql>
+        <echo>=====getPartlyPatternEventsLength=====</echo>
+        <sql
+                driver="${mysql.driver}"
+                url="jdbc:mysql://${mysql.server}"
+                userid="${mysql.username}"
+                password="${mysql.password}"
+                output="${res.dir}${mysql.partly.file}"
+                print="yes"
+                delimiter=" "
+                classpathref="classpath"
+                ><![CDATA[
+            use gobi1;
+            SELECT
+            se.stop - se.start + 1 AS length,
+            count(se.id) AS partly
+            FROM Event se
+            JOIN PatternEvent pe ON se.isoform1 = pe.transcriptid
+            WHERE type != 'I' AND
+            ((se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))
+            GROUP BY se.stop - se.start;
+            ]]>
+        </sql>
+        <echo>=====getCompletePatternEventsLength=====</echo>
+        <sql
+                driver="${mysql.driver}"
+                url="jdbc:mysql://${mysql.server}"
+                userid="${mysql.username}"
+                password="${mysql.password}"
+                output="${res.dir}${mysql.complete.file}"
+                print="yes"
+                delimiter=" "
+                classpathref="classpath"
+                ><![CDATA[
+            use gobi1;
+            SELECT
+            se.stop - se.start + 1 AS length,
+            count(se.id)           AS complete
+            FROM Event se
+            JOIN PatternEvent pe ON se.isoform1 = pe.transcriptid
+            WHERE type != 'I' AND
+            ((se.start < pe.start AND pe.start < se.stop) AND (se.start < pe.stop AND pe.stop < se.stop))
+            GROUP BY se.stop - se.start;
+            ]]>
+        </sql>
+        <echo>=====FINISHMYSQLOUT=====</echo>
+    </target>
+
+    <target name="statistics" depends="results-database">
+        <exec executable="${r.exec}">
+            <arg line="CMD BATCH ${r.prosite.script.file}"/>
+        </exec>
+    </target>
+
+    <target name="statistics2" depends="results-database">
+        <exec executable="${r.exec}">
+            <arg line="${res.dir} ${mysql.complete.file} ${mysql.partly.file} ${mysql.all.file} ${type.all}.png ${type.partly}.png ${type.complete}.png ${r.png.width} ${r.png.heigth}"/>
+        </exec>
+    </target>
+
+    <target name="stub">
+        <echo>didadei</echo>
+    </target>
+</project>
