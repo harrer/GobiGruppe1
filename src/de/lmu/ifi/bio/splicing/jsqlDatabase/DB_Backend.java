@@ -156,7 +156,6 @@ public class DB_Backend {
             ResultSet rs = stmt.executeQuery(select);
             while (rs.next()) {
                 row.add(rs.getObject(1));
-                rs.getString("transcriptid");
             }
         } catch (SQLException e) {
             e.printStackTrace();

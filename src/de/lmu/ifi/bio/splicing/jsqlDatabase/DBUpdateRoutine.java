@@ -33,6 +33,7 @@ public class DBUpdateRoutine {
         ModelPDB_onENSP modelling = new ModelPDB_onENSP();
         List<String> geneIds = dbq.findAllGenes();
         HashMap<String, DSSPData> dsspData = new HashMap<>();
+        int i = 0, percent = 0;
         for (String geneId : geneIds) {
             List<Event> events = dbq.getEvents(geneId);
             HashMap<String, List<Model>> mapModels = new HashMap<>();
@@ -45,9 +46,9 @@ public class DBUpdateRoutine {
                 } else {
                     models = modelling.getModelsForENST(event.getI1());
                     mapModels.put(event.getI1(), models);
-                    if(models.size() == 0){
-                        System.out.println("No models meeting constraints for " + event.getI1());
-                    }
+//                    if(models.size() == 0){
+//                        System.out.println("No models meeting constraints for " + event.getI1());
+//                    }
                 }
                 for (Model model : models) {
                     if (model.contains(event.getStart(), event.getStop()) && model.getQuality() > quality) {
@@ -64,7 +65,7 @@ public class DBUpdateRoutine {
                         dsspData.put(used.getPdbId(), dssp);
                     }
                     if(dssp != null) {
-                        System.out.println("Model " + used.getPdbId() + " applied for " + event.getI1());
+//                        System.out.println("Model " + used.getPdbId() + " applied for " + event.getI1());
                         try{
                         DSSP.updateEventWithAccAndSS(used, event, dssp);
                         } catch (Exception e){
@@ -72,9 +73,13 @@ public class DBUpdateRoutine {
                             e.printStackTrace();
                         }
                     }
-                    else
-                        System.out.println("No dssp attainable for " + used.getPdbId() + " (" + event.getI1() + ")");
+//                    else
+//                        System.out.println("No dssp attainable for " + used.getPdbId() + " (" + event.getI1() + ")");
                 }
+            }
+            i++;
+            if(i * 100 % geneIds.size() == 0){
+                System.out.println(percent++ + "%");
             }
         }
     }
