@@ -261,25 +261,34 @@ public class ModelPDB_onENSP {
     }
     
     public void run(String fileOut, double coverage, int longerThan, double seqIdentity) throws IOException{
-        PrintWriter writer = new PrintWriter(fileOut);
+        //PrintWriter writer = new PrintWriter(fileOut);
         Object[] templates = null;
-        writer.write("rmsd\tgtd-ts\tpdb1\tpdb2\n");
+        //writer.write("rmsd\tgtd-ts\tpdb1\tpdb2\n");
         try {
-            templates = dbq.db.select_oneColumn("select transcriptid from transcript_has_pdbs");
+            templates = dbq.db.select_oneColumn("select distinct transcriptid from transcript_has_pdbs");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         int c = 1;
         for (Object object : templates) {
-            System.out.println(c+" templates processed");
-            ArrayList<Model> models = getModelsForENSP((String) object, coverage, longerThan, seqIdentity);
+            System.out.println(c+" templates processed");c++;
+            String ensp = "";
+            try {
+                ensp= (String) dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '"+ (String) object +"'")[0];
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            ArrayList<Model> models = getModelsForENSP(ensp, coverage, longerThan, seqIdentity);
+            if(models.size()>0){
+                System.out.println("");
+            }
             ArrayList<Overlap> overlaps = findOverlapForAllModels(models);
             for (Overlap overlap : overlaps) {
                 double[] scores = superimposeOverlap(overlap);
-                writer.printf("%f\t%f\t%s\t%s\n", scores[0], scores[1], overlap.getModel1().getPdbId(), overlap.getModel2().getPdbId());
+                //writer.printf("%f\t%f\t%s\t%s\n", scores[0], scores[1], overlap.getModel1().getPdbId(), overlap.getModel2().getPdbId());
             }
         }
-        writer.close();
+        //writer.close();
     }
     
     public static void main(String[] args) throws SQLException, IOException {
@@ -290,7 +299,7 @@ public class ModelPDB_onENSP {
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
-        m.run("/tmp/superimposeAllModelsSSSSSSSSSSSSSS.txt", 0.6, 60, 0.4);
+        m.run("/tmp/DISTINCT_superimposeAllModelsSSSSSSSSSSSSSS.txt", 0.6, 60, 0.4);
     }
 
 }
