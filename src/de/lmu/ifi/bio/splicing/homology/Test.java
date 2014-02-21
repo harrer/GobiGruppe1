@@ -38,7 +38,8 @@ public class Test {
     
     
     public static void main(String[] args) {
-        float f = 1.1f;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        System.out.println(map.get(2));
         //DatabaseQuery db = new DBQuery();
         //Transcript t = db.getTranscriptForProteinId("ENSP00000261313");
         //System.out.println(GenomeSequenceExtractor.getProteinSequence(t));

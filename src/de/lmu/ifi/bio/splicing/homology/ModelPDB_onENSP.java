@@ -66,7 +66,13 @@ public class ModelPDB_onENSP {
         ArrayList<String[]> alignments = new ArrayList<>();
         gotoh.setSeq1(GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id)));
         for (String PDBid : seq) {
-            String str = pdbSequences.containsKey(PDBid)? pdbSequences.get(PDBid) : PDBParser.getPDBSequence(PDBid);
+            String str;
+            if (pdbSequences.containsKey(PDBid)) {
+                str = pdbSequences.get(PDBid);
+            } else {
+                str = PDBParser.getPDBSequence(PDBid);
+                pdbSequences.put(PDBid, str);
+            }
             gotoh.setSeq2(str);
             String[] ali = gotoh.backtrackingLocal(gotoh.fillMatrixLocal());
             if (gotoh.sequenceIdentity(ali) >= seqIdentity && gotoh.coverage(ali, longerThan, coverage)) {//if alignment is significant given the 3 paramsz
@@ -90,7 +96,7 @@ public class ModelPDB_onENSP {
                     pdbStart++;
                 }
             }
-            int enspEnd = proteinSeq.length(), pdbEnd = (pdbSequences.containsKey(ali[2]))? pdbSequences.get(ali[2]).length() : PDBParser.getPDBSequence(ali[2]).length();
+            int enspEnd = proteinSeq.length(), pdbEnd = pdbSequences.get(ali[2]).length();
             for (int i = ali[0].length() - 1; i >= ali_StartEnd[1]; i--) {
                 if (ali[0].charAt(i) != '-') {
                     enspEnd--;
@@ -103,11 +109,15 @@ public class ModelPDB_onENSP {
             int ensp = enspStart, pdb = pdbStart;
             for (int i = ali_StartEnd[0]; i <= ali_StartEnd[1]; i++) {
                 boolean noUpperDash = ali[0].charAt(i) != '-', noLowerDash = ali[1].charAt(i) != '-';
-                if(noUpperDash && noLowerDash){
+                if (noUpperDash && noLowerDash) {
                     alignedPos.put(ensp, pdb);
                 }
-                if(noUpperDash){ensp++;}
-                if(noLowerDash){pdb++;}
+                if (noUpperDash) {
+                    ensp++;
+                }
+                if (noLowerDash) {
+                    pdb++;
+                }
             }
             //models.add(new Object[]{enspStart, enspEnd, ali[2], pdbStart, pdbEnd, SingleGotoh.sequenceIdentity(ali)});
             models.add(new Model(ENST_id, enspStart, enspEnd, ali[2], pdbStart, pdbEnd, alignedPos, SingleGotoh.sequenceIdentity(ali)));
@@ -188,9 +198,12 @@ public class ModelPDB_onENSP {
      * @return double[] contains the rmsd and the gtd-ts sccores
      */
     public double[] superimposeOverlap(Overlap overlap) {
-        String pdb1 = this.pdbSequences.get(overlap.getModel1().getPdbId()); StringBuilder s1 = new StringBuilder();
-        String pdb2 = this.pdbSequences.get(overlap.getModel2().getPdbId()); StringBuilder s2 = new StringBuilder();
-        
+        double[][] pdb1 = PDBParser.getPDBFile(overlap.getModel1().getPdbId()).getCACoordinates(); ArrayList<double[][]> coord1 = new ArrayList<>();
+        double[][] pdb2 = PDBParser.getPDBFile(overlap.getModel2().getPdbId()).getCACoordinates(); ArrayList<double[][]> coord2 = new ArrayList<>();
+        for (int i = overlap.getModel1().getEnspStart(); i <= overlap.getModel1().getEnspStop(); i++) {
+            
+        }
+
         return new double[]{};
     }
 
