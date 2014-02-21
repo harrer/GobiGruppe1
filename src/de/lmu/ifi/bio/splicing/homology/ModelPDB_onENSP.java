@@ -67,19 +67,20 @@ public class ModelPDB_onENSP {
     //returns an array of PDBids that are modelable on the given ENST transcript
     private String[] getModelSequences(String ENST_id) {
         String ensp_id;
-        Object[] result = null;
-        try {
-            ensp_id = (String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '" + ENST_id + "'")[0];
-            String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
-            result = dbq.db.select_oneColumn(query);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        String[] s = new String[result.length];
-        for (int i = 0; i < s.length; i++) {
-            s[i] = (String) result[i];
-        }
-        return s;
+                    ensp_id = dbq.db.getEnsp(ENST_id);//(String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '" + ENST_id + "'")[0];
+
+//        ArrayList<String> result = null;
+//        try {
+//            String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
+//            result = dbq.db.//select_oneColumn(query);
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//        }
+//        String[] s = new String[result.length];
+//        for (int i = 0; i < s.length; i++) {
+//            s[i] = (String) result[i];
+//        }
+        return dbq.db.getPDBID(ensp_id).toArray(new String[0]);
     }
 
     private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity) {

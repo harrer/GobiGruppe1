@@ -39,12 +39,18 @@ public class DB_Backend {
 
     private Connection connection;
 
+    private PreparedStatement getEnsp;
+    private PreparedStatement getModelPDB;
+
     public DB_Backend() {
         try {
             this.connection = getConnection();
+            getEnsp = connection.prepareStatement("select proteinid from transcript where transcriptid = ?");
+            getModelPDB = connection.prepareStatement("select pdbId from transcript_has_pdbs where transcriptId = ?");
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
     }
 
     public Connection getConnection() throws SQLException, ClassNotFoundException {
@@ -118,6 +124,29 @@ public class DB_Backend {
             return;
         }
     }
+    
+    public ArrayList<String> getPDBID(String enst_id){
+        ArrayList<String> result = new ArrayList<>(20);
+        try {
+            getModelPDB.setString(1, enst_id);
+            ResultSet rs = getModelPDB.executeQuery();
+            while (rs.next()) {
+                result.add(rs.getString("transcriptid"));
+            }
+        } catch (SQLException sQLException) {sQLException.printStackTrace();}
+        return result;
+    }
+
+    public String getEnsp(String enst) {
+        try {
+            getEnsp.setString(1, enst);
+            ResultSet rs = getEnsp.executeQuery();
+            return rs.getString("proteinid");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public Object[] select_oneColumn(String select) throws SQLException {
         Statement stmt = null;
@@ -127,6 +156,7 @@ public class DB_Backend {
             ResultSet rs = stmt.executeQuery(select);
             while (rs.next()) {
                 row.add(rs.getObject(1));
+                rs.getString("transcriptid");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -138,7 +168,7 @@ public class DB_Backend {
         }
         return row.toArray(new Object[]{});
     }
-    
+
     public Object[][] select(String select, int length) throws SQLException {
         Statement stmt = null;
         ArrayList<Object> row = new ArrayList<>();
