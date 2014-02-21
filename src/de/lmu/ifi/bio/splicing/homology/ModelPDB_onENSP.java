@@ -206,13 +206,13 @@ public class ModelPDB_onENSP {
             return null;
         } else {
             if (m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()) {//m2 is "included" in m1
-                return new Overlap(m1, m2, "m2 is included in m1", m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
+                return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
             } else if (m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()) {//m1 is "included" in m2
-                return new Overlap(m1, m2, "m1 is included in m2", m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
+                return new Overlap(m1, m2, OverlapType.m1_included_in_m2, m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
             } else if (m2.getEnspStop() > m1.getEnspStop()) {//partly overlap of m1(end), m2(start)
-                return new Overlap(m1, m2, "partly overlap of m1(end), m2(start)", m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
+                return new Overlap(m1, m2, OverlapType.m1_end_m2_start_overlap, m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
             } else if (m2.getEnspStart() < m1.getEnspStart()) {//partly overlap of m1(start), m2(end)
-                return new Overlap(m1, m2, "partly overlap of m1(start), m2(end)", m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
+                return new Overlap(m1, m2, OverlapType.m1_start_m2_end_overlap, m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
             } else {
                 System.out.println("### overlap available, but not found! ###");
                 return null;//should not happen
@@ -238,33 +238,24 @@ public class ModelPDB_onENSP {
      * @return double[] contains the rmsd and the gtd-ts sccores
      */
     public double[] superimposeOverlap(Overlap overlap) {
-        Model model = overlap.getModel1();
-        HashMap<Integer, Integer> aligned = model.getAligned();
-        double[][] pdb = PDBParser.getPDBFile(model.getPdbId()).getCACoordinates();
-        ArrayList<double[]> coord1 = new ArrayList<>();
-        for (int i = model.getEnspStart(); i <= model.getEnspStop(); i++) {
-            if(aligned.containsKey(i)){
-                coord1.add(pdb[aligned.get(i)]);
-            }
+        ArrayList<double[]> coord1 = new ArrayList<>(), coord2 = new ArrayList<>();
+        int start = -1, stop = -1;
+        if(overlap.getType().)
+        
+        Object[] sp = null;
+        try {
+            sp = superposition.superimpose(new DenseDoubleMatrix2D(coord1.toArray(new double[][]{})), new DenseDoubleMatrix2D(coord2.toArray(new double[][]{})), null);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
-        model = overlap.getModel2();
-        aligned = model.getAligned();
-        pdb = PDBParser.getPDBFile(model.getPdbId()).getCACoordinates();
-        ArrayList<double[]> coord2 = new ArrayList<>();
-        for (int i = model.getEnspStart(); i <= model.getEnspStop(); i++) {
-            if(aligned.containsKey(i)){
-                coord2.add(pdb[aligned.get(i)]);
-            }
-        }
-        Object[] sp = superposition.superimpose(new DenseDoubleMatrix2D(coord1.toArray(new double[][]{})), new DenseDoubleMatrix2D(coord2.toArray(new double[][]{})), null);
         
         return new double[]{(double) sp[2], (double) sp[3]};
     }
     
     public void run(String fileOut, double coverage, int longerThan, double seqIdentity) throws IOException{
-        //PrintWriter writer = new PrintWriter(fileOut);
+        PrintWriter writer = new PrintWriter(fileOut);
         Object[] templates = null;
-        //writer.write("rmsd\tgtd-ts\tpdb1\tpdb2\n");
+        writer.write("rmsd\tgtd-ts\tpdb1\tpdb2\n");
         try {
             templates = dbq.db.select_oneColumn("select distinct transcriptid from transcript_has_pdbs");
         } catch (SQLException ex) {
@@ -280,16 +271,13 @@ public class ModelPDB_onENSP {
                 ex.printStackTrace();
             }
             ArrayList<Model> models = getModelsForENST(enst, coverage, longerThan, seqIdentity);
-            if(models.size()>0){
-                System.out.println("");
-            }
             ArrayList<Overlap> overlaps = findOverlapForAllModels(models);
             for (Overlap overlap : overlaps) {
                 double[] scores = superimposeOverlap(overlap);
-                //writer.printf("%f\t%f\t%s\t%s\n", scores[0], scores[1], overlap.getModel1().getPdbId(), overlap.getModel2().getPdbId());
+                writer.printf("%f\t%f\t%s\t%s\n", scores[0], scores[1], overlap.getModel1().getPdbId(), overlap.getModel2().getPdbId());
             }
         }
-        //writer.close();
+        writer.close();
     }
     
     public static void main(String[] args) throws SQLException, IOException {

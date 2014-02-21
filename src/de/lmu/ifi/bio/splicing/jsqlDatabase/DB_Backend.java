@@ -45,7 +45,7 @@ public class DB_Backend {
     public DB_Backend() {
         try {
             this.connection = getConnection();
-            getEnsp = connection.prepareStatement("select proteinid from transcript where transcriptid = ?");
+            getEnsp = connection.prepareStatement("select proteinid from Transcript where transcriptid = ?");
             getModelPDB = connection.prepareStatement("select pdbId from transcript_has_pdbs where transcriptId = ?");
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -131,7 +131,7 @@ public class DB_Backend {
             getModelPDB.setString(1, enst_id);
             ResultSet rs = getModelPDB.executeQuery();
             while (rs.next()) {
-                result.add(rs.getString("transcriptid"));
+                result.add(rs.getString("pdbid"));
             }
         } catch (SQLException sQLException) {sQLException.printStackTrace();}
         return result;
@@ -141,6 +141,7 @@ public class DB_Backend {
         try {
             getEnsp.setString(1, enst);
             ResultSet rs = getEnsp.executeQuery();
+            rs.next();
             return rs.getString("proteinid");
         } catch (SQLException e) {
             e.printStackTrace();

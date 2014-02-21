@@ -9,10 +9,10 @@ import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 public class Overlap {
     
     private final Model model1, model2;
-    private final String type;
+    private final OverlapType type;
     private final int pdb1Start, pdb1End, pdb2Start, pdb2End;
 
-    public Overlap(Model m1, Model m2, String type, int pdb1Start, int pdb1End, int pdb2Start, int pdb2End) {
+    public Overlap(Model m1, Model m2, OverlapType type, int pdb1Start, int pdb1End, int pdb2Start, int pdb2End) {
         this.model1 = m1;
         this.model2 = m2;
         this.type = type;
@@ -46,7 +46,7 @@ public class Overlap {
         return pdb2Start;
     }
 
-    public String getType() {
+    public OverlapType getType() {
         return type;
     }
 }
