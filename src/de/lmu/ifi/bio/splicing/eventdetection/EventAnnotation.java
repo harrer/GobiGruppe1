@@ -206,7 +206,6 @@ public class EventAnnotation {
                 extra2 = (len + extra2) % 3;
                 frameshift = (frameshift - len) % 3;
             }
-            System.out.println();
         }
     }
 
