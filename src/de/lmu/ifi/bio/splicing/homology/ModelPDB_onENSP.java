@@ -273,13 +273,13 @@ public class ModelPDB_onENSP {
         int c = 1;
         for (Object object : templates) {
             System.out.println(c+" templates processed");c++;
-            String ensp = "";
+            String enst = "";
             try {
-                ensp= (String) dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '"+ (String) object +"'")[0];
+                enst = (String) dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '"+ (String) object +"'")[0];
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            ArrayList<Model> models = getModelsForENSP(ensp, coverage, longerThan, seqIdentity);
+            ArrayList<Model> models = getModelsForENST(enst, coverage, longerThan, seqIdentity);
             if(models.size()>0){
                 System.out.println("");
             }
