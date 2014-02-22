@@ -209,6 +209,7 @@ public class ModelPDB_onENSP {
         if (m1.getEnspStart() > m2.getEnspStop() || m1.getEnspStop() < m2.getEnspStart()) {//models do not overlap
             return null;
         } else {
+            int abs = -1; double rel = -1;
             if (m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()) {//m2 is "included" in m1
                 return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
             } else if (m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()) {//m1 is "included" in m2

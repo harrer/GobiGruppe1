@@ -16,11 +16,11 @@ public class SingleGotoh {
     private int gapextend;
     private String mode;
     private boolean check;
-    private HashMap<Character, Integer> aminoAcids;
-
-    private int[][] A = new int[][]{};
-    private int[][] I = new int[][]{};
-    private int[][] D = new int[][]{};
+    private HashMap<Character, Integer> aminoAcids;    
+    
+    private int[][] A = new int[8001][8001];
+    private int[][] I = new int[8001][8001];
+    private int[][] D = new int[8001][8001];
 
     private String seq1;
     private String seq2;
@@ -187,20 +187,6 @@ public class SingleGotoh {
         this.seq2 = seq2;
         for (int i = 0; i < aa.length(); i++) {
             aminoAcids.put(aa.charAt(i), i);
-        }
-        int size = Math.max(seq1.length(), seq2.length());
-        if (size >= A.length) {
-            A = new int[size + 1][size + 1];
-            I = new int[size + 1][size + 1];
-            D = new int[size + 1][size + 1];
-            for (int i = 1; i < size + 1; i++) {//init
-                A[i][0] = 0;
-                D[i][0] = -99999999;
-            }
-            for (int i = 1; i < size + 1; i++) {
-                A[0][i] = 0;
-                I[0][i] = -99999999;
-            }
         }
     }
 
