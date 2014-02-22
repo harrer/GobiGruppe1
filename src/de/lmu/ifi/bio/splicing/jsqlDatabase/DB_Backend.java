@@ -45,7 +45,7 @@ public class DB_Backend {
     public DB_Backend() {
         try {
             this.connection = getConnection();
-            getEnsp = connection.prepareStatement("select proteinid from transcript where transcriptid = ?");
+            getEnsp = connection.prepareStatement("select proteinid from Transcript where transcriptid = ?");
             getModelPDB = connection.prepareStatement("select pdbId from transcript_has_pdbs where transcriptId = ?");
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
