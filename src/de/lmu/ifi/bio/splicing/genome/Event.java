@@ -13,7 +13,9 @@ public class Event {
     char stopSS = 'N';
     char startAcc = 'N';
     char stopAcc = 'N';
-    double accessibility = -1;
+    char access = 'N';
+
+    double accessibility = 0;
 
     public Event(String i1, String i2, int start, int stop, char type) {
         this.i1 = i1;
@@ -70,6 +72,14 @@ public class Event {
     public void setBordersAcc(char startAcc, char stopAcc) {
         this.startAcc = startAcc;
         this.stopAcc = stopAcc;
+    }
+
+    public char getAccess() {
+        return access;
+    }
+
+    public void setAccess(char access) {
+        this.access = access;
     }
 
     public char getStopSS() {

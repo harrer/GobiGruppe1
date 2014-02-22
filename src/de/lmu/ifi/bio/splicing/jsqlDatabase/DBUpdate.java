@@ -228,9 +228,9 @@ public class DBUpdate implements DatabaseUpdate {
     }
 
     public void fullUpdateEvent(Event event) {
-        updateEvent(event.getI1(), event.getI2(), event.getStart(), event.getStop(), new String[]{"acc", "sec", "startAcc", "stopAcc", "startSS", "stopSS"},
+        updateEvent(event.getI1(), event.getI2(), event.getStart(), event.getStop(), new String[]{"acc", "sec", "startAcc", "stopAcc", "startSS", "stopSS", "access"},
                 new String[]{String.valueOf(event.getAccessibility()), String.valueOf(event.getSecondaryStructure()), String.valueOf(event.getStartAcc()),
-                String.valueOf(event.getStopAcc()), String.valueOf(event.getStartSS()), String.valueOf(event.getStopSS())});
+                String.valueOf(event.getStopAcc()), String.valueOf(event.getStartSS()), String.valueOf(event.getStopSS()), String.valueOf(event.getAccess())});
     }
 
 
