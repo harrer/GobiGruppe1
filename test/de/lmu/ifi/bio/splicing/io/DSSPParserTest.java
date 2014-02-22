@@ -11,4 +11,8 @@ public class DSSPParserTest extends TestCase {
     public void testGetDSSPData() throws Exception {
 //        DSSPData d = DSSPParser.runDSSP("1a7i.A", Setting.PDBREPCCHAINSDIR);
     }
+
+    public void testSaveSSDistribution() throws Exception {
+        DSSPParser.saveSSDistribution(new int[]{10, 8, 12});
+    }
 }

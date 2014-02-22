@@ -2,15 +2,40 @@ package de.lmu.ifi.bio.splicing.structures.mapping;
 
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Event;
-import de.lmu.ifi.bio.splicing.io.DSSPParser;
-
 import java.util.*;
 
 /**
  * Created by schmidtju on 14.02.14.
  */
 public class DSSP {
-    public static void updateEventWithAccAndSS(Model model, Event event, DSSPData dssp){
+
+    // Values taken from: C. Chotia, The Nature of the Accessible and Buried
+    // Surfaces in Proteins (ASA calculated in G-X-G tripeptide)
+    static HashMap<Character, Integer> surface = new HashMap<>();
+    static {
+        surface.put('A', 115);
+        surface.put('R', 225);
+        surface.put('D', 150);
+        surface.put('N', 160);
+        surface.put('C', 135);
+        surface.put('E', 190);
+        surface.put('Q', 180);
+        surface.put('G', 75);
+        surface.put('H', 195);
+        surface.put('I', 175);
+        surface.put('L', 170);
+        surface.put('K', 200);
+        surface.put('M', 185);
+        surface.put('F', 210);
+        surface.put('P', 145);
+        surface.put('S', 115);
+        surface.put('T', 140);
+        surface.put('W', 255);
+        surface.put('Y', 230);
+        surface.put('V', 155);
+    }
+
+    public static void updateEventWithAccAndSS(Model model, Event event, DSSPData dssp) {
         event.setAccessibility(mapAccessibility(dssp, model, event));
         event.setSecondaryStructure(mapSS(dssp, model, event));
         char[] bordersAcc = mapBordersAcc(dssp, model, event);
@@ -18,6 +43,7 @@ public class DSSP {
         char[] bordersSS = mapBordersSS(dssp, model, event);
         event.setBordersSS(bordersSS[0], bordersSS[1]);
         event.setAccess(mapAccessibility2(dssp, model, event));
+        event.setModelPdbId(model.getPdbId());
         Setting.dbu.fullUpdateEvent(event);
     }
 
@@ -31,13 +57,19 @@ public class DSSP {
     }
 
     public static double mapAccessibility(DSSPData dssp, Model model, Event event) {
-        double meanAccess = 0;
+        int access = 0, expAccess = 0;
         List<Integer> affected = model.getAffectedPositions(event);
-        List<Double> accessible = calcAccessiblity(dssp);
         for (Integer aff : affected) {
-            meanAccess += accessible.get(aff);
+            char c = dssp.getSequence().charAt(aff);
+            if(surface.containsKey(c)){
+                access += dssp.getAccesibility()[aff];
+                expAccess += surface.get(c);
+            }
         }
-        return Math.round(meanAccess / affected.size() * 1000)/1000.0;
+        if(expAccess > 0)
+            return Math.round(10000 * access/ (double) expAccess) /10000;
+        else
+            return 0;
     }
 
     public static char mapAccessibility2(DSSPData dssp, Model model, Event event) {
@@ -49,7 +81,7 @@ public class DSSP {
             if (accessible.get(aff) < 0.069) {
                 buried++;
             }
-            if(buried > 3){
+            if (buried > 3) {
                 interior = true;
                 break;
             }
@@ -57,18 +89,18 @@ public class DSSP {
         return interior ? 'M' : 'S';
     }
 
-/*    H	Alpha helix
-    B	Beta bridge
-    E	Strand
-    G	Helix-3
-    I	Helix-5
-    T	Turn
-    S   Bend*/
-        public static char mapSS(DSSPData dssp, Model model, Event event) {
+    /*    H	Alpha helix
+        B	Beta bridge
+        E	Strand
+        G	Helix-3
+        I	Helix-5
+        T	Turn
+        S   Bend*/
+    public static char mapSS(DSSPData dssp, Model model, Event event) {
         int[] sec = new int[8]; // 0 = H (H, G, I), 1 = E (E, B), 2 = C (T, S, ' ')
         List<Integer> affected = model.getAffectedPositions(event);
         for (Integer aff : affected) {
-            switch(dssp.getSecondarySructure()[aff]){
+            switch (dssp.getSecondarySructure()[aff]) {
                 case 'H':
                 case 'G':
                 case 'I':
@@ -85,11 +117,11 @@ public class DSSP {
                     break;
             }
         }
-        if((double) sec[0] / affected.size() > 0.8){
+        if ((double) sec[0] / affected.size() > 0.8) {
             return 'H';
-        } else if((double) sec[1] / affected.size() > 0.8){
+        } else if ((double) sec[1] / affected.size() > 0.8) {
             return 'E';
-        } else if((double) sec[0] / affected.size() > 0.8){
+        } else if ((double) sec[0] / affected.size() > 0.8) {
             return 'C';
         }
         return 'M';
@@ -99,10 +131,10 @@ public class DSSP {
         char[] bordersSS = new char[2];
         int[] borders = model.getBoundaries(event);
         for (int i = 0; i < borders.length; i++) {
-            if (borders[i] == -1 || dssp.getSecondarySructure()[borders[i]] != ' ') {
+            if (borders[i] == -1) {
                 bordersSS[i] = 'N';
             } else {
-                switch(dssp.getSecondarySructure()[borders[i]]) {
+                switch (dssp.getSecondarySructure()[borders[i]]) {
                     case 'H':
                     case 'G':
                     case 'I':
@@ -145,40 +177,17 @@ public class DSSP {
 
 
     private static double calcAccessibility(char aa, int accessible) {
-        // Values taken from: C. Chotia, The Nature of the Accessible and Buried
-        // Surfaces in Proteins (ASA calculated in G-X-G tripeptide)
-        HashMap<Character, Integer> surface = new HashMap<>();
-        surface.put('A', 115);
-        surface.put('R', 225);
-        surface.put('D', 150);
-        surface.put('N', 160);
-        surface.put('C', 135);
-        surface.put('E', 190);
-        surface.put('Q', 180);
-        surface.put('G', 75);
-        surface.put('H', 195);
-        surface.put('I', 175);
-        surface.put('L', 170);
-        surface.put('K', 200);
-        surface.put('M', 185);
-        surface.put('F', 210);
-        surface.put('P', 145);
-        surface.put('S', 115);
-        surface.put('T', 140);
-        surface.put('W', 255);
-        surface.put('Y', 230);
-        surface.put('V', 155);
-        if(surface.containsKey(aa))
+        if (surface.containsKey(aa))
             return (double) accessible / (double) surface.get(aa);
         else
             return 0;
     }
 
-    public static int[] calcSecondaryStructureDistribution(Collection<DSSPData> dsspData){
+    public static int[] calcSecondaryStructureDistribution(Collection<DSSPData> dsspData) {
         int[] ssCount = new int[3]; //ssCount[0]: Helix, ssCount[1]: Extended, ssCount[2]: Coil
         for (DSSPData data : dsspData) {
             for (char ss : data.getSecondarySructure()) {
-                switch(ss) {
+                switch (ss) {
                     case 'H':
                     case 'G':
                     case 'I':

@@ -230,15 +230,9 @@ public class DBUpdate implements DatabaseUpdate {
     }
 
     public void fullUpdateEvent(Event event) {
-        updateEvent(event.getI1(), event.getI2(), event.getStart(), event.getStop(), new String[]{"acc", "sec", "startAcc", "stopAcc", "startSS", "stopSS", "access"},
+        updateEvent(event.getI1(), event.getI2(), event.getStart(), event.getStop(), new String[]{"acc", "sec", "startAcc", "stopAcc", "startSS", "stopSS", "access", "pdbid1"},
                 new String[]{String.valueOf(event.getAccessibility()), String.valueOf(event.getSecondaryStructure()), String.valueOf(event.getStartAcc()),
-                String.valueOf(event.getStopAcc()), String.valueOf(event.getStartSS()), String.valueOf(event.getStopSS()), String.valueOf(event.getAccess())});
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        DBUpdate db = new DBUpdate();
-//        ShortenPDB_Mapping mapping = new ShortenPDB_Mapping("/home/proj/biocluster/praktikum/genprakt-ws13/abgaben/assignment2/harrer/2_e_enriched");
-//        db.insertPDB_Transcript(mapping.getENSP_PDBmap());
+                        String.valueOf(event.getStopAcc()), String.valueOf(event.getStartSS()), String.valueOf(event.getStopSS()), String.valueOf(event.getAccess()),
+                        event.getModelPdbId()});
     }
 }

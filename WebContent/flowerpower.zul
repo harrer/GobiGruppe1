@@ -1,4 +1,25 @@
-<zk >
-    <image id="exonview"/>
-    <button label="Info" onClick="updateExonview()"/>
-</zk>
+<window width="1280px" border="normal" apply="org.zkoss.bind.BindComposer"
+        title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
+    <div id="jmolDiv" visible="true">
+        <vlayout>
+            <html>
+                <![CDATA[ <script type="text/javascript"
+					src="Jmol/Jmol.js"></script>
+
+					<script type="text/javascript"> //seejmol.sourceforge.net/jslibrary/ for further available commands
+					function loadModel(pdb) {
+						jmolLoadInline(pdb);
+						setTimeout('jmolScript("model all; select all; wireframe off; spacefill off; cartoon on; select hetero; spacefill on; color white; select all;");',100); //waits 100ms before executing the command (model needs to be loaded first)
+					}
+
+					jmolInitialize("Jmol");
+					jmolApplet(400);
+					jmolBr();
+					jmolCommandInput("<-","40"); //add JMol console
+                    jmolScript("load '/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/STRUCTURES/1a0a.A.pdb'");
+					</script> ]]>
+            </html>
+        </vlayout>
+    </div>
+</window>
+

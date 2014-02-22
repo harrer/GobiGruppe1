@@ -1,10 +1,10 @@
 package de.lmu.ifi.bio.splicing.homology;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import de.lmu.ifi.bio.splicing.superimpose.Superposition;
@@ -25,14 +25,14 @@ import java.util.logging.Logger;
  */
 public class ModelPDB_onENSP {
 
-    private final DBQuery dbq;
+//    private final Setting.dbquery Setting.dbq;
     private HashMap<String, String> pdbSequences;
     private final SingleGotoh gotoh;
     private final Superposition superposition;
     private HashMap<String, Integer> enstSequnces;
 
     public ModelPDB_onENSP() {
-        dbq = new DBQuery();
+//        Setting.dbq = new Setting.dbquery();
         pdbSequences = new HashMap<>();//readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
         enstSequnces = new HashMap<>();
         this.gotoh = new SingleGotoh();
@@ -55,7 +55,7 @@ public class ModelPDB_onENSP {
         Object[] result = null;
         try {
             String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
-            result = dbq.db.select_oneColumn(query);
+            result = Setting.dbq.db.select_oneColumn(query);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -68,25 +68,13 @@ public class ModelPDB_onENSP {
 
     //returns an array of PDBids that are modelable on the given ENST transcript
     private String[] getModelSequences(String ENST_id) {
-        String ensp_id = dbq.db.getEnsp(ENST_id);//(String) dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '" + ENST_id + "'")[0];
-
-//        ArrayList<String> result = null;
-//        try {
-//            String query = "select pdbId from transcript_has_pdbs where transcriptId = '" + ensp_id + "'";
-//            result = dbq.db.//select_oneColumn(query);
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        }
-//        String[] s = new String[result.length];
-//        for (int i = 0; i < s.length; i++) {
-//            s[i] = (String) result[i];
-//        }
-        return dbq.db.getPDBID(ensp_id).toArray(new String[0]);
+        String ensp_id = Setting.dbq.db.getEnsp(ENST_id);//(String) Setting.dbq.db.select_oneColumn("select proteinid from Transcript where transcriptid = '" + ENST_id + "'")[0];
+        return Setting.dbq.db.getPDBID(ensp_id).toArray(new String[0]);
     }
 
     private ArrayList<String[]> alignPDBs_onENSP(String ENST_id, String[] seq, double coverage, int longerThan, double seqIdentity) {
         ArrayList<String[]> alignments = new ArrayList<>();
-        String seq1 = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id));
+        String seq1 = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
         enstSequnces.put(ENST_id, seq1.length());
         if(seq1.length() > 8000){return alignments;}
         gotoh.setSeq1(seq1);
@@ -169,7 +157,7 @@ public class ModelPDB_onENSP {
     }
 
     public String displayModels(ArrayList<Model> models, String ENST_id) {
-        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(dbq.getTranscript(ENST_id));
+        String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
         StringBuilder sb = new StringBuilder("        " + proteinSeq + '\n');
         for (Model model : models) {
             sb.append(model.getPdbId()).append(": ");
@@ -206,23 +194,23 @@ public class ModelPDB_onENSP {
     }
 
     public Overlap findModelOverlap(Model m1, Model m2) {
-        if (m1.getEnspStart() > m2.getEnspStop() || m1.getEnspStop() < m2.getEnspStart()) {//models do not overlap
-            return null;
-        } else {
-            int abs = -1; double rel = -1;
-            if (m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()) {//m2 is "included" in m1
-                return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
-            } else if (m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()) {//m1 is "included" in m2
-                return new Overlap(m1, m2, OverlapType.m1_included_in_m2, m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
-            } else if (m2.getEnspStop() > m1.getEnspStop()) {//partly overlap of m1(end), m2(start)
-                return new Overlap(m1, m2, OverlapType.m1_end_m2_start_overlap, m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
-            } else if (m2.getEnspStart() < m1.getEnspStart()) {//partly overlap of m1(start), m2(end)
-                return new Overlap(m1, m2, OverlapType.m1_start_m2_end_overlap, m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
-            } else {
-                System.out.println("### overlap available, but not found! ###");
+//        if (m1.getEnspStart() > m2.getEnspStop() || m1.getEnspStop() < m2.getEnspStart()) {//models do not overlap
+//            return null;
+//        } else {
+//            int abs = -1; double rel = -1;
+//            if (m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()) {//m2 is "included" in m1
+//                return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
+//            } else if (m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()) {//m1 is "included" in m2
+//                return new Overlap(m1, m2, OverlapType.m1_included_in_m2, m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
+//            } else if (m2.getEnspStop() > m1.getEnspStop()) {//partly overlap of m1(end), m2(start)
+//                return new Overlap(m1, m2, OverlapType.m1_end_m2_start_overlap, m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
+//            } else if (m2.getEnspStart() < m1.getEnspStart()) {//partly overlap of m1(start), m2(end)
+//                return new Overlap(m1, m2, OverlapType.m1_start_m2_end_overlap, m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
+//            } else {
+//                System.out.println("### overlap available, but not found! ###");
                 return null;//should not happen
-            }
-        }
+//            }
+//        }
     }
     
     public ArrayList<Overlap> findOverlapForAllModels(ArrayList<Model> models){
@@ -288,7 +276,7 @@ public class ModelPDB_onENSP {
         Object[] templates = null;
         writer.write("rmsd\tgtd-ts\tpdb1\tpdb2\n");
         try {
-            templates = dbq.db.select_oneColumn("select distinct transcriptid from transcript_has_pdbs");
+            templates = Setting.dbq.db.select_oneColumn("select distinct transcriptid from transcript_has_pdbs");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -297,7 +285,7 @@ public class ModelPDB_onENSP {
             System.out.println(templateCount+" templates processed");templateCount++;
             String enst = "";
             try {
-                enst = (String) dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '"+ (String) templates[i] +"'")[0];
+                enst = (String) Setting.dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '"+ (String) templates[i] +"'")[0];
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
