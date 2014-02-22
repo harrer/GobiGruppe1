@@ -17,6 +17,7 @@ public class DSSP {
         event.setBordersAcc(bordersAcc[0], bordersAcc[1]);
         char[] bordersSS = mapBordersSS(dssp, model, event);
         event.setBordersSS(bordersSS[0], bordersSS[1]);
+        event.setAccess(mapAccessibility2(dssp, model, event));
         Setting.dbu.fullUpdateEvent(event);
     }
 
