@@ -143,7 +143,7 @@ public class GenomeSequenceExtractor {
 
             bw.close();
         } catch (IOException e) {
-            System.err.println("Datei \"" + file + "\" konnte nicht erstellt werden. [GenomeSequenceExtractor]");
+            System.err.printf("[GenomeSequenceExtractor]: Datei \"%s\" konnte nicht erstellt werden.%n", file);
             e.printStackTrace();
         }
     }
@@ -170,7 +170,7 @@ public class GenomeSequenceExtractor {
 
             bw.close();
         } catch (IOException e) {
-            System.err.println("Datei \"" + file + "\" konnte nicht erstellt werden. [GenomeSequenceExtractor]");
+            System.err.printf("[GenomeSequenceExtractor]: Datei \"%s\" konnte nicht erstellt werden.%n", file);
             e.printStackTrace();
         }
     }
@@ -189,7 +189,7 @@ public class GenomeSequenceExtractor {
 
             bw.close();
         } catch (IOException e) {
-            System.err.printf("Datei \"%s\" konnte nicht erstellt werden. [GenomeSequenceExtractor]%n", file);
+            System.err.printf("[GenomeSequenceExtractor]: Datei \"%s\" konnte nicht erstellt werden.%n", file);
             e.printStackTrace();
         }
     }
