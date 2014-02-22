@@ -138,8 +138,12 @@ public class SingleGotoh {
         int identical = 0;
         int[] startEnd = getAli_StartEnd(ali);
         for (int i = startEnd[0]; i <= startEnd[1]; i++) {
-            if (ali[0].charAt(i) != '-' && ali[0].charAt(i) == ali[1].charAt(i)) {
-                identical++;
+            try {
+                if (ali[0].charAt(i) != '-' && ali[0].charAt(i) == ali[1].charAt(i)) {
+                    identical++;
+                }
+            } catch (StringIndexOutOfBoundsException e) {
+                return 0;
             }
         }
         return 1.0 * identical / (startEnd[1] - startEnd[0] + 1);
