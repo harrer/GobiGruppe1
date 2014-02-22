@@ -38,13 +38,12 @@ public class Test {
     
     
     public static void main(String[] args) {
-        for (int i = 0; i < 10; i++) {
-            for (int j = i; j < 10; j++) {
-                if(i != j){
-                    System.out.println("("+i+","+j+")\n");
-                }
-            }
+        StringBuilder sb = new StringBuilder("asd");
+        System.out.println(sb.toString());
+        if(sb.toString().charAt(sb.length()-1) == 'd'){
+            sb.deleteCharAt(sb.length()-1);
         }
+        System.out.println(sb.toString());
         //DatabaseQuery db = new DBQuery();
         //Transcript t = db.getTranscriptForProteinId("ENSP00000261313");
         //System.out.println(GenomeSequenceExtractor.getProteinSequence(t));
