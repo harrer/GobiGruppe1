@@ -1,7 +1,6 @@
 package de.lmu.ifi.bio.splicing.homology;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
@@ -16,8 +15,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -211,13 +208,17 @@ public class ModelPDB_onENSP {
         } else {
             int abs = -1; double rel = -1;
             if (m1.getEnspStart() <= m2.getEnspStart() && m1.getEnspStop() >= m2.getEnspStop()) {//m2 is "included" in m1
-                return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop());
+                abs = (m2.getEnspStop() - m2.getEnspStart() +1); rel = 1.0*abs/(m1.getEnspStop()-m1.getEnspStart()+1);
+                return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop(), rel, abs);
             } else if (m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()) {//m1 is "included" in m2
-                return new Overlap(m1, m2, OverlapType.m1_included_in_m2, m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop());
+                abs = m1.getEnspStop() - m1.getEnspStop() +1; rel = 1.0*abs/(m2.getEnspStop() - m2.getEnspStart() +1);
+                return new Overlap(m1, m2, OverlapType.m1_included_in_m2, m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop(), rel, abs);
             } else if (m2.getEnspStop() > m1.getEnspStop()) {//partly overlap of m1(end), m2(start)
-                return new Overlap(m1, m2, OverlapType.m1_end_m2_start_overlap, m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop());
+                abs = m1.getEnspStop() - m2.getEnspStart() +1; rel = 1.0*abs/(Math.max(m1.getEnspStop()-m1.getEnspStart(), m2.getEnspStop()-m2.getEnspStart()));
+                return new Overlap(m1, m2, OverlapType.m1_end_m2_start_overlap, m2.getEnspStart(), m1.getEnspStop(), m2.getEnspStart(), m1.getEnspStop(), rel, abs);
             } else if (m2.getEnspStart() < m1.getEnspStart()) {//partly overlap of m1(start), m2(end)
-                return new Overlap(m1, m2, OverlapType.m1_start_m2_end_overlap, m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop());
+                abs = m2.getEnspStop() - m1.getEnspStart() +1; rel = 1.0*abs/(Math.max(m1.getEnspStop()-m1.getEnspStart(), m2.getEnspStop()-m2.getEnspStart()));
+                return new Overlap(m1, m2, OverlapType.m1_start_m2_end_overlap, m1.getEnspStart(), m2.getEnspStop(), m1.getEnspStart(), m2.getEnspStop(), rel, abs);
             } else {
                 System.out.println("### overlap available, but not found! ###");
                 return null;//should not happen
