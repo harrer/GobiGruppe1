@@ -8,8 +8,6 @@ import de.lmu.ifi.bio.splicing.structures.mapping.DSSP;
 import de.lmu.ifi.bio.splicing.structures.mapping.DSSPData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -33,6 +31,8 @@ public class DBUpdateRoutine {
         ModelPDB_onENSP modelling = new ModelPDB_onENSP();
         List<String> geneIds = dbq.findAllGenes();
         HashMap<String, DSSPData> dsspData = new HashMap<>();
+        HashMap<String, double[]> ssDistribution = new HashMap<>();
+        HashMap<String, double[]> accDistribution = new HashMap<>();
         long time = System.currentTimeMillis();
         int i = 0, percent = 0;
         for (String geneId : geneIds) {
@@ -62,10 +62,18 @@ public class DBUpdateRoutine {
                         dssp = DSSPParser.getDSSPData(used.getPdbId());
                         dsspData.put(used.getPdbId(), dssp);
                     }
-                    if(dssp != null) {
-                        try{
-                        DSSP.updateEventWithAccAndSS(used, event, dssp);
-                        } catch (Exception e){
+                    if (dssp != null) {
+                        try {
+                            DSSP.updateEventWithAccAndSS(used, event, dssp);
+                            double expSS[] = DSSP.calcSecondaryStructureDistribution(dssp, used.getPdbStart(), used.getPdbStop(),
+                                    used.getEnspStop() - used.getEnspStart() + 1);
+                            double expAcc[] = DSSP.calcAccessibilityDistribution(dssp, used.getPdbStart(), used.getPdbStop(),
+                                    used.getEnspStop() - used.getEnspStart() + 1);
+                            ssDistribution.put(event.getI1() + event.getStart() + "|" + event.getStop(), expSS);
+                            accDistribution.put(event.getI1() + event.getStart() + "|" + event.getStop(), expAcc);
+//                            System.out.printf("Isoform1: %s start: %d stop: %d, Expected: %d %d %d%n", event.getI1(),
+//                                    event.getStart(), event.getStop(), expSS[0], expSS[1], expSS[2]);
+                        } catch (Exception e) {
                             System.out.println("Exception while using Model " + used.getPdbId() + " for " + event.getI1());
                             e.printStackTrace();
                         }
@@ -73,13 +81,16 @@ public class DBUpdateRoutine {
                 }
             }
             i++;
-            if(i % (geneIds.size()/100) == 0) {
+            if (i % (geneIds.size() / 100) == 0) {
                 long da = System.currentTimeMillis();
                 percent++;
-                System.out.printf("Progress: %d%% after %.1f min, %.1f min left %n", percent,  ((da-time)/(float)60000) ,  ((da-time)/(float)i) * (geneIds.size()-i)/(float)60000);
+                System.out.printf("Progress: %d%% after %.1f min, %.1f min left %n", percent, ((da - time) / (float) 60000), ((da - time) / (float) i) * (geneIds.size() - i) / (float) 60000);
             }
+//            if(i > 100)
+//                break;
         }
         DSSPParser.saveSSDistribution(DSSP.calcSecondaryStructureDistribution(dsspData.values()));
+        DSSPParser.saveExpectedSS(ssDistribution.values(), accDistribution.values());
     }
 
     public static void insertEventSets() {
