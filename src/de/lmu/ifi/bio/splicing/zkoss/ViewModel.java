@@ -144,6 +144,7 @@ public class ViewModel {
         selectedGene = data.getSelectedGene(eventDisplay);
     }
 
+    @NotifyChange({"transcriptid","sequenceview"})
     public void selectgriditem(EventDisplay ev) {
         //TODO was passiert wenn auf item in gridlist geklickt wird
         // pattern
@@ -153,6 +154,7 @@ public class ViewModel {
         //ExonView by selected Transcript --> Gene
 
         renderedImage = data.renderImage(ev, height_img_ri, width_img_ri);
+        seqEntity = data.prepareSequences(ev);
         selectedGene = data.getSelectedGene(ev);
     }
 

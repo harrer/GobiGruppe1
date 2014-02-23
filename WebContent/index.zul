@@ -103,16 +103,20 @@
                     void update() {
                     vm.selectgriditem(gridlist.getSelectedItem().getValue());
                     exonview.setContent(vm.getRenderedImage());
+                    transcripid.setLabel(vm.getSeqEntity.getTranscriptid());
                     }
                 </zscript>
             </groupbox>
-            <groupbox hflex="1" mold="3d" closable="true" open="false">
+            <groupbox id="sequenceview" hflex="1" mold="3d" closable="true" open="false">
                 <caption label="SequenceView"/>
+                <label id="transcriptid" value="@load(vm.seqEntity.transcriptid)"/>
+                <label id="aa" value="@load(vm.seqEntity.aa)"/>
                 <label value="stub"/>
             </groupbox>
             <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="3DView"/>
                 <label value="stub"/>
+                <applet codebase="lib/Jmol.jar" code="ticker" height="320" width="620"/>
             </groupbox>
             <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="Statistiken"/>

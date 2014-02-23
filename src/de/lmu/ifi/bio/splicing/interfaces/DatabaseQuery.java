@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.splicing.interfaces;
 import de.lmu.ifi.bio.splicing.interfaces.*;
 import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
 
 import java.util.List;
@@ -54,4 +55,6 @@ public interface DatabaseQuery {
     public String getGeneIDForTranscriptID(String transcriptid);
 
     public Transcript getTranscriptForProteinId(String proteinId);
+
+    public List<PatternEvent> getPatternEventForTranscriptID(String transcriptid);
 }

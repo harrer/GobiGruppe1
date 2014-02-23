@@ -4,15 +4,39 @@ package de.lmu.ifi.bio.splicing.zkoss.entity;
  * Created by Carsten Uhlig on 20.02.14.
  */
 public class SequenceEntity {
-    private String aa,varsplic,sec,acc,prosite;
+    private String aa,varsplic,sec,acc,prosite, transcriptid;
+
+    public SequenceEntity(String aa, String transcriptid, String prosite) {
+        this.aa = aa;
+        this.transcriptid = transcriptid;
+        this.prosite = prosite;
+    }
+
+    public String getTranscriptid() {
+        return transcriptid;
+    }
+
+    public void setTranscriptid(String transcriptid) {
+        this.transcriptid = transcriptid;
+    }
 
     public SequenceEntity(String aa, String varsplic) {
         this.aa = aa;
         this.varsplic = varsplic;
     }
 
+    public SequenceEntity() {
+    }
+
     public SequenceEntity(String aa) {
         this.aa = aa;
+    }
+
+    public SequenceEntity(String aa, String sec, String acc, String prosite) {
+        this.aa = aa;
+        this.sec = sec;
+        this.acc = acc;
+        this.prosite = prosite;
     }
 
     public String getAa() {

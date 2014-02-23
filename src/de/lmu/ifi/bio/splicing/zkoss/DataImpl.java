@@ -1,10 +1,13 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import bsh.StringUtil;
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
@@ -28,6 +31,7 @@ public class DataImpl implements Data {
         dbq = new DBQuery();
         searchlist = new LinkedList<>();
         eventlist = new ArrayList<>();
+        seqEntity = new SequenceEntity();
     }
 
     @Override
@@ -161,11 +165,16 @@ public class DataImpl implements Data {
     public SequenceEntity prepareSequences(EventDisplay eventDisplay) {
         if (eventDisplay == null || !eventDisplay.equals(selectedEvent)) {
             setSelectedEvent(eventDisplay);
-
-        } else
+            calcSeqEntity();
             return seqEntity;
+        }
 
-        return null;
+        if (seqEntity == null)
+
+        if (!seqEntity.getTranscriptid().equals(eventDisplay.getI1()))
+            calcSeqEntity();
+
+        return seqEntity;
     }
 
     private void calcSeqEntity() {
@@ -178,7 +187,37 @@ public class DataImpl implements Data {
         String aa1 = GenomeSequenceExtractor.getProteinSequence(t1, g.getChromosome(), g.getStrand());
         String aa2 = GenomeSequenceExtractor.getProteinSequence(t2, g.getChromosome(), g.getStrand());
 
+        //TODO VARSPLIC sequence implementation
+        //TODO AA2 sequence implementation
 
+        String sec = null, acc = null;
+        StringBuilder prosite = new StringBuilder();
+        List<PatternEvent> pelist = dbq.getPatternEventForTranscriptID(i1);
+        int end = 0;
+        for (PatternEvent patternEvent : pelist) {
+            if (patternEvent.getStart() - prosite.length() > 0)
+                prosite.append(new String(new char[patternEvent.getStart() - prosite.length()]).replace("\0", "-"));
+            prosite.append(new String(new char[patternEvent.getStop() - patternEvent.getStart()]).replace("\0", "P"));
+            end = patternEvent.getStop();
+        }
+        prosite.append(new String(new char[aa1.length() - end]).replace("\0", "-"));
+
+        //TODO implement SECStructure Chars in String
+        if (selectedEvent.getSec() != '\0')
+            sec = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getSec()));
+
+        //TODO implement Prosite Chars in String
+        if (selectedEvent.getAcc() != '\0')
+            acc = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getAcc()));
+
+        if (sec != null) {
+            seqEntity.setSec(sec);
+        }
+        seqEntity.setProsite(prosite.toString());
+        seqEntity.setAa(aa1);
+        if (acc != null) {
+            seqEntity.setAcc(acc);
+        }
     }
 
     @Override
