@@ -12,6 +12,7 @@ import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import de.lmu.ifi.bio.splicing.superimpose.Superposition;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -168,18 +169,30 @@ public class ModelPDB_onENSP {
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
         StringBuilder sb = new StringBuilder("        " + proteinSeq + "\n\n");
         for (Model model : models) {
-            DSSPData dssp = DSSPParser.parseDSSPFile(new File(Setting.DSSPDIR+model.getPdbId()+".dssp"), "");
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();
-            for (int i = 0; i < proteinSeq.length(); i++) {
-                char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? proteinSeq.charAt(aligned.get(i)) : '\'';//&& model.getAligned().containsKey(i)
-                sb.append(append);
+            boolean dssp_available = true;
+            DSSPData dssp = null;
+            try {
+                dssp = DSSPParser.parseDSSPFile(new File(Setting.DSSPDIR+model.getPdbId()+".dssp"), "");
+            } catch (Exception e) {
+                dssp_available = false;
             }
-            sb.append("\n        ");
-            Character[] secStruct = dssp.getSecondarySructure();
-            for (int i = 0; i < proteinSeq.length(); i++) {
-                char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? secStruct[aligned.get(i)] : '\'';//&& model.getAligned().containsKey(i)
-                sb.append(append);
+            try {
+                for (int i = 0; i < proteinSeq.length(); i++) {
+                    char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? proteinSeq.charAt(aligned.get(i)) : '\'';//&& model.getAligned().containsKey(i)
+                    sb.append(append);
+                }
+                sb.append("\n        ");
+                if (dssp_available) {
+                    Character[] secStruct = dssp.getSecondarySructure();
+                    for (int i = 0; i < proteinSeq.length(); i++) {
+                        char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? secStruct[aligned.get(i)] : '\'';//&& model.getAligned().containsKey(i)
+                        sb.append(append);
+                    }
+                }
+            } catch (StringIndexOutOfBoundsException | ArrayIndexOutOfBoundsException e) {
+                sb.append('+');
             }
             sb.append("\n\n");
         }
@@ -362,7 +375,7 @@ public class ModelPDB_onENSP {
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
-        System.out.println(m.displayModels("ENST00000380952"));
+        System.out.println(m.displayModels("ENST00000315238"));//("ENST00000380952"));
 //        //PDBData pdb = m.modelToStructure(models.get(0));
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);

@@ -77,10 +77,10 @@ public class DSSPParser {
                     acids = true;
                 }
             }
-        } catch (NumberFormatException | NullPointerException exception) {}
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException | NumberFormatException | NullPointerException exception) {}
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
         DSSPData data = new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString(), proteinId);
         data.setCa_coordinates(c_alpha.toArray(new double[][]{}));
         return data;
