@@ -38,12 +38,7 @@ public class Test {
     
     
     public static void main(String[] args) {
-        StringBuilder sb = new StringBuilder("asd");
-        System.out.println(sb.toString());
-        if(sb.toString().charAt(sb.length()-1) == 'd'){
-            sb.deleteCharAt(sb.length()-1);
-        }
-        System.out.println(sb.toString());
+        System.out.println(new int[]{}[0]);
         //DatabaseQuery db = new DBQuery();
         //Transcript t = db.getTranscriptForProteinId("ENSP00000261313");
         //System.out.println(GenomeSequenceExtractor.getProteinSequence(t));
