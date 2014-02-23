@@ -1,8 +1,11 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import com.sun.scenario.effect.impl.state.LinearConvolveKernel;
 import de.lmu.ifi.bio.splicing.interfaces.DatabaseQuery;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import de.lmu.ifi.bio.splicing.genome.*;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 
-public class DBQuery implements DatabaseQuery{
+public class DBQuery implements DatabaseQuery {
     public DB_Backend db = new DB_Backend();
 
     public DBQuery() {
@@ -223,7 +226,7 @@ public class DBQuery implements DatabaseQuery{
             return null;
     }
 
-    public List<Event> getEvents(String geneid){
+    public List<Event> getEvents(String geneid) {
         List<Event> events = new LinkedList<>();
         String query = "Select isoform1, isoform2, start, stop, type from Event, Transcript where isoform1 = transcriptid and geneid = '" + geneid + "'";
         Object[][] result = null;
@@ -241,7 +244,7 @@ public class DBQuery implements DatabaseQuery{
 
     @Override
     public EventDisplay getEventDisplay(String isoform1, String isoform2) {
-        String query = "select `Event`.start, `Event`.stop, type, `PatternEvent`.start, `PatternEvent`.stop, acc, sec, PatternEvent.fk_pattern_id\n" +
+        String query = "select `Event`.start, `Event`.stop, type, `PatternEvent`.start, `PatternEvent`.stop, `access`, sec, PatternEvent.fk_pattern_id\n" +
                 " from Event inner join Transcript on `Event`.isoform1 = Transcript.transcriptid\n" +
                 " left outer join PatternEvent on Transcript.transcriptid = PatternEvent.transcriptid\n" +
                 " where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
@@ -265,11 +268,11 @@ public class DBQuery implements DatabaseQuery{
             }
         }
 
-        return new EventDisplay(isoform1, isoform2,(int) result[0][0],
+        return new EventDisplay(isoform1, isoform2, (int) result[0][0],
                 (int) result[0][1],
                 ((String) result[0][2]).charAt(0),
-                result[0][5] != null ? Double.parseDouble((String) result[0][5]) : 0.0, list,
-                result[0][6] != null ? Double.parseDouble((String) result[0][6]) : 0.0);
+                result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'X', list,
+                result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'X');
     }
 
     @Override
@@ -338,6 +341,30 @@ public class DBQuery implements DatabaseQuery{
         } else {
             return getTranscript((String) result[0]);
         }
+    }
+
+    @Override
+    public List<PatternEvent> getPatternEventForTranscriptID(String transcriptid) {
+        String query = String.format("SELECT start, stop, fk_pattern_id FROM PatternEvent NATURAL JOIN Transcript WHERE transcriptid = '%s'", transcriptid);
+        Object[][] res = new Object[0][];
+        try {
+            res = db.select(query, 3);
+        } catch (SQLException e) {
+            System.err.printf("[DBQuery]: Query: %s%n", query);
+            return null;
+        }
+
+        List<PatternEvent> pe = new LinkedList<>();
+        if (res.length == 0)
+            return pe;
+
+        for (Object[] re : res) {
+            pe.add(new PatternEvent(((String) re[2]), transcriptid, (int) (long) (re[0]), (int) (long) (re[1])));
+        }
+
+        //sortiert nach start positionen --> comparable für patternevent
+        Collections.sort(pe);
+        return pe;
     }
 
     @Override

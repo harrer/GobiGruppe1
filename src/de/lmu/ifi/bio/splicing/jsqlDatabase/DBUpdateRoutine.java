@@ -63,24 +63,24 @@ public class DBUpdateRoutine {
                         dssp = DSSPParser.getDSSPData(used.getPdbId());
                         dsspData.put(used.getPdbId(), dssp);
                     }
-                        try{
+                    try {
                         DSSP.updateEventWithAccAndSS(used, event, dssp);
-                        } catch (Exception e){
-                            System.out.println("Exception while using Model " + used.getPdbId() + " for " + event.getI1());
-                            e.printStackTrace();
-                        }
+                    } catch (Exception e) {
+                        System.out.println("Exception while using Model " + used.getPdbId() + " for " + event.getI1());
+                        e.printStackTrace();
                     }
                 }
             }
-            i++;
-            if(i % (geneIds.size()/1000) == 0) {
-                long da = System.currentTimeMillis();
+        }
+        i++;
+        if (i % (geneIds.size() / 1000) == 0) {
+            long da = System.currentTimeMillis();
 
-                percent += 0.001;
-                System.out.printf("Progress: %.2f%% noch %.1f min %n", percent * 100, ((da-time)/(float)i) * (geneIds.size()-i)/(float)60000);
-            }
+            percent += 0.001;
+            System.out.printf("Progress: %.2f%% noch %.1f min %n", percent * 100, ((da - time) / (float) i) * (geneIds.size() - i) / (float) 60000);
         }
     }
+
 
     public static void insertEventSets() {
         List<String> thebiglist = dbq.findAllGenes();

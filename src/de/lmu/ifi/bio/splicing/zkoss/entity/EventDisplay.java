@@ -4,7 +4,6 @@ import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,9 +11,9 @@ import java.util.Set;
  * Created by uhligc on 13.02.14.
  */
 public class EventDisplay extends Event {
-    private double acc;
+    private char acc;
     private List<PatternEvent> pattern;
-    private double sec;
+    private char sec;
     private String patternids;
     private Gene curGene;
 
@@ -26,7 +25,7 @@ public class EventDisplay extends Event {
         this.curGene = curGene;
     }
 
-    public EventDisplay(String i1, String i2, int start, int stop, char type, double acc, List<PatternEvent> pattern, double sec) {
+    public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, List<PatternEvent> pattern, char sec) {
         super(i1, i2, start, stop, type);
         this.acc = acc;
         this.pattern = pattern;
@@ -34,7 +33,7 @@ public class EventDisplay extends Event {
         patternids = calcpatternids();
     }
 
-    public EventDisplay(String i1, String i2, int start, int stop, char type, double acc, List<PatternEvent> pattern, double sec, Gene gene) {
+    public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, List<PatternEvent> pattern, char sec, Gene gene) {
         super(i1, i2, start, stop, type);
         this.acc = acc;
         this.pattern = pattern;
@@ -47,7 +46,7 @@ public class EventDisplay extends Event {
         return patternids;
     }
 
-    public double getAcc() {
+    public char getAcc() {
         return acc;
     }
 
@@ -55,7 +54,7 @@ public class EventDisplay extends Event {
         return pattern;
     }
 
-    public double getSec() {
+    public char getSec() {
         return sec;
     }
 

@@ -49,10 +49,11 @@
                 print="yes"
                 classpathref="classpath"
                 delimiter=" "
-                >
+                ><![CDATA[
             use gobi1;
-            SELECT se.stop - se.start + 1 AS length, COUNT(se.id) AS `all` FROM `Event` se WHERE se.type != 'I' GROUP BY
-            se.stop - se.start;
+            SELECT se.`stop` - se.`start` + 1, COUNT(se.`id`)
+            FROM `Event` se WHERE se.`type` != 'I' GROUP BY se.`stop` - se.`start`;
+            ]]>
         </sql>
         <echo>=====getPartlyPatternEventsLength=====</echo>
         <sql
@@ -67,13 +68,13 @@
                 ><![CDATA[
             use gobi1;
             SELECT
-            se.stop - se.start + 1 AS length,
-            count(se.id) AS partly
-            FROM Event se
-            JOIN PatternEvent pe ON se.isoform1 = pe.transcriptid
+            se.`stop` - se.`start` + 1 AS `length`,
+            count(se.`id`) AS `partly`
+            FROM `Event` se
+            JOIN `PatternEvent` pe ON se.`isoform1` = pe.`transcriptid`
             WHERE type != 'I' AND
-            ((se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))
-            GROUP BY se.stop - se.start;
+            ((se.`start` < pe.`start` AND pe.`start` < se.`stop`) OR (se.`start` < pe.`stop` AND pe.`stop` < se.`stop`))
+            GROUP BY se.`stop` - se.`start`;
             ]]>
         </sql>
         <echo>=====getCompletePatternEventsLength=====</echo>
@@ -99,6 +100,12 @@
             ]]>
         </sql>
         <echo>=====FINISHMYSQLOUT=====</echo>
+    </target>
+
+    <target name="man-statistics">
+        <exec executable="${zsh.exec}">
+            <arg line="/usr/bin/mysql -h ${mysql.server} -u ${mysql.username} --password=${mysql.password} -e '${mysql.command.all}' > ${mysql.all.file}"/>
+        </exec>
     </target>
 
     <target name="statistics" depends="results-database">
