@@ -222,7 +222,7 @@ public class EventAnnotation {
             if (a[0] == 0) {
                 if (reps1 != 0) {
                     eventsP1.add(new long[]{3, cur1, cur1 + reps1 + dels - 1});
-                    eventsP2.add(new long[]{3, cur1, cur1 + reps2 + ins - 1});
+                    eventsP2.add(new long[]{3, cur2, cur2 + reps2 + ins - 1});
                     cur1 += reps1 + dels;
                     cur2 += reps2 + ins;
                     reps1 = 0;
@@ -232,7 +232,7 @@ public class EventAnnotation {
                 } else {
                     if (dels != 0) {
                         eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
-                        eventsP2.add(new long[]{2, cur1, cur1 - 1});
+                        eventsP2.add(new long[]{2, cur2, cur2 - 1});
                         cur1 += dels;
                         dels = 0;
                     } else if (ins != 0) {
@@ -265,10 +265,10 @@ public class EventAnnotation {
         }
         if (reps1 != 0) {
             eventsP1.add(new long[]{3, cur1, cur1 + reps1 + dels - 1});
-            eventsP2.add(new long[]{3, cur1, cur1 + reps2 + ins - 1});
+            eventsP2.add(new long[]{3, cur2, cur2 + reps2 + ins - 1});
         } else if (dels != 0) {
             eventsP1.add(new long[]{1, cur1, cur1 + dels - 1});
-            eventsP2.add(new long[]{2, cur1, cur1 - 1});
+            eventsP2.add(new long[]{2, cur2, cur2 - 1});
         } else if (ins != 0) {
             eventsP1.add(new long[]{2, cur1, cur1 - 1});
             eventsP2.add(new long[]{1, cur2, cur2 + ins - 1});

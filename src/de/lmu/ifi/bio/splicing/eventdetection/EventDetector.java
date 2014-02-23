@@ -49,7 +49,7 @@ public class EventDetector {
 	}
 	
 	public static void printEvents(EventAnnotation ea) {
-		System.out.println("N\nConserved:");
+		System.out.println("\nConserved:");
 		for (long[] e : ea.getEventsN()) {
 			if (e[0] == 0)
 				System.out.print("(" + e[1] + ", " + e[2] + ") ");

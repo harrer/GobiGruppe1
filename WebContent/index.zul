@@ -97,22 +97,56 @@
             <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="ExonView"/>
                 <image id="exonview" content="@load(vm.renderedImage)"/>
-                <zscript>
+            </groupbox>
+
+            <zscript>
+                <![CDATA[
                     import java.awt.image.BufferedImage;
                     import java.awt.image.RenderedImage;
+
                     void update() {
+
                     vm.selectgriditem(gridlist.getSelectedItem().getValue());
                     exonview.setContent(vm.getRenderedImage());
-                    transcripid.setLabel(vm.getSeqEntity.getTranscriptid());
+
+                    transcriptid.value = vm.getSeqEntity().getTranscriptid();
+
+                    //varsplic
+                    aa1seq.value = vm.getSeqEntity().getAa1();
+                    aa2seq.value = vm.getSeqEntity().getAa2();
+                    varsplic.value = vm.getSeqEntity().getVarsplic();
+
+                    //prosite
+                    prositeseq.value = vm.getSeqEntity().getProsite();
+
+                    //dssp
+                    accseq.value = vm.getSeqEntity().getAcc();
+                    secseq.value = vm.getSeqEntity().getSec();
+
+                    //BindUtils.postNotifyChange(null, null, this, "*");
                     }
-                </zscript>
-            </groupbox>
+                    ]]>
+            </zscript>
+
             <groupbox id="sequenceview" hflex="1" mold="3d" closable="true" open="false">
                 <caption label="SequenceView"/>
-                <label id="transcriptid" value="@load(vm.seqEntity.transcriptid)"/>
-                <label id="aa" value="@load(vm.seqEntity.aa)"/>
-                <label value="stub"/>
+                <div style="overflow:auto;">
+                    <label id="transcriptid" pre="true" style="font-weight:bold;"/>
+                    <separator/>
+                    <label id="aa1seq" style="font-family:Monospace; white-space:nowrap;" multiline="false"/>
+                    <separator/>
+                    <label id="aa2seq" style="font-family:Monospace; white-space:nowrap;" multiline="false"/>
+                    <separator/>
+                    <label id="varsplic" style="font-family:Monospace;" multiline="false"/>
+                    <separator/>
+                    <label id="prositeseq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
+                    <separator/>
+                    <label id="accseq" style="font-family:Monospace;" multiline="false"/>
+                    <separator/>
+                    <label id="secseq" style="font-family:Monospace;" multiline="false"/>
+                </div>
             </groupbox>
+
             <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="3DView"/>
                 <label value="stub"/>

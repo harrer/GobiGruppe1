@@ -5,6 +5,7 @@ import de.lmu.ifi.bio.splicing.structures.mapping.DSSPData;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -110,6 +111,32 @@ public class DSSPParser {
             out.write("Helix: " + distribution[0] / (double) overall +
                     "\nExtended: " + distribution[1] / (double) overall +
                     "\nCoil: " + distribution[2] / (double) overall);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveExpectedSS(Collection<double[]> expSS, Collection<double[]> expAcc){
+        FileWriter fstream = null;
+        try {
+            double[] expectedSS = new double[3];
+            for (double[] e : expSS) {
+                for(int i = 0; i < 3; i++)
+                    expectedSS[i] += e[i];
+            }
+            BufferedWriter out = new BufferedWriter(new FileWriter("/home/sch/schmidtju/Dokumente/Expectations.txt"));
+            out.write("Helix: " + expectedSS[0] +
+                    "\nExtended: " + expectedSS[1]+
+                    "\nCoil: " + expectedSS[2]);
+            double[] expectedAcc = new double[3];
+            for (double[] e : expAcc) {
+                for(int i = 0; i < 3; i++)
+                    expectedAcc[i] += e[i];
+            }
+            out.write("\n\nBuried: " + expectedAcc[0] +
+                    "\nPartly buried: " + expectedAcc[1]+
+                    "\nExposed: " + expectedAcc[2]);
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
