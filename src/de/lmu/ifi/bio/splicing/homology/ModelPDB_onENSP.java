@@ -2,13 +2,17 @@ package de.lmu.ifi.bio.splicing.homology;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.config.Setting;
+import de.lmu.ifi.bio.splicing.io.DSSPParser;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+//import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
+import de.lmu.ifi.bio.splicing.structures.mapping.DSSPData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import de.lmu.ifi.bio.splicing.superimpose.Superposition;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,6 +34,7 @@ public class ModelPDB_onENSP {
     private final Superposition superposition;
     private HashMap<String, Integer> enstSequnces;
     private final int[] gtdts_frequencies;
+    private final HashMap<String, String> pdb_cath_map;
 
     public ModelPDB_onENSP() {
         pdbSequences = new HashMap<>();//readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
@@ -37,6 +42,12 @@ public class ModelPDB_onENSP {
         this.gotoh = new SingleGotoh();
         superposition = new Superposition();
         gtdts_frequencies = new int[101];
+        pdb_cath_map = new HashMap<>();
+        try {
+            this.read_pdb_cath_mapping();
+        } catch (IOException ex) {
+            Logger.getLogger(ModelPDB_onENSP.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
@@ -160,17 +171,37 @@ public class ModelPDB_onENSP {
         return modelAlignmentsOnProtein(alignments, enstId);
     }
 
-    public String displayModels(ArrayList<Model> models, String ENST_id) {
+    public String displayModels(String ENST_id) {
+        ArrayList<Model> models = getModelsForENST(ENST_id);
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
-        StringBuilder sb = new StringBuilder("        " + proteinSeq + '\n');
+        StringBuilder sb = new StringBuilder("        " + proteinSeq + "\n\n");
         for (Model model : models) {
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();
-            for (int i = 0; i < proteinSeq.length(); i++) {
-                char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? '+' : '\'';//&& model.getAligned().containsKey(i)
-                sb.append(append);
+            boolean dssp_available = true;
+            DSSPData dssp = null;
+            try {
+                dssp = DSSPParser.parseDSSPFile(new File(Setting.DSSPDIR+model.getPdbId()+".dssp"), "");
+            } catch (Exception e) {
+                dssp_available = false;
             }
-            sb.append('\n');
+            try {
+                for (int i = 0; i < proteinSeq.length(); i++) {
+                    char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? proteinSeq.charAt(aligned.get(i)) : '\'';//&& model.getAligned().containsKey(i)
+                    sb.append(append);
+                }
+                sb.append("\n        ");
+                if (dssp_available) {
+                    Character[] secStruct = dssp.getSecondarySructure();
+                    for (int i = 0; i < proteinSeq.length(); i++) {
+                        char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? secStruct[aligned.get(i)] : '\'';//&& model.getAligned().containsKey(i)
+                        sb.append(append);
+                    }
+                }
+            } catch (StringIndexOutOfBoundsException | ArrayIndexOutOfBoundsException e) {
+                sb.append('+');
+            }
+            sb.append("\n\n");
         }
         return sb.toString();
     }
@@ -208,7 +239,7 @@ public class ModelPDB_onENSP {
                 rel = 1.0 * abs / (m1.getEnspStop() - m1.getEnspStart() + 1);
                 return new Overlap(m1, m2, OverlapType.m2_included_in_m1, m2.getEnspStart(), m2.getEnspStop(), m2.getEnspStart(), m2.getEnspStop(), rel, abs);
             } else if (m2.getEnspStart() <= m1.getEnspStart() && m2.getEnspStop() >= m1.getEnspStop()) {//m1 is "included" in m2
-                abs = m1.getEnspStop() - m1.getEnspStop() + 1;
+                abs = m1.getEnspStop() - m1.getEnspStart() + 1;
                 rel = 1.0 * abs / (m2.getEnspStop() - m2.getEnspStart() + 1);
                 return new Overlap(m1, m2, OverlapType.m1_included_in_m2, m1.getEnspStart(), m1.getEnspStop(), m1.getEnspStart(), m1.getEnspStop(), rel, abs);
             } else if (m2.getEnspStop() > m1.getEnspStop()) {//partly overlap of m1(end), m2(start)
@@ -285,6 +316,28 @@ public class ModelPDB_onENSP {
     private void update_gtdts_freq(double gtd_ts) {
         this.gtdts_frequencies[(int) Math.floor(gtd_ts * 100)]++;
     }
+    
+    private void read_pdb_cath_mapping() throws IOException{
+        BufferedReader br = new BufferedReader(new FileReader("/home/proj/biosoft/CATH/CathDomainDescriptionFile.v3.5.0"));
+        String line, domain="", cathcode="";
+        boolean domainFound = false, cathcodeFound = false;
+        while((line = br.readLine()).startsWith("#")){}//ignore header
+        while((line = br.readLine()) != null){
+            if(line.startsWith("DOMAIN")){
+                String pdb = line.split("\\s+")[1];
+                domain = pdb.substring(0,4)+'.'+pdb.charAt(4);
+                domainFound = true;
+            }
+            else if(line.startsWith("CATHCODE")){
+                cathcode = line.split("\\s+")[1];
+                cathcodeFound = true;
+            }
+            if(domainFound && cathcodeFound){
+                this.pdb_cath_map.put(domain, cathcode);
+                domainFound = false; cathcodeFound = false;
+            }
+        }
+    }
 
     public void run(String fileOut, double coverage, int longerThan, double seqIdentity) throws IOException {
         Object[] templates = null;
@@ -296,17 +349,18 @@ public class ModelPDB_onENSP {
         }
         int templateCount = 1, nullpointer = 0, overlapCount = 0;
         for (Object object : templates) {
-            StringBuilder sb = new StringBuilder("insert into overlaps(ENST, PDB1, PDB2, rmsd, gts_ts, abs_length, rel_length, type) values");
+            StringBuilder sb = new StringBuilder("insert into overlaps(ENST, PDB1, PDB2, rmsd, gts_ts, abs_length, rel_length, type, supFam1, supFam2) values");
             System.out.println(templateCount + " templates processed");
             templateCount++;
             String enst = "";
+            ArrayList<Overlap> overlaps = new ArrayList<>();
             try {
                 enst = (String) Setting.dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '" + (String) object + "'")[0];
-            } catch (SQLException ex) {
+                ArrayList<Model> models = getModelsForENST(enst, coverage, longerThan, seqIdentity);
+                overlaps = findOverlapForAllModels(models);
+            } catch (ArrayIndexOutOfBoundsException|SQLException ex) {
                 ex.printStackTrace();
             }
-            ArrayList<Model> models = getModelsForENST(enst, coverage, longerThan, seqIdentity);
-            ArrayList<Overlap> overlaps = findOverlapForAllModels(models);
             boolean setComma = false, appendToSb = false;
             for (Overlap overlap : overlaps) {
                 overlapCount++;
@@ -315,11 +369,15 @@ public class ModelPDB_onENSP {
                 } else {
                     setComma = true;
                 }
+                Model m1 = overlap.getModel1();
+                Model m2 = overlap.getModel2();
+                String supFam1 = pdb_cath_map.containsKey(m1.getPdbId())? pdb_cath_map.get(m1.getPdbId()) : "";
+                String supFam2 = pdb_cath_map.containsKey(m2.getPdbId())? pdb_cath_map.get(m2.getPdbId()) : "";
                 try {
                     double[] scores = superimposeOverlap(overlap);
-                    sb.append("('").append(overlap.getModel1().getEnstId()).append("','").append(overlap.getModel1().getPdbId()).append("','").append(overlap.getModel2().getPdbId()).append("',");
+                    sb.append("('").append(m1.getEnstId()).append("','").append(m1.getPdbId()).append("','").append(m2.getPdbId()).append("',");
                     sb.append(scores[0]).append(',').append(scores[1]).append(',').append(overlap.getAbsoluteLength()).append(',').append(overlap.getRelativeLength());
-                    sb.append(",'").append(overlap.getType()).append("')");
+                    sb.append(",'").append(overlap.getType()).append("','").append(supFam1).append("','").append(supFam2).append("')");
                     appendToSb = true;
                     update_gtdts_freq(scores[1]);
                     //writer.printf("%f\t%f\t%s\t%s\t%s\t%d\t%.3f\t%s\n", scores[0], scores[1], overlap.getModel1().getPdbId(), overlap.getModel2().getPdbId(), overlap.getModel1().getEnstId(),overlap.getAbsoluteLength(),overlap.getRelativeLength(),overlap.getType());
@@ -351,12 +409,12 @@ public class ModelPDB_onENSP {
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
-//        System.out.println(m.displayModels(models, "ENST00000380952"));
+//        System.out.println(m.displayModels("ENST00000589994"));//("ENST00000315238"));ENST00000380952
 //        //PDBData pdb = m.modelToStructure(models.get(0));
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
-        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);//
+        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
     }
 
 }

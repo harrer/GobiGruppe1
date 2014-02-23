@@ -11,6 +11,7 @@ import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
 import java.awt.image.RenderedImage;
+import java.rmi.server.ServerRef;
 import java.util.*;
 
 /**
@@ -201,15 +202,20 @@ public class DataImpl implements Data {
             Event e1 = it1.next();
             Event e2 = it2.next();
 
-            if(e1.getType() != 'I')
-                aa1_mod.append(aa1.substring(old1, e1.getStart()));
-            else
-                aa1_mod.append(aa1.substring(old1, e1.getStart() - 1));
+            try {
+                if(e1.getType() != 'I')
+                    aa1_mod.append(aa1.substring(old1, e1.getStart()));
+                else
+                    aa1_mod.append(aa1.substring(old1, e1.getStart() - 1));
 
-            if(e2.getType() != 'I')
-                aa2_mod.append(aa2.substring(old2, e2.getStart()));
-            else
-                aa2_mod.append(aa2.substring(old2, e2.getStart() - 1));
+                if(e2.getType() != 'I')
+                    aa2_mod.append(aa2.substring(old2, e2.getStart()));
+                else
+                    aa2_mod.append(aa2.substring(old2, e2.getStart() - 1));
+            } catch (Exception e) {
+                //TODO spliceevent annotation repair
+                System.err.println("[calcSeqEntity]: " + "fucked up spliceannotation!");
+            }
 
             switch (e1.getType()) {
                 case 'D': //wenn in e1 deletion rest analog
