@@ -185,9 +185,10 @@ public class ModelPDB_onENSP {
             } catch (Exception e) {
                 dssp_available = false;
             }
+            String pdbSeq = PDBParser.getPDBFile(model.getPdbId()).getSequence();
             try {
                 for (int i = 0; i < proteinSeq.length(); i++) {
-                    char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? proteinSeq.charAt(aligned.get(i)) : '\'';//&& model.getAligned().containsKey(i)
+                    char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? pdbSeq.charAt(aligned.get(i)) : '\'';//&& model.getAligned().containsKey(i)
                     sb.append(append);
                 }
                 sb.append("\n        ");
@@ -409,12 +410,12 @@ public class ModelPDB_onENSP {
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
-//        System.out.println(m.displayModels("ENST00000589994"));//("ENST00000315238"));ENST00000380952
+        System.out.println(m.displayModels("ENST00000380952"));
 //        //PDBData pdb = m.modelToStructure(models.get(0));
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
-        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
+//        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
     }
 
 }
