@@ -59,6 +59,7 @@ public class DSSPParser {
         List<Integer> accessibility = new ArrayList<>();
         List<Character> secondaryStructure = new ArrayList<>();
         StringBuilder sequence = new StringBuilder();
+        ArrayList<double[]> c_alpha = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
@@ -68,18 +69,21 @@ public class DSSPParser {
                         accessibility.add(Integer.parseInt(line.substring(35, 38).replaceAll(" ", "")));
                         secondaryStructure.add(line.charAt(16));
                         sequence.append(line.charAt(13));
+                        String[] split = line.split("\\s+");
+                        c_alpha.add(new double[]{Double.parseDouble(split[split.length - 3]), Double.parseDouble(split[split.length - 2]), Double.parseDouble(split[split.length - 1])}); 
                     } else
                         break;
                 } else if (line.startsWith("  #")) {
                     acids = true;
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (NumberFormatException | NullPointerException exception) {}
+        catch (IOException e) {
             e.printStackTrace();
         }
-        return new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString(), proteinId);
+        DSSPData data = new DSSPData(accessibility.toArray(new Integer[0]), secondaryStructure.toArray(new Character[0]), sequence.toString(), proteinId);
+        data.setCa_coordinates(c_alpha.toArray(new double[][]{}));
+        return data;
     }
 
     public static DSSPData getDSSPData(String proteinId) {

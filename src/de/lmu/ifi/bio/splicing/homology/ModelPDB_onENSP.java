@@ -2,13 +2,16 @@ package de.lmu.ifi.bio.splicing.homology;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.config.Setting;
+import de.lmu.ifi.bio.splicing.io.DSSPParser;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
+//import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
+import de.lmu.ifi.bio.splicing.structures.mapping.DSSPData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import de.lmu.ifi.bio.splicing.superimpose.Superposition;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -160,17 +163,25 @@ public class ModelPDB_onENSP {
         return modelAlignmentsOnProtein(alignments, enstId);
     }
 
-    public String displayModels(ArrayList<Model> models, String ENST_id) {
+    public String displayModels(String ENST_id) {
+        ArrayList<Model> models = getModelsForENST(ENST_id);
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
-        StringBuilder sb = new StringBuilder("        " + proteinSeq + '\n');
+        StringBuilder sb = new StringBuilder("        " + proteinSeq + "\n\n");
         for (Model model : models) {
+            DSSPData dssp = DSSPParser.parseDSSPFile(new File(Setting.DSSPDIR+model.getPdbId()+".dssp"), "");
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();
             for (int i = 0; i < proteinSeq.length(); i++) {
-                char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? '+' : '\'';//&& model.getAligned().containsKey(i)
+                char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? proteinSeq.charAt(aligned.get(i)) : '\'';//&& model.getAligned().containsKey(i)
                 sb.append(append);
             }
-            sb.append('\n');
+            sb.append("\n        ");
+            Character[] secStruct = dssp.getSecondarySructure();
+            for (int i = 0; i < proteinSeq.length(); i++) {
+                char append = (i >= model.getEnspStart() && i <= model.getEnspStop() && aligned.containsKey(i)) ? secStruct[aligned.get(i)] : '\'';//&& model.getAligned().containsKey(i)
+                sb.append(append);
+            }
+            sb.append("\n\n");
         }
         return sb.toString();
     }
@@ -351,12 +362,12 @@ public class ModelPDB_onENSP {
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
-//        System.out.println(m.displayModels(models, "ENST00000380952"));
+        System.out.println(m.displayModels("ENST00000380952"));
 //        //PDBData pdb = m.modelToStructure(models.get(0));
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
-        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);//
+        //m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);//
     }
 
 }
