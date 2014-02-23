@@ -4,7 +4,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
-import de.lmu.ifi.bio.splicing.jsqlDatabase.dbquery;
+import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.structures.PDBData;
 import de.lmu.ifi.bio.splicing.structures.mapping.Model;
 import de.lmu.ifi.bio.splicing.superimpose.Superposition;
