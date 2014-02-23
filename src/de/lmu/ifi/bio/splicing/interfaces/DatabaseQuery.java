@@ -40,7 +40,7 @@ public interface DatabaseQuery {
      * @param isoform2 TranscriptID 2
      * @return new Event()
      */
-    public Event getEvent(String isoform1, String isoform2);
+    public List<Event> getEvent(String isoform1, String isoform2);
 
     public EventDisplay getEventDisplay(String isoform1, String isoform2);
 

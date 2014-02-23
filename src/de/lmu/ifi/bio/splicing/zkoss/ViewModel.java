@@ -144,7 +144,7 @@ public class ViewModel {
         selectedGene = data.getSelectedGene(eventDisplay);
     }
 
-    @NotifyChange({"transcriptid","sequenceview"})
+    @NotifyChange("*")
     public void selectgriditem(EventDisplay ev) {
         //TODO was passiert wenn auf item in gridlist geklickt wird
         // pattern

@@ -211,8 +211,8 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
-    public Event getEvent(String isoform1, String isoform2) {
-        String query = "Select start, stop, type from Event where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
+    public List<Event> getEvent(String isoform1, String isoform2) {
+        String query = String.format("Select start, stop, type from Event where isoform1 = '%s' and isoform2 = '%s' order by start", isoform1, isoform2);
         Object[][] result = null;
         try {
             result = db.select(query, 3);
@@ -220,10 +220,14 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
-        if (result.length > 0)
-            return new Event(isoform1, isoform2, (int) result[0][0], (int) result[0][1], ((String) result[0][2]).charAt(0));
-        else
-            return null;
+
+        List<Event> events = new LinkedList<>();
+        if (result.length > 0) {
+            for (int i = 0; i < result.length; i++) {
+                events.add(new Event(isoform1, isoform2, (int) result[i][0], (int) result[i][1], ((String) result[i][2]).charAt(0)));
+            }
+        }
+        return events;
     }
 
     public List<Event> getEvents(String geneid) {
