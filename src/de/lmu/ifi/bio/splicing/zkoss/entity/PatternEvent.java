@@ -3,7 +3,7 @@ package de.lmu.ifi.bio.splicing.zkoss.entity;
 /**
  * Created by uhligc on 13.02.14.
  */
-public class PatternEvent {
+public class PatternEvent implements Comparable {
     private String id, transcriptid;
     private int start, stop;
     private boolean is_total; //whether pattern is completetly inside in splicevent or not.
@@ -40,4 +40,11 @@ public class PatternEvent {
         return stop;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof PatternEvent))
+            return Integer.MAX_VALUE;
+        PatternEvent pe = ((PatternEvent) o);
+        return start - pe.getStart();
+    }
 }

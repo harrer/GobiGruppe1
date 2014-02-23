@@ -1,10 +1,12 @@
 package de.lmu.ifi.bio.splicing.zkoss;
 
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
@@ -28,6 +30,7 @@ public class DataImpl implements Data {
         dbq = new DBQuery();
         searchlist = new LinkedList<>();
         eventlist = new ArrayList<>();
+        seqEntity = new SequenceEntity();
     }
 
     @Override
@@ -159,19 +162,20 @@ public class DataImpl implements Data {
 
     @Override
     public SequenceEntity prepareSequences(EventDisplay eventDisplay) {
-        if (eventDisplay == null || !eventDisplay.equals(selectedEvent)) {
+        if (eventDisplay == null || !eventDisplay.equals(selectedEvent) || seqEntity == null || !seqEntity.getTranscriptid().equals(eventDisplay.getI1())) {
             setSelectedEvent(eventDisplay);
-
-        } else
+            calcSeqEntity();
             return seqEntity;
+        }
 
-        return null;
+        return seqEntity;
     }
 
     private void calcSeqEntity() {
         //get transcripts i1 and i2 | t1 and t2
         String i1 = selectedEvent.getI1();
         String i2 = selectedEvent.getI2();
+        seqEntity.setTranscriptid(i1);
         Transcript t1 = g.getTranscriptByTranscriptId(i1);
         Transcript t2 = g.getTranscriptByTranscriptId(i2);
 
@@ -179,6 +183,98 @@ public class DataImpl implements Data {
         String aa2 = GenomeSequenceExtractor.getProteinSequence(t2, g.getChromosome(), g.getStrand());
 
 
+        //TODO VARSPLIC sequence implementation
+        //TODO AA2 sequence implementation
+
+
+        //modified Strings ( with events included )
+        StringBuilder aa1_mod = new StringBuilder(), aa2_mod = new StringBuilder(), varsplic = new StringBuilder();
+        List<Event> eventlist1 = dbq.getEvent(i1, i2);
+        List<Event> eventlist2 = dbq.getEvent(i2, i1); //brauchen beide da inserts nur als start = pos, stop = pos-1 gespeichert sind --> länge unbekannt
+        Iterator<Event> it1 = eventlist1.iterator();
+        Iterator<Event> it2 = eventlist2.iterator();
+
+        int old1 = 0;
+        int old2 = 0;
+
+        while (it1.hasNext() && it2.hasNext()) {
+            Event e1 = it1.next();
+            Event e2 = it2.next();
+
+            if(e1.getType() != 'I')
+                aa1_mod.append(aa1.substring(old1, e1.getStart()));
+            else
+                aa1_mod.append(aa1.substring(old1, e1.getStart() - 1));
+
+            if(e2.getType() != 'I')
+                aa2_mod.append(aa2.substring(old2, e2.getStart()));
+            else
+                aa2_mod.append(aa2.substring(old2, e2.getStart() - 1));
+
+            switch (e1.getType()) {
+                case 'D': //wenn in e1 deletion rest analog
+                    varsplic.append(new String(new char[e1.getStop() - e1.getStart() + 1]).replace("\0", "D"));
+                    aa1_mod.append(aa1.substring(e1.getStart(), e1.getStop() + 1));
+                    aa2_mod.append(new String(new char[e1.getStop() - e1.getStart() + 1]).replace("\0", " "));
+                    break;
+                case 'R':
+                    if (e1.getStop() - e1.getStart() < e2.getStop() - e2.getStart()) {
+                        aa1_mod.append(new String(new char[(e2.getStop() - e2.getStart()) - (e1.getStop() - e1.getStart())]).replace("\0", " "));
+                        varsplic.append(new String(new char[e2.getStop() - e2.getStart() + 1]).replace("\0", "R"));
+                    } else {
+                        aa2_mod.append(new String(new char[(e1.getStop() - e1.getStart()) - (e2.getStop() - e2.getStart())]).replace("\0", " "));
+                        varsplic.append(new String(new char[e1.getStop() - e1.getStart() + 1]).replace("\0", "R"));
+                    }
+
+                    aa1_mod.append(aa1.substring(e1.getStart(), e1.getStop() + 1));
+                    aa2_mod.append(aa2.substring(e2.getStart(), e2.getStop() + 1));
+                    break;
+                case 'I':
+                    varsplic.append(new String(new char[e2.getStop() - e2.getStart() + 1]).replace("\0", "I"));
+                    aa1_mod.append(new String(new char[e2.getStop() - e2.getStart() + 1]).replace("\0", " "));
+                    aa2_mod.append(aa2.substring(e2.getStart(), e2.getStop() + 1));
+                    break;
+            }
+
+            old1 = e1.getStop() + 1;
+            old2 = e2.getStop() + 1;
+        }
+
+        aa1_mod.append(aa1.substring(old1, aa1.length()));
+        aa2_mod.append(aa2.substring(old2, aa2.length()));
+
+        //Prosite Pattern String
+        String sec = null, acc = null;
+        StringBuilder prosite = new StringBuilder();
+        List<PatternEvent> pelist = dbq.getPatternEventForTranscriptID(i1);
+        int end = 0;
+        for (PatternEvent patternEvent : pelist) {
+            if (patternEvent.getStart() - prosite.length() > 0)
+                prosite.append(new String(new char[patternEvent.getStart() - prosite.length() - 1]).replace("\0", "-"));
+            prosite.append(new String(new char[patternEvent.getStop() - patternEvent.getStart() + 1]).replace("\0", "P"));
+            end = patternEvent.getStop();
+        }
+        prosite.append(new String(new char[aa1.length() - end]).replace("\0", "-"));
+
+        //TODO implement SECStructure Chars in String
+        if (selectedEvent.getSec() != '\0')
+            sec = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getSec()));
+
+        //TODO implement Accessibility Chars in String
+        if (selectedEvent.getAcc() != '\0')
+            acc = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getAcc()));
+
+        if (sec != null) {
+            seqEntity.setSec(sec);
+        }
+
+        seqEntity.setAa1(aa1_mod.toString());
+        seqEntity.setAa2(aa2_mod.toString());
+        seqEntity.setVarsplic(varsplic.toString());
+        seqEntity.setProsite(prosite.toString());
+        if (acc != null) {
+            seqEntity.setAcc(acc);
+        }
     }
 
     @Override
@@ -239,5 +335,4 @@ public class DataImpl implements Data {
 
         return returnlist;
     }
-
 }

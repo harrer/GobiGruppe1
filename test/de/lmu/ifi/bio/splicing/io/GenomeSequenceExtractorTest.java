@@ -22,7 +22,7 @@ public class GenomeSequenceExtractorTest {
     public void setUp() throws Exception {
         liste = Setting.dbq.findTranscriptIDsForKeyword("1233");
         output = "/home/u/uhligc/git/gobi2/res/output.txt";
-        tr = Setting.dbq.getTranscript("ENST00000374004");
+        tr = Setting.dbq.getTranscript("ENST00000557594");
     }
 
     @Test
