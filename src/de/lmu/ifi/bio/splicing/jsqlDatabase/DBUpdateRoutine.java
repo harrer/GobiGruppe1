@@ -34,8 +34,7 @@ public class DBUpdateRoutine {
         List<String> geneIds = dbq.findAllGenes();
         HashMap<String, DSSPData> dsspData = new HashMap<>();
         long time = System.currentTimeMillis();
-        int i = 0;
-        double percent = 0;
+        int i = 0, percent = 0;
         for (String geneId : geneIds) {
             List<Event> events = dbq.getEvents(geneId);
             HashMap<String, List<Model>> mapModels = new HashMap<>();
@@ -63,24 +62,25 @@ public class DBUpdateRoutine {
                         dssp = DSSPParser.getDSSPData(used.getPdbId());
                         dsspData.put(used.getPdbId(), dssp);
                     }
-                    try {
+                    if(dssp != null) {
+                        try{
                         DSSP.updateEventWithAccAndSS(used, event, dssp);
-                    } catch (Exception e) {
-                        System.out.println("Exception while using Model " + used.getPdbId() + " for " + event.getI1());
-                        e.printStackTrace();
+                        } catch (Exception e){
+                            System.out.println("Exception while using Model " + used.getPdbId() + " for " + event.getI1());
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
+            i++;
+            if(i % (geneIds.size()/100) == 0) {
+                long da = System.currentTimeMillis();
+                percent++;
+                System.out.printf("Progress: %d%% after %.1f min, %.1f min left %n", percent,  ((da-time)/(float)60000) ,  ((da-time)/(float)i) * (geneIds.size()-i)/(float)60000);
+            }
         }
-        i++;
-        if (i % (geneIds.size() / 1000) == 0) {
-            long da = System.currentTimeMillis();
-
-            percent += 0.001;
-            System.out.printf("Progress: %.2f%% noch %.1f min %n", percent * 100, ((da - time) / (float) i) * (geneIds.size() - i) / (float) 60000);
-        }
+        DSSPParser.saveSSDistribution(DSSP.calcSecondaryStructureDistribution(dsspData.values()));
     }
-
 
     public static void insertEventSets() {
         List<String> thebiglist = dbq.findAllGenes();
@@ -107,6 +107,9 @@ public class DBUpdateRoutine {
     }
 
     public static void main(String[] args) {
-        insertEventSets();
+        if (args.length > 0 && args[0].equalsIgnoreCase("event"))
+            insertEventSets();
+        else
+            updateEvents();
     }
 }

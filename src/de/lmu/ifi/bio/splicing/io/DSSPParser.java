@@ -98,6 +98,20 @@ public class DSSPParser {
         return null;
     }
 
+    public static void saveSSDistribution(int[] distribution){
+        FileWriter fstream = null;
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter("/home/sch/schmidtju/Dokumente/SSDistribution.txt"));
+            int overall = distribution[0] + distribution[1] + distribution[2];
+            out.write("Helix: " + distribution[0] / (double) overall +
+                    "\nExtended: " + distribution[1] / (double) overall +
+                    "\nCoil: " + distribution[2] / (double) overall);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     static class StreamWrapper extends Thread {
         InputStream is = null;
         String type = null;

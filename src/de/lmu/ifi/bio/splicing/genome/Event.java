@@ -15,6 +15,8 @@ public class Event {
     char stopAcc = 'N';
     char access = 'N';
 
+    String modelPdbId;
+
     double accessibility = 0;
 
     public Event(String i1, String i2, int start, int stop, char type) {
@@ -59,6 +61,14 @@ public class Event {
 
     public void setAccessibility(double accessibility) {
         this.accessibility = accessibility;
+    }
+
+    public String getModelPdbId() {
+        return modelPdbId;
+    }
+
+    public void setModelPdbId(String modelPdbId) {
+        this.modelPdbId = modelPdbId;
     }
 
     public char getStartAcc() {
