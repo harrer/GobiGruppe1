@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.splicing.homology;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.config.Setting;
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.io.DSSPParser;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
@@ -186,10 +187,19 @@ public class ModelPDB_onENSP {
         return modelAlignmentsOnProtein(alignments, enstId);
     }
 
-    public String displayModels(String ENST_id) {
+    public String displayModels(String ENST_id, List<Event> events) {
         ArrayList<Model> models = getModelsForENST(ENST_id);
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
-        StringBuilder sb = new StringBuilder(ENST_id+"\n        " + proteinSeq + "\n\n");
+        StringBuilder sb = new StringBuilder(ENST_id+"\n        " + proteinSeq + "\n        ");
+        int old = 0;
+        for (Event event : events){
+            sb.append(new String(new char[event.getStart() - old]).replaceAll("\0", " "));
+            if(event.getType() != 'I'){
+                sb.append(new String(new char[event.getStop() - event.getStart() + 1]).replaceAll("\0", String.valueOf(event.getType())));
+                old = event.getStop() + 1;
+            }
+        }
+        sb.append("\n\n");
         for (Model model : models) {
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();

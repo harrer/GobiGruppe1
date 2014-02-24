@@ -55,7 +55,7 @@ public class DataImpl implements Data {
         String enst1 = eventDisplay.getI1();
         String enst2 = eventDisplay.getI2();
 
-        return new ModelSequenceEntity(model.displayModels(enst1), model.displayModels(enst2));
+        return new ModelSequenceEntity(model.displayModels(enst1, selectedEventlist1), model.displayModels(enst2, selectedEventlist2));
     }
 
     @Override
