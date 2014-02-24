@@ -49,11 +49,11 @@
                             <textbox instant="true" hflex="1"
                                      value="@bind(vm.filter.pattern)" onChange="@command('changeFilter')"/>
                         </auxheader>
-                        <auxheader colspan="1">
+                        <auxheader colspan="2">
                             <textbox instant="true" hflex="1"
                                      value="@bind(vm.filter.sec)" onChange="@command('changeFilter')"/>
                         </auxheader>
-                        <auxheader colspan="1">
+                        <auxheader colspan="2">
                             <textbox instant="true" hflex="1"
                                      value="@bind(vm.filter.acc)" onChange="@command('changeFilter')"/>
                         </auxheader>
@@ -66,8 +66,10 @@
                         <listheader hflex="1">Stop</listheader>
                         <listheader hflex="1">Type</listheader>
                         <listheader hflex="2">Pattern</listheader>
-                        <listheader hflex="1">Secondary Structure</listheader>
-                        <listheader hflex="1">Acces.</listheader>
+                        <listheader hflex="1">StartSS</listheader>
+                        <listheader hflex="1">StopSS</listheader>
+                        <listheader hflex="1">StartAcc</listheader>
+                        <listheader hflex="1">StopAcc</listheader>
                     </listhead>
                     <template name="model">
                         <listitem>
@@ -93,10 +95,16 @@
                                 <label value="${each.patternids}" onSelect="alert('flash')"/>
                             </listcell>
                             <listcell>
-                                <label value="${each.sec}"/>
+                                <label value="${each.startSS}"/>
                             </listcell>
                             <listcell>
-                                <label value="${each.acc}"/>
+                                <label value="${each.stopSS}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.startAcc}"/>
+                            </listcell>
+                            <listcell>
+                                <label value="${each.stopAcc}"/>
                             </listcell>
                         </listitem>
                     </template>
