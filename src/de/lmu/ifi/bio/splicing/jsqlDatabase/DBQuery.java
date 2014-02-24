@@ -254,14 +254,18 @@ public class DBQuery implements DatabaseQuery {
         String query2 = "SELECT\n" +
                 "  se.start,\n" +
                 "  se.stop,\n" +
-                "  type,\n" +
+                "  se.type,\n" +
                 "  access,\n" +
                 "  sec,\n" +
                 "  startSS,\n" +
                 "  stopSS,\n" +
                 "  startAcc,\n" +
-                "  stopAcc\n" +
+                "  stopAcc,\n" +
+                "  pattern\n  " +
+                "  pe.start,\n" +
+                "  pe.stop\n" +
                 "FROM Event se JOIN PatternEvent pe ON isoform1 = fk_pattern_id\n" +
+                "      JOIN Pattern p on fk_pattern_id = p.id\n" +
                 "WHERE isoform1 = '' AND isoform2 = '' AND\n" +
                 "      ((se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))";
         String query = "select start, stop, type, startSS, stopSS, startAcc, stopAcc, access from Event " +
@@ -278,34 +282,25 @@ public class DBQuery implements DatabaseQuery {
             return null;
 
         List<EventDisplay> eventList = new LinkedList<>();
+        List<PatternEvent> patternList;
         EventDisplay cur = null;
-        for (Object[] objects : result) {
-            if(cur == null || cur.getStart() != (int) result[0][0] || cur.getStop() != (int) result[0][1] || cur.getType() != ((String) result[0][2]).charAt(0))
-            cur = new EventDisplay(isoform1, isoform2, (int) result[0][0],
-                    (int) result[0][1],
-                    ((String) result[0][2]).charAt(0),
-                    result[0][3] != null ? ((String) result[0][3]).charAt(0) : 'N',
-                    result[0][4] != null ? ((String) result[0][4]).charAt(0) : 'N',
-                    result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'N',
-                    result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'N',
-                    result[0][7] != null ? ((String) result[0][7]).charAt(0) : 'N');
-            eventList.add();
-        }
-
-
         for (int i = 0; i < result.length; i++) {
-            List<PatternEvent> list = new LinkedList<>();
-            if (result[0][3] != null) {
-                for (int j = 0; j < result.length; j++) {
-                    list.add(new PatternEvent((String) result[i][7], isoform1, (int) (long) result[i][3], (int) (long) result[i][4]));
-                }
+            if (cur == null || cur.getStart() != (int) result[i][0]) {
+                cur = new EventDisplay(isoform1, isoform2, (int) result[i][0],
+                        (int) result[i][1],
+                        ((String) result[i][2]).charAt(0),
+                        result[i][3] != null ? ((String) result[i][3]).charAt(0) : 'N',
+                        result[i][4] != null ? ((String) result[i][4]).charAt(0) : 'N',
+                        result[i][5] != null ? ((String) result[i][5]).charAt(0) : 'N',
+                        result[i][6] != null ? ((String) result[i][6]).charAt(0) : 'N',
+                        result[i][7] != null ? ((String) result[i][7]).charAt(0) : 'N');
+                eventList.add(cur);
+                pattern = new LinkedList<>();
+                cur.setPattern(pattern);
+                pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
+            } else {
+                pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
             }
-
-            eventList.add(new EventDisplay(isoform1, isoform2, (int) result[0][0],
-                    (int) result[0][1],
-                    ((String) result[0][2]).charAt(0),
-                    result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'N', list,
-                    result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'N'));
         }
         return eventList;
     }
