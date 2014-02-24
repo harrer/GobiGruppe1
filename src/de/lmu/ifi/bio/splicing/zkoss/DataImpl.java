@@ -28,12 +28,16 @@ public class DataImpl implements Data {
     private EventDisplay selectedEvent;
     private RenderedImage bi;
     private SequenceEntity seqEntity;
+    private ModelPDB_onENSP model;
+    private List<Event> selectedEventlist1;
+    private List<Event> selectedEventlist2;
 
     DataImpl() {
         dbq = new DBQuery();
         searchlist = new LinkedList<>();
         eventlist = new ArrayList<>();
         seqEntity = new SequenceEntity();
+        model = new ModelPDB_onENSP(true);
     }
 
     @Override
@@ -50,7 +54,7 @@ public class DataImpl implements Data {
     public ModelSequenceEntity getModel(EventDisplay eventDisplay) {
         String enst1 = eventDisplay.getI1();
         String enst2 = eventDisplay.getI2();
-        ModelPDB_onENSP model = new ModelPDB_onENSP(true);
+
         return new ModelSequenceEntity(model.displayModels(enst1), model.displayModels(enst2));
     }
 
@@ -202,10 +206,10 @@ public class DataImpl implements Data {
 
         //modified Strings ( with events included )
         StringBuilder aa1_mod = new StringBuilder(), aa2_mod = new StringBuilder(), varsplic = new StringBuilder();
-        List<Event> eventlist1 = dbq.getEvent(i1, i2);
-        List<Event> eventlist2 = dbq.getEvent(i2, i1); //brauchen beide da inserts nur als start = pos, stop = pos-1 gespeichert sind --> länge unbekannt
-        Iterator<Event> it1 = eventlist1.iterator();
-        Iterator<Event> it2 = eventlist2.iterator();
+        selectedEventlist1 = dbq.getEvent(i1, i2);
+        selectedEventlist2 = dbq.getEvent(i2, i1); //brauchen beide da inserts nur als start = pos, stop = pos-1 gespeichert sind --> länge unbekannt
+        Iterator<Event> it1 = selectedEventlist1.iterator();
+        Iterator<Event> it2 = selectedEventlist2.iterator();
 
         int old1 = 0;
         int old2 = 0;
