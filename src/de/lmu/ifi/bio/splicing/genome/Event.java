@@ -27,6 +27,35 @@ public class Event {
         this.type = type; //1 = deletion, 2 = insert, 3 = replace
     }
 
+    public Event(String i1, String i2, int start, int stop, char type, char secondaryStructure, char startSS, char stopSS, char startAcc, char stopAcc, char access, String modelPdbId, double accessibility) {
+        this.i1 = i1;
+        this.i2 = i2;
+        this.start = start;
+        this.stop = stop;
+        this.type = type;
+        this.secondaryStructure = secondaryStructure;
+        this.startSS = startSS;
+        this.stopSS = stopSS;
+        this.startAcc = startAcc;
+        this.stopAcc = stopAcc;
+        this.access = access;
+        this.modelPdbId = modelPdbId;
+        this.accessibility = accessibility;
+    }
+
+    public Event(String i1, String i2, int start, int stop, char type, char startSS, char stopSS, char startAcc, char stopAcc, char access) {
+        this.i1 = i1;
+        this.i2 = i2;
+        this.start = start;
+        this.stop = stop;
+        this.type = type;
+        this.startSS = startSS;
+        this.stopSS = stopSS;
+        this.startAcc = startAcc;
+        this.stopAcc = stopAcc;
+        this.access = access;
+    }
+
     public String getI1() {
         return i1;
     }

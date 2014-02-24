@@ -42,7 +42,7 @@ public interface DatabaseQuery {
      */
     public List<Event> getEvent(String isoform1, String isoform2);
 
-    public EventDisplay getEventDisplay(String isoform1, String isoform2);
+    public List<EventDisplay> getEventDisplay(String isoform1, String isoform2);
 
     public List<Event> getEvents(String geneid);
 

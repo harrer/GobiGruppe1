@@ -11,9 +11,17 @@ import java.util.Set;
  * Created by uhligc on 13.02.14.
  */
 public class EventDisplay extends Event {
-    private char acc;
+    public void setPattern(List<PatternEvent> pattern) {
+        this.pattern = pattern;
+    }
+
+    public void setPatternids(String patternids) {
+        this.patternids = patternids;
+    }
+
+    //    private char acc;
     private List<PatternEvent> pattern;
-    private char sec;
+//    private char sec;
     private String patternids;
     private Gene curGene;
 
@@ -27,18 +35,24 @@ public class EventDisplay extends Event {
 
     public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, List<PatternEvent> pattern, char sec) {
         super(i1, i2, start, stop, type);
-        this.acc = acc;
+        this.setSecondaryStructure(sec);
+        this.setAccess(acc);
         this.pattern = pattern;
-        this.sec = sec;
         patternids = calcpatternids();
     }
 
     public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, List<PatternEvent> pattern, char sec, Gene gene) {
         super(i1, i2, start, stop, type);
-        this.acc = acc;
+        this.setSecondaryStructure(sec);
+        this.setAccess(acc);
         this.pattern = pattern;
-        this.sec = sec;
         curGene = gene;
+        patternids = calcpatternids();
+    }
+
+    public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, char startSS, char stopSS, char startAcc, char stopAcc) {
+        super(i1, i2, start, stop, type, acc, startSS, stopSS, startAcc, stopAcc);
+        this.pattern = pattern;
         patternids = calcpatternids();
     }
 
@@ -46,16 +60,8 @@ public class EventDisplay extends Event {
         return patternids;
     }
 
-    public char getAcc() {
-        return acc;
-    }
-
     public List<PatternEvent> getPattern() {
         return pattern;
-    }
-
-    public char getSec() {
-        return sec;
     }
 
     private String calcpatternids() {
@@ -81,9 +87,9 @@ public class EventDisplay extends Event {
     @Override
     public String toString() {
         return "EventDisplay{" + super.toString() +
-                "acc=" + acc +
+                "acc=" + getAccessibility() +
                 ", pattern=" + pattern +
-                ", sec=" + sec +
+                ", sec=" + getSecondaryStructure() +
                 '}';
     }
 }

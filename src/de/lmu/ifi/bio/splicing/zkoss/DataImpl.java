@@ -146,8 +146,8 @@ public class DataImpl implements Data {
             if (!String.valueOf(next.getStop()).contains(stop)) continue;
             if (!String.valueOf(next.getType()).contains(type)) continue;
             if (!next.getPatternids().contains(pattern)) continue;
-            if (!(String.valueOf(next.getSec()).contains(sec))) continue;
-            if (!(String.valueOf(next.getAcc()).contains(acc))) continue;
+            if (!(String.valueOf(next.getSecondaryStructure()).contains(sec))) continue;
+            if (!(String.valueOf(next.getAccessibility()).contains(acc))) continue;
 
             events.add(next);
         }
@@ -277,12 +277,12 @@ public class DataImpl implements Data {
         prosite.append(new String(new char[aa1.length() - end]).replace("\0", "-"));
 
         //TODO implement SECStructure Chars in String
-        if (selectedEvent.getSec() != '\0')
-            sec = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getSec()));
+        if (selectedEvent.getSecondaryStructure() != '\0')
+            sec = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getSecondaryStructure()));
 
         //TODO implement Accessibility Chars in String
-        if (selectedEvent.getAcc() != '\0')
-            acc = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getAcc()));
+        if (selectedEvent.getAccessibility() != '\0')
+            acc = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getAccessibility()));
 
         if (sec != null) {
             seqEntity.setSec(sec);

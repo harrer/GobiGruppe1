@@ -250,11 +250,22 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
-    public EventDisplay getEventDisplay(String isoform1, String isoform2) {
-        String query = "select `Event`.start, `Event`.stop, type, `PatternEvent`.start, `PatternEvent`.stop, `access`, sec, PatternEvent.fk_pattern_id\n" +
-                " from Event inner join Transcript on `Event`.isoform1 = Transcript.transcriptid\n" +
-                " left outer join PatternEvent on Transcript.transcriptid = PatternEvent.transcriptid\n" +
-                " where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
+    public List<EventDisplay> getEventDisplay(String isoform1, String isoform2) {
+        String query2 = "SELECT\n" +
+                "  se.start,\n" +
+                "  se.stop,\n" +
+                "  type,\n" +
+                "  access,\n" +
+                "  sec,\n" +
+                "  startSS,\n" +
+                "  stopSS,\n" +
+                "  startAcc,\n" +
+                "  stopAcc\n" +
+                "FROM Event se JOIN PatternEvent pe ON isoform1 = fk_pattern_id\n" +
+                "WHERE isoform1 = '' AND isoform2 = '' AND\n" +
+                "      ((se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))";
+        String query = "select start, stop, type, startSS, stopSS, startAcc, stopAcc, access from Event " +
+                "where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
         Object[][] result = null;
         try {
             result = db.select(query, 8);
@@ -266,20 +277,37 @@ public class DBQuery implements DatabaseQuery {
         if (result.length == 0)
             return null;
 
-        List<PatternEvent> list = new LinkedList<>();
-
-        if (result[0][3] != null) {
-            for (int i = 0; i < result.length; i++) {
-                Object[] objects = result[i];
-                list.add(new PatternEvent((String) result[0][7], isoform1, (int) (long) result[0][3], (int) (long) result[0][4]));
-            }
+        List<EventDisplay> eventList = new LinkedList<>();
+        EventDisplay cur = null;
+        for (Object[] objects : result) {
+            if(cur == null || cur.getStart() != (int) result[0][0] || cur.getStop() != (int) result[0][1] || cur.getType() != ((String) result[0][2]).charAt(0))
+            cur = new EventDisplay(isoform1, isoform2, (int) result[0][0],
+                    (int) result[0][1],
+                    ((String) result[0][2]).charAt(0),
+                    result[0][3] != null ? ((String) result[0][3]).charAt(0) : 'N',
+                    result[0][4] != null ? ((String) result[0][4]).charAt(0) : 'N',
+                    result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'N',
+                    result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'N',
+                    result[0][7] != null ? ((String) result[0][7]).charAt(0) : 'N');
+            eventList.add();
         }
 
-        return new EventDisplay(isoform1, isoform2, (int) result[0][0],
-                (int) result[0][1],
-                ((String) result[0][2]).charAt(0),
-                result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'X', list,
-                result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'X');
+
+        for (int i = 0; i < result.length; i++) {
+            List<PatternEvent> list = new LinkedList<>();
+            if (result[0][3] != null) {
+                for (int j = 0; j < result.length; j++) {
+                    list.add(new PatternEvent((String) result[i][7], isoform1, (int) (long) result[i][3], (int) (long) result[i][4]));
+                }
+            }
+
+            eventList.add(new EventDisplay(isoform1, isoform2, (int) result[0][0],
+                    (int) result[0][1],
+                    ((String) result[0][2]).charAt(0),
+                    result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'N', list,
+                    result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'N'));
+        }
+        return eventList;
     }
 
     @Override
