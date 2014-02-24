@@ -3,6 +3,7 @@ package de.lmu.ifi.bio.splicing.homology;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.config.Setting;
+import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.io.DSSPParser;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.io.PDBParser;
@@ -185,11 +186,41 @@ public class ModelPDB_onENSP {
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, coverage, longerThan, seqIdentity);
         return modelAlignmentsOnProtein(alignments, enstId);
     }
+    
+    public int[] numberOfModels(double coverage, int longerThan, double seqIdentity) throws SQLException{
+        Object[] templates = Setting.dbq.db.select_oneColumn("select distinct transcriptid from transcript_has_pdbs");
+        int c = 0, templateCount = 0;
+        for (Object object : templates) {
+            templateCount++;
+            if(templateCount % 100 ==0){System.out.println(templateCount+" templates processed");}
+            String enst = "";
+            boolean outOfBounds = false;
+            try {
+                enst = (String) Setting.dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '" + (String) object + "'")[0];
+            } catch (SQLException | ArrayIndexOutOfBoundsException exception) {
+                outOfBounds = true;
+            }
+                if (!outOfBounds) {
+                ArrayList<Model> models = getModelsForENST(enst, coverage, longerThan, seqIdentity);
+                c = (models.size() > 0) ? c + 1 : c;
+            }
+        }
+        return new int[]{c, templateCount};
+    }
 
-    public String displayModels(String ENST_id) {
+    public String displayModels(String ENST_id, List<Event> events) {
         ArrayList<Model> models = getModelsForENST(ENST_id);
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
-        StringBuilder sb = new StringBuilder(ENST_id+"\n        " + proteinSeq + "\n\n");
+        StringBuilder sb = new StringBuilder(ENST_id+"\n        " + proteinSeq + "\n        ");
+        int old = 0;
+        for (Event event : events){
+            sb.append(new String(new char[event.getStart() - old]).replaceAll("\0", " "));
+            if(event.getType() != 'I'){
+                sb.append(new String(new char[event.getStop() - event.getStart() + 1]).replaceAll("\0", String.valueOf(event.getType())));
+                old = event.getStop() + 1;
+            }
+        }
+        sb.append("\n\n");
         for (Model model : models) {
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();
@@ -511,13 +542,14 @@ public class ModelPDB_onENSP {
 //        System.out.println("");
 //        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
 //        System.out.println(GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript("ENST00000308639")));
-        ArrayList<Model> models = m.getModelsForENST("ENST00000412135");
-        Overlap overlap = m.findModelOverlap(models.get(9), models.get(10));
+//        ArrayList<Model> models = m.getModelsForENST("ENST00000412135");
+//        Overlap overlap = m.findModelOverlap(models.get(9), models.get(10));
         // ### superimposeOverlap() ###
-        Object[] sp1 = m.superimposeFullOverlap(overlap);
-        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(9).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(10).getPdbId()+".pdb");
+//        Object[] sp1 = m.superimposeFullOverlap(overlap);
+//        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(9).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(10).getPdbId()+".pdb");
         //Object[] sp2 = m.superimposeOverlap(overlap2);
-        System.out.println("");
+        int[] numberOfModels = m.numberOfModels(0.6, 60, 0.4);
+        System.out.println(numberOfModels[0]+"models on "+numberOfModels[1] + "templates");
     }
 
 }
