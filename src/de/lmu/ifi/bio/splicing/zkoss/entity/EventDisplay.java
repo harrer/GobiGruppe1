@@ -13,6 +13,7 @@ import java.util.Set;
 public class EventDisplay extends Event {
     public void setPattern(List<PatternEvent> pattern) {
         this.pattern = pattern;
+        calcpatternids();
     }
 
     public void setPatternids(String patternids) {
@@ -38,7 +39,6 @@ public class EventDisplay extends Event {
         this.setSecondaryStructure(sec);
         this.setAccess(acc);
         this.pattern = pattern;
-        patternids = calcpatternids();
     }
 
     public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, List<PatternEvent> pattern, char sec, Gene gene) {
@@ -47,13 +47,11 @@ public class EventDisplay extends Event {
         this.setAccess(acc);
         this.pattern = pattern;
         curGene = gene;
-        patternids = calcpatternids();
     }
 
     public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, char startSS, char stopSS, char startAcc, char stopAcc) {
         super(i1, i2, start, stop, type, acc, startSS, stopSS, startAcc, stopAcc);
         this.pattern = pattern;
-        patternids = calcpatternids();
     }
 
     public String getPatternids() {
@@ -64,7 +62,7 @@ public class EventDisplay extends Event {
         return pattern;
     }
 
-    private String calcpatternids() {
+    public void calcpatternids() {
         Set<String> dada = new HashSet<>();
         for (PatternEvent patternEvent : pattern) {
             if (!dada.contains(patternEvent.getId()))
@@ -81,7 +79,7 @@ public class EventDisplay extends Event {
             prefix = "\n";
             sb.append(s);
         }
-        return sb.toString();
+        patternids = sb.toString();
     }
 
     @Override

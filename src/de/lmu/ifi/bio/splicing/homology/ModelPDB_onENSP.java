@@ -34,7 +34,9 @@ public class ModelPDB_onENSP {
     private final Superposition superposition;
     private HashMap<String, Integer> enstSequnces;
     private final int[] gtdts_frequencies;
-    private final HashMap<String, String> pdb_cath_map;
+    private final HashMap<String, String> cathPDB_id_cath_class_map;
+    private final HashMap<String, int[]> cathPDB_start_stop_map;
+    private final HashMap<String, ArrayList<String>> PDBid_cathPDB_id_map;
 
     public ModelPDB_onENSP() {
         pdbSequences = new HashMap<>();//readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
@@ -42,7 +44,9 @@ public class ModelPDB_onENSP {
         this.gotoh = new SingleGotoh();
         superposition = new Superposition();
         gtdts_frequencies = new int[101];
-        pdb_cath_map = new HashMap<>();
+        cathPDB_id_cath_class_map = new HashMap<>();
+        cathPDB_start_stop_map = new HashMap<>();
+        PDBid_cathPDB_id_map = new HashMap<>();
         try {
             this.read_pdb_cath_mapping();
         } catch (IOException ex) {
@@ -56,7 +60,9 @@ public class ModelPDB_onENSP {
         this.gotoh = new SingleGotoh();
         superposition = new Superposition();
         gtdts_frequencies = new int[101];
-        pdb_cath_map = new HashMap<>();
+        cathPDB_id_cath_class_map = new HashMap<>();
+        cathPDB_start_stop_map = new HashMap<>();
+        PDBid_cathPDB_id_map = new HashMap<>();
     }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
@@ -329,22 +335,39 @@ public class ModelPDB_onENSP {
     
     private void read_pdb_cath_mapping() throws IOException{
         BufferedReader br = new BufferedReader(new FileReader("/home/proj/biosoft/CATH/CathDomainDescriptionFile.v3.5.0"));
-        String line, domain="", cathcode="";
-        boolean domainFound = false, cathcodeFound = false;
+        String line, domain="", cathDomain = "", cathcode="";
+        int[] range = new int[0];
+        boolean domainFound = false, cathcodeFound = false, rangeFound = false;
         while((line = br.readLine()).startsWith("#")){}//ignore header
         while((line = br.readLine()) != null){
+            boolean nfException = false;
             if(line.startsWith("DOMAIN")){
                 String pdb = line.split("\\s+")[1];
                 domain = pdb.substring(0,4)+'.'+pdb.charAt(4);
+                cathDomain = pdb;
                 domainFound = true;
             }
             else if(line.startsWith("CATHCODE")){
                 cathcode = line.split("\\s+")[1];
                 cathcodeFound = true;
             }
-            if(domainFound && cathcodeFound){
-                this.pdb_cath_map.put(domain, cathcode);
-                domainFound = false; cathcodeFound = false;
+            else if(line.startsWith("SRANGE")){
+                String[] splitWhitespace = line.split("\\s+");
+                try {
+                    range = new int[]{Integer.parseInt(splitWhitespace[1].split("=")[1]), Integer.parseInt(splitWhitespace[2].split("=")[1])};
+                } catch (NumberFormatException numberFormatException) {
+                    range = new int[]{0,0};
+                    nfException = true;
+                }
+                rangeFound = true;
+            }
+            if(domainFound && cathcodeFound && rangeFound && !nfException){
+                this.cathPDB_id_cath_class_map.put(cathDomain, cathcode);
+                cathPDB_start_stop_map.put(cathDomain, range);
+                ArrayList<String> list = (PDBid_cathPDB_id_map.containsKey(domain))? PDBid_cathPDB_id_map.get(domain) : new ArrayList<String>();
+                list.add(cathDomain);
+                PDBid_cathPDB_id_map.put(domain, list);    
+                domainFound = false; cathcodeFound = false; rangeFound = false;
             }
         }
     }
@@ -381,8 +404,32 @@ public class ModelPDB_onENSP {
                 }
                 Model m1 = overlap.getModel1();
                 Model m2 = overlap.getModel2();
-                String supFam1 = pdb_cath_map.containsKey(m1.getPdbId())? pdb_cath_map.get(m1.getPdbId()) : "";
-                String supFam2 = pdb_cath_map.containsKey(m2.getPdbId())? pdb_cath_map.get(m2.getPdbId()) : "";
+                //String supFam1 = cathPDB_id_cath_class_map.containsKey(m1.getPdbId())? cathPDB_id_cath_class_map.get(m1.getPdbId()) : "";
+                //String supFam2 = cathPDB_id_cath_class_map.containsKey(m2.getPdbId())? cathPDB_id_cath_class_map.get(m2.getPdbId()) : "";
+//    private final HashMap<String, String> cathPDB_id_cath_class_map;
+//    private final HashMap<String, int[]> cathPDB_start_stop_map;
+//    private final HashMap<String, ArrayList<String>> PDBid_cathPDB_id_map;
+                String supFam1 = "";
+                if(PDBid_cathPDB_id_map.containsKey(m1.getPdbId())){
+                    for (String id : PDBid_cathPDB_id_map.get(m1.getPdbId())) {
+                        int[] range = this.cathPDB_start_stop_map.get(id);
+                        if(m1.getPdbStart()>= range[0] && m1.getPdbStop()<=range[1]){
+                            supFam1 = this.cathPDB_id_cath_class_map.get(id);
+                            break;
+                        }
+                    }
+                }
+                String supFam2 = "";
+                if(PDBid_cathPDB_id_map.containsKey(m2.getPdbId())){
+                    for(String id : PDBid_cathPDB_id_map.get(m2.getPdbId())){
+                        int[] range = cathPDB_start_stop_map.get(id);
+                        if(m2.getPdbStart()>=range[0] && m2.getPdbStop()<=range[1]){
+                            supFam2 = cathPDB_id_cath_class_map.get(id);
+                            break;
+                        }
+                    }
+                }
+                
                 try {
                     Object[]sp = superimposeOverlap(overlap);
                     double[] scores = new double[]{(double) sp[2], (double) sp[3]};
