@@ -509,13 +509,13 @@ public class ModelPDB_onENSP {
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
-//        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
+        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
 //        System.out.println(GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript("ENST00000308639")));
-        ArrayList<Model> models = m.getModelsForENST("ENST00000412135");
-        Overlap overlap = m.findModelOverlap(models.get(9), models.get(10));
+//        ArrayList<Model> models = m.getModelsForENST("ENST00000412135");
+//        Overlap overlap = m.findModelOverlap(models.get(9), models.get(10));
         // ### superimposeOverlap() ###
-        Object[] sp1 = m.superimposeFullOverlap(overlap);
-        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(9).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(10).getPdbId()+".pdb");
+//        Object[] sp1 = m.superimposeFullOverlap(overlap);
+//        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(9).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(10).getPdbId()+".pdb");
         //Object[] sp2 = m.superimposeOverlap(overlap2);
         System.out.println("");
     }
