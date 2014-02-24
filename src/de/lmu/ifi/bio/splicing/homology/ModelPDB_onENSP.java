@@ -410,13 +410,17 @@ public class ModelPDB_onENSP {
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
-        System.out.println(m.displayModels("ENST00000308639"));
+//        System.out.println(m.displayModels("ENST00000308639"));
 //        //PDBData pdb = m.modelToStructure(models.get(0));
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
 //        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
 //        System.out.println(GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript("ENST00000308639")));
+        ArrayList<Model> models = m.getModelsForENST("ENST00000308639");
+        Overlap overlap = m.findModelOverlap(models.get(0), models.get(7));
+        // ### superimposeOverlap() ###
+        System.out.println("");
     }
 
 }
