@@ -299,7 +299,6 @@ public class DBQuery implements DatabaseQuery {
                 eventList.add(cur);
                 pattern = new LinkedList<>();
                 pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
-                cur.setPattern(pattern);
                 if (result[i][8] != null) {
                     pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
                 }
