@@ -24,7 +24,7 @@ public class ViewModel {
     private SpliceEventFilter filter = new SpliceEventFilter();
     private EventDisplay eventDisplay;
     private RenderedImage renderedImage; // set int und height by init
-    private int height_img_ri = 600, width_img_ri = 400;
+    private int height_img_ri = 200, width_img_ri = 1000;
     private Gene selectedGene;
     private SequenceEntity seqEntity;
     private ModelSequenceEntity mseqEntity;

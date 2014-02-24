@@ -40,7 +40,7 @@ public class ExonView {
         lineHeight = height / (size + 1);
     }
 
-    public ExonView(Gene gene, int width, int height) {
+    public ExonView(Gene gene, int height, int width) {
         this.gene = gene;
         this.width = width;
         this.height = height;

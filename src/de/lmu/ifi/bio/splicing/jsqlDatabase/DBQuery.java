@@ -34,11 +34,16 @@ public class DBQuery implements DatabaseQuery {
         //case-insensitivity
         keyword = keyword.toLowerCase();
 
+        String limit = "";
+
+        if (keyword.length() < 3)
+            limit = " LIMIT 0, 100";
+
         String query;
         Object[] result;
         List<String> liste = new LinkedList<>();
 
-        query = "SELECT geneid FROM Gene WHERE lower(geneid) REGEXP '" + keyword + "';";
+        query = "SELECT geneid FROM Gene WHERE lower(geneid) REGEXP '" + keyword + "'" + limit + ";";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -53,7 +58,7 @@ public class DBQuery implements DatabaseQuery {
         }
 
         db = new DB_Backend();
-        query = "SELECT transcriptid FROM Transcript WHERE lower(transcriptid) REGEXP '" + keyword + "';";
+        query = "SELECT transcriptid FROM Transcript WHERE lower(transcriptid) REGEXP '" + keyword + "'" + limit + ";";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -67,7 +72,7 @@ public class DBQuery implements DatabaseQuery {
             }
         }
 
-        query = "SELECT proteinid FROM Transcript WHERE lower(proteinid) REGEXP '" + keyword + "';";
+        query = "SELECT proteinid FROM Transcript WHERE lower(proteinid) REGEXP '" + keyword + "'" + limit + ";";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -245,11 +250,26 @@ public class DBQuery implements DatabaseQuery {
     }
 
     @Override
-    public EventDisplay getEventDisplay(String isoform1, String isoform2) {
-        String query = "select `Event`.start, `Event`.stop, type, `PatternEvent`.start, `PatternEvent`.stop, `access`, sec, PatternEvent.fk_pattern_id\n" +
-                " from Event inner join Transcript on `Event`.isoform1 = Transcript.transcriptid\n" +
-                " left outer join PatternEvent on Transcript.transcriptid = PatternEvent.transcriptid\n" +
-                " where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
+    public List<EventDisplay> getEventDisplay(String isoform1, String isoform2) {
+        String query2 = "SELECT\n" +
+                "  se.start,\n" +
+                "  se.stop,\n" +
+                "  se.type,\n" +
+                "  access,\n" +
+                "  sec,\n" +
+                "  startSS,\n" +
+                "  stopSS,\n" +
+                "  startAcc,\n" +
+                "  stopAcc,\n" +
+                "  pattern\n  " +
+                "  pe.start,\n" +
+                "  pe.stop\n" +
+                "FROM Event se JOIN PatternEvent pe ON isoform1 = fk_pattern_id\n" +
+                "      JOIN Pattern p on fk_pattern_id = p.id\n" +
+                "WHERE isoform1 = '' AND isoform2 = '' AND\n" +
+                "      ((se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))";
+        String query = "select start, stop, type, startSS, stopSS, startAcc, stopAcc, access from Event " +
+                "where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
         Object[][] result = null;
         try {
             result = db.select(query, 8);
@@ -261,20 +281,28 @@ public class DBQuery implements DatabaseQuery {
         if (result.length == 0)
             return null;
 
-        List<PatternEvent> list = new LinkedList<>();
-
-        if (result[0][3] != null) {
-            for (int i = 0; i < result.length; i++) {
-                Object[] objects = result[i];
-                list.add(new PatternEvent((String) result[0][7], isoform1, (int) (long) result[0][3], (int) (long) result[0][4]));
+        List<EventDisplay> eventList = new LinkedList<>();
+        List<PatternEvent> patternList;
+        EventDisplay cur = null;
+        for (int i = 0; i < result.length; i++) {
+            if (cur == null || cur.getStart() != (int) result[i][0]) {
+                cur = new EventDisplay(isoform1, isoform2, (int) result[i][0],
+                        (int) result[i][1],
+                        ((String) result[i][2]).charAt(0),
+                        result[i][3] != null ? ((String) result[i][3]).charAt(0) : 'N',
+                        result[i][4] != null ? ((String) result[i][4]).charAt(0) : 'N',
+                        result[i][5] != null ? ((String) result[i][5]).charAt(0) : 'N',
+                        result[i][6] != null ? ((String) result[i][6]).charAt(0) : 'N',
+                        result[i][7] != null ? ((String) result[i][7]).charAt(0) : 'N');
+                eventList.add(cur);
+                pattern = new LinkedList<>();
+                cur.setPattern(pattern);
+                pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
+            } else {
+                pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
             }
         }
-
-        return new EventDisplay(isoform1, isoform2, (int) result[0][0],
-                (int) result[0][1],
-                ((String) result[0][2]).charAt(0),
-                result[0][5] != null ? ((String) result[0][5]).charAt(0) : 'X', list,
-                result[0][6] != null ? ((String) result[0][6]).charAt(0) : 'X');
+        return eventList;
     }
 
     @Override

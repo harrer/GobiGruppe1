@@ -32,9 +32,9 @@ public class ModelSequenceEntity {
         this.model2 = flowers;
     }
 
-    public ModelSequenceEntity(String flower, String flowers) {
-        this.model1 = flower;
-        this.model2 = flowers;
+    public ModelSequenceEntity(String model1, String model2) {
+        this.model1 = model1;
+        this.model2 = model2;
     }
     
 }

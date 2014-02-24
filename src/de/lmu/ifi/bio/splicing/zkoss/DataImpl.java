@@ -45,7 +45,7 @@ public class DataImpl implements Data {
     public List<String> search(String keyword) {
         return dbq.search(keyword);
     }
-    
+
     @Override
     public ModelSequenceEntity getModel(EventDisplay eventDisplay) {
         String enst1 = eventDisplay.getI1();
@@ -146,8 +146,8 @@ public class DataImpl implements Data {
             if (!String.valueOf(next.getStop()).contains(stop)) continue;
             if (!String.valueOf(next.getType()).contains(type)) continue;
             if (!next.getPatternids().contains(pattern)) continue;
-            if (!(String.valueOf(next.getSec()).contains(sec))) continue;
-            if (!(String.valueOf(next.getAcc()).contains(acc))) continue;
+            if (!(String.valueOf(next.getSecondaryStructure()).contains(sec))) continue;
+            if (!(String.valueOf(next.getAccessibility()).contains(acc))) continue;
 
             events.add(next);
         }
@@ -161,7 +161,11 @@ public class DataImpl implements Data {
             if (g == null || !g.hasTranscriptID(eventDisplay.getI1())) {
 //                g = dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
                 g = eventDisplay.getCurGene();
-                ev = new ExonView(g, height, width);
+                int hei = g.getHashmap_transcriptid().size() * 60; //px
+
+                if (hei < height)
+                    hei = height;
+                ev = new ExonView(g, hei, width);
                 bi = ev.renderExonView();
             } else
                 selectedEvent = eventDisplay;
@@ -273,12 +277,12 @@ public class DataImpl implements Data {
         prosite.append(new String(new char[aa1.length() - end]).replace("\0", "-"));
 
         //TODO implement SECStructure Chars in String
-        if (selectedEvent.getSec() != '\0')
-            sec = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getSec()));
+        if (selectedEvent.getSecondaryStructure() != '\0')
+            sec = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getSecondaryStructure()));
 
         //TODO implement Accessibility Chars in String
-        if (selectedEvent.getAcc() != '\0')
-            acc = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getAcc()));
+        if (selectedEvent.getAccessibility() != '\0')
+            acc = new String(new char[aa1.length()]).replace("\0", String.valueOf(selectedEvent.getAccessibility()));
 
         if (sec != null) {
             seqEntity.setSec(sec);

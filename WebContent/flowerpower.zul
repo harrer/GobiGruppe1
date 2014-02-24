@@ -16,8 +16,11 @@
 					jmolApplet(400);
 					jmolBr();
 					jmolCommandInput("<-","40"); //add JMol console
-                    jmolScript("load '/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/STRUCTURES/1a0a.A.pdb'");
-					</script> ]]>
+					</script>
+
+                <script type="text/javascript">
+                    setTimeout('loadModel("1a0a.A.pdb");' , 100);
+                </script> ]]>
             </html>
         </vlayout>
     </div>
