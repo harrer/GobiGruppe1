@@ -29,6 +29,18 @@ public class Superposition {
         return new Object[]{Q, readOffRMSD(P, Q), RMSD(covar, initError(cP, cQ), P.rows()), gdt_ts(P, Q)};
     }
     
+    public  Object[] superimposeFullStructure(DoubleMatrix2D P, DoubleMatrix2D Q, DoubleMatrix2D Q_full){
+        DoubleMatrix1D centP = getCentroid(P);
+        DoubleMatrix1D centQ = getCentroid(Q);
+        DoubleMatrix2D cP = translate(P, centP);
+        DoubleMatrix2D cQ = translate(Q, centQ);
+        DoubleMatrix2D covar = covarMatrix(cP, cQ);
+        DoubleMatrix2D R = rotate(covar);
+        DoubleMatrix1D t = T(R, centP, centQ);
+        Q = move_Q_onto_P(Q_full, R, t);
+        return new Object[]{Q, readOffRMSD(P, Q), RMSD(covar, initError(cP, cQ), P.rows()), gdt_ts(P, Q)};
+    }
+    
     private DoubleMatrix1D getCentroid(DoubleMatrix2D matrix){
         DoubleMatrix1D m = new DenseDoubleMatrix1D(3);
         double x=0,y=0,z=0;

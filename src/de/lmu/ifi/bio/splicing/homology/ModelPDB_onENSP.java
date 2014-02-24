@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.homology;
 
+import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.io.DSSPParser;
@@ -274,7 +275,7 @@ public class ModelPDB_onENSP {
      * @param overlap the overlap
      * @return double[] contains the rmsd and the gtd-ts sccores
      */
-    public double[] superimposeOverlap(Overlap overlap) {
+    public Object[] superimposeOverlap(Overlap overlap) {
         Model m1 = overlap.getModel1(), m2 = overlap.getModel2();
         int start = -1, stop = -1;
         if (overlap.getType().equals(OverlapType.m1_included_in_m2)) {
@@ -310,7 +311,7 @@ public class ModelPDB_onENSP {
             //System.out.println("SVD");
         }
 
-        return new double[]{(double) sp[2], (double) sp[3]};
+        return sp;
     }
 
     private void update_gtdts_freq(double gtd_ts) {
@@ -374,7 +375,8 @@ public class ModelPDB_onENSP {
                 String supFam1 = pdb_cath_map.containsKey(m1.getPdbId())? pdb_cath_map.get(m1.getPdbId()) : "";
                 String supFam2 = pdb_cath_map.containsKey(m2.getPdbId())? pdb_cath_map.get(m2.getPdbId()) : "";
                 try {
-                    double[] scores = superimposeOverlap(overlap);
+                    Object[]sp = superimposeOverlap(overlap);
+                    double[] scores = new double[]{(double) sp[2], (double) sp[3]};
                     sb.append("('").append(m1.getEnstId()).append("','").append(m1.getPdbId()).append("','").append(m2.getPdbId()).append("',");
                     sb.append(scores[0]).append(',').append(scores[1]).append(',').append(overlap.getAbsoluteLength()).append(',').append(overlap.getRelativeLength());
                     sb.append(",'").append(overlap.getType()).append("','").append(supFam1).append("','").append(supFam2).append("')");
@@ -405,20 +407,61 @@ public class ModelPDB_onENSP {
         writer.close();
         System.out.println("superPos failure: " + nullpointer + " on " + overlapCount + " overlaps for " + (templateCount - 1) + " templates");
     }
+    
+    public Object[] superimposeFullOverlap(Overlap overlap) {
+        Model m1 = overlap.getModel1(), m2 = overlap.getModel2();
+        int start = -1, stop = -1;
+        if (overlap.getType().equals(OverlapType.m1_included_in_m2)) {
+            start = m1.getEnspStart();
+            stop = m1.getEnspStop();
+        } else if (overlap.getType().equals(OverlapType.m2_included_in_m1)) {
+            start = m2.getEnspStart();
+            stop = m2.getEnspStop();
+        } else if (overlap.getType().equals(OverlapType.m1_end_m2_start_overlap)) {
+            start = m1.getEnspStop();
+            stop = m2.getEnspStart();
+        } else if (overlap.getType().equals(OverlapType.m1_start_m2_end_overlap)) {
+            start = m1.getEnspStart();
+            stop = m2.getEnspStop();
+        } else {System.out.println("no overlap type matching");}//should not happen
+        ArrayList<double[]> coord1 = new ArrayList<>(), coord2 = new ArrayList<>();
+        double[][] pdb1 = PDBParser.getPDBFile(m1.getPdbId()).getCACoordinates(), pdb2 = PDBParser.getPDBFile(m2.getPdbId()).getCACoordinates();//the CA-coordinates of the respective PDB files
+        HashMap<Integer, Integer> aligned1 = m1.getAligned(), aligned2 = m2.getAligned();
+        for (int i = start; i < stop; i++) {
+            if (aligned1.containsKey(i) && aligned2.containsKey(i)) {
+                coord1.add(pdb1[aligned1.get(i)]);
+                coord2.add(pdb2[aligned2.get(i)]);
+            }
+        }
+        assert (coord1.size() == coord2.size());// must be the same length
+        double[][] pdb2_full = PDBParser.getPDBFile(m2.getPdbId()).getCoordinates();
+        Object[] sp = null;
+        try {
+            sp = superposition.superimposeFullStructure(new DenseDoubleMatrix2D(coord1.toArray(new double[][]{})), new DenseDoubleMatrix2D(coord2.toArray(new double[][]{})), new DenseDoubleMatrix2D(pdb2_full));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            //System.out.println("SVD");
+        }
+
+        return sp;
+    }
 
     public static void main(String[] args) throws SQLException, IOException {
         ModelPDB_onENSP m = new ModelPDB_onENSP();
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000380952");
-//        System.out.println(m.displayModels("ENST00000308639"));
+//        System.out.println(m.displayModels("ENST00000372330"));
 //        //PDBData pdb = m.modelToStructure(models.get(0));
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
 //        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
 //        System.out.println(GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript("ENST00000308639")));
-        ArrayList<Model> models = m.getModelsForENST("ENST00000308639");
-        Overlap overlap = m.findModelOverlap(models.get(0), models.get(7));
+        ArrayList<Model> models = m.getModelsForENST("ENST00000372330");
+        Overlap overlap1 = m.findModelOverlap(models.get(0), models.get(6));
+        Overlap overlap2 = m.findModelOverlap(models.get(2), models.get(6));
         // ### superimposeOverlap() ###
+        Object[] sp1 = m.superimposeFullOverlap(overlap1);
+        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(2).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(6).getPdbId()+".pdb");
+        //Object[] sp2 = m.superimposeOverlap(overlap2);
         System.out.println("");
     }
 

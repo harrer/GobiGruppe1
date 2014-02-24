@@ -128,6 +128,7 @@ public class PDBParser {
     }
 
     private static String pdbToSequence(String file) throws FileNotFoundException, IOException {
+        PDBParser parser = new PDBParser();
         StringBuilder sb = new StringBuilder();
         BufferedReader br = new BufferedReader(new FileReader(file));
         String line;
@@ -146,7 +147,7 @@ public class PDBParser {
         return sb.toString();
     }
     
-    private static ArrayList<String[]> pdbToList(String path) throws IOException{
+    public static ArrayList<String[]> pdbToList(String path) throws IOException{
         BufferedReader br = new BufferedReader(new FileReader(path));
         String line;
         ArrayList<String[]> list = new ArrayList();
@@ -163,25 +164,33 @@ public class PDBParser {
         DecimalFormat dec = new DecimalFormat("#0.000", new DecimalFormatSymbols(Locale.US));
         sb.append(name).append("\nREMARK File written by harrert\nREMARK\n");
         for (int i = 0; i < matrix.rows(); i++) {
-            sb.append("ATOM    ");
-            if(i<10){sb.append("  ");}
-            else if(i<100){sb.append(" ");}
-            sb.append(i).append("  ").append(list.get(i)[2]).append(" ");
-            if(list.get(i)[2].length()==2){sb.append(" ");}
+            sb.append("ATOM   ");
+            if(i<10){sb.append("   ");}
+            else if(i<100){sb.append("  ");}
+            else if(i<1000){sb.append(" ");}
+            sb.append(i).append(" ");
+            if(list.get(i)[2].length()<3){sb.append(" ");}
+            sb.append(list.get(i)[2]).append(" ");
+            if(list.get(i)[2].length()==3){sb.append(" ");}
+            else if(list.get(i)[2].length()==2){sb.append(" ");}
             else if(list.get(i)[2].length()==1){sb.append("  ");}
-            sb.append(list.get(i)[3]).append(" ").append(list.get(i)[4]).append("  ");
-            if(list.get(i)[5].length()==1){sb.append(" ");}
-            sb.append(list.get(i)[5]).append("     ");
+            sb.append(list.get(i)[3]).append(" ").append(list.get(i)[4]).append(" ");
+            if(list.get(i)[5].length()==1){sb.append("  ");}
+            else if(list.get(i)[5].length()==2){sb.append(" ");}
+            sb.append(list.get(i)[5]).append("    ");
             if(matrix.get(i, 0)>0){sb.append(" ");}
-            if(matrix.get(i, 0)<10.0 && matrix.get(i, 0)>-10.0){sb.append(" ");}
+            if(matrix.get(i, 0)<10.0 && matrix.get(i, 0)>-10.0){sb.append("  ");}
+            else if(matrix.get(i, 0)<100.0 && matrix.get(i, 0)>-100.0){sb.append(" ");}
             sb.append(dec.format(matrix.get(i, 0)));
-            sb.append(" ");
+            //sb.append(" ");
             if(matrix.get(i, 1)>0){sb.append(" ");}
-            if(matrix.get(i, 1)<10.0 && matrix.get(i, 1)>-10.0){sb.append(" ");}
+            if(matrix.get(i, 1)<10.0 && matrix.get(i, 1)>-10.0){sb.append("  ");}
+            else if(matrix.get(i, 1)<100.0 && matrix.get(i, 1)>-100.0){sb.append(" ");}
             sb.append(dec.format(matrix.get(i, 1)));
-            sb.append(" ");
+            //sb.append(" ");
             if(matrix.get(i, 2)>0){sb.append(" ");}
-            if(matrix.get(i, 2)<10.0 && matrix.get(i, 2)>-10.0){sb.append(" ");}
+            if(matrix.get(i, 2)<10.0 && matrix.get(i, 2)>-10.0){sb.append("  ");}
+            else if(matrix.get(i, 2)<100.0 && matrix.get(i, 2)>-100.0){sb.append(" ");}
             sb.append(dec.format(matrix.get(i, 2))).append("\n");
         }
         sb.append("TER");
@@ -311,9 +320,9 @@ public class PDBParser {
         DoubleMatrix2D Q = parseToMatrix(q, alignedPositions(ali, false, seq2.length()), true);
         DoubleMatrix2D Q_full = parseToMatrix(q, null , false);
         Superposition s = new Superposition();
-        Object[] superposition = s.superimpose(P, Q, Q_full);
+        Object[] superposition = s.superimposeFullStructure(P, Q, Q_full);
         ArrayList list = pdbToList(q);
-        matrixToPDB((DoubleMatrix2D) superposition[0], list, seq2, "/Users/Tobias/Desktop/", "1ca0_on_1tfx.pdb");
+        matrixToPDB((DoubleMatrix2D) superposition[0], list, seq2, "/tmp/", "SSumperimposeEE.pdb");
     }
 
     public static void main(String[] args) throws IOException {

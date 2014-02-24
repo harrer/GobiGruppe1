@@ -342,7 +342,17 @@ public class GotohForSuperposition {
     }
 
     private int getCost(char i, char j) {
-        return matrix[i - 65][j - 65];
+        if(i=='X' || j=='X'){
+            return -2;
+        }
+        else{
+            try {
+                return matrix[i - 65][j - 65];
+            } catch (ArrayStoreException e) {
+                System.out.println("");
+                return -1;
+            }
+        }
     }
 
     private void initParams(HashMap<String, String> params) throws IOException {
