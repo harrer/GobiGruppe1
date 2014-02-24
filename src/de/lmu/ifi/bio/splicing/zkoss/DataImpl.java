@@ -224,7 +224,6 @@ public class DataImpl implements Data {
                 if (Math.min(e1.getStart(), e2.getStart()) - Math.max(old1, old2) > 0)
                     varsplic.append(new String(new char[Math.min(e1.getStart(), e2.getStart()) - Math.max(old1, old2)]).replace("\0", "*"));
             } catch (Exception e) {
-                //TODO spliceevent annotation repair
                 System.err.printf("[calcSeqEntity]: fucked up spliceannotation!%n");
             }
             int magnesium = 1;

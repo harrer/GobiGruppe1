@@ -141,7 +141,6 @@
                     model1.value = vm.getMseqEntity().getModel1();
                     model2.value = vm.getMseqEntity().getModel2();
 
-
                     //BindUtils.postNotifyChange(null, null, this, "*");
                     }
                     ]]>
