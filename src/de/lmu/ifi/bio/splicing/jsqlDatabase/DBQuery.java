@@ -251,35 +251,32 @@ public class DBQuery implements DatabaseQuery {
 
     @Override
     public List<EventDisplay> getEventDisplay(String isoform1, String isoform2) {
-        String query2 = "SELECT\n" +
+        String query = "SELECT\n" +
                 "  se.start,\n" +
                 "  se.stop,\n" +
                 "  se.type,\n" +
                 "  access,\n" +
-                "  sec,\n" +
                 "  startSS,\n" +
                 "  stopSS,\n" +
                 "  startAcc,\n" +
                 "  stopAcc,\n" +
-                "  pattern\n  " +
+                "  pattern,\n" +
                 "  pe.start,\n" +
                 "  pe.stop\n" +
-                "FROM Event se JOIN PatternEvent pe ON isoform1 = fk_pattern_id\n" +
-                "      JOIN Pattern p on fk_pattern_id = p.id\n" +
-                "WHERE isoform1 = '' AND isoform2 = '' AND\n" +
-                "      ((se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))";
-        String query = "select start, stop, type, startSS, stopSS, startAcc, stopAcc, access from Event " +
-                "where isoform1 = '" + isoform1 + "' and isoform2 = '" + isoform2 + "'";
+                "FROM Event se LEFT OUTER JOIN PatternEvent pe ON isoform1 = fk_pattern_id\n" +
+                "  LEFT OUTER JOIN Pattern p ON fk_pattern_id = p.id\n" +
+                "WHERE isoform1 = '" + isoform1 + "' AND isoform2 = '" + isoform2 + "' AND (pe.fk_pattern_id IS NULL OR\n" +
+                "       (se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))";
         Object[][] result = null;
         try {
-            result = db.select(query, 8);
+            result = db.select(query, 11);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return new LinkedList<>();
         }
 
-        if (result.length == 0)
-            return null;
+        if (result == null || result.length == 0)
+            return new LinkedList<>();
 
         List<EventDisplay> eventList = new LinkedList<>();
         List<PatternEvent> pattern = null;
@@ -298,8 +295,6 @@ public class DBQuery implements DatabaseQuery {
                         result[i][7] != null ? ((String) result[i][7]).charAt(0) : 'N');
                 eventList.add(cur);
                 pattern = new LinkedList<>();
-                pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
-                cur.setPattern(pattern);
                 if (result[i][8] != null) {
                     pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
                 }
