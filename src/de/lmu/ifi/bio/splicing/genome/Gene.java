@@ -5,7 +5,7 @@ import de.lmu.ifi.bio.splicing.interfaces.Search;
 import java.util.HashMap;
 import java.util.List;
 
-public class Gene implements Search{
+public class Gene implements Search {
     HashMap<String, Transcript> hashmap_transcriptid; //transcript_id
     HashMap<String, Transcript> hashmap_proteinid; //protein_id als key
     String geneId, chromosome;
@@ -32,6 +32,7 @@ public class Gene implements Search{
     public Transcript getTranscriptByProteinId(String protein_id) {
         return hashmap_proteinid.get(protein_id);
     }
+
     public String getGeneId() {
         return geneId;
     }

@@ -92,6 +92,7 @@ public class DBUpdate implements DatabaseUpdate {
         try {
             db.executeUpdate(insert);
         } catch (SQLException e) {
+            e.printStackTrace();
             System.err.printf("[DBUpdate]: insertPatternEvent: %s%n", insert);
         }
     }

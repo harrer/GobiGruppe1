@@ -114,6 +114,7 @@ public class DataImpl implements Data {
     public List<EventDisplay> filter(SpliceEventFilter sef) {
         //TODO implement method for filtering data in grid > < and in between range
         List<EventDisplay> events = new LinkedList<>();
+        String geneid = sef.getGeneid().toLowerCase();
         String i1 = sef.getI1().toLowerCase();
         String i2 = sef.getI2().toLowerCase();
         String start = sef.getStart().toLowerCase();
@@ -121,26 +122,23 @@ public class DataImpl implements Data {
         String type = sef.getType().toUpperCase();
         String pattern = sef.getPattern().toUpperCase();
         String sec = sef.getSec().toLowerCase();
-        String acc = sef.getAcc();
+        String acc = sef.getAcc().toLowerCase();
 
         Iterator<EventDisplay> evit = eventlist.iterator();
 
         while (evit.hasNext()) {
             EventDisplay next = evit.next();
-            if (!next.getI1().toLowerCase().contains(i1))
-                continue;
-            if (!next.getI2().toLowerCase().contains(i2))
-                continue;
-            if (!String.valueOf(next.getStart()).contains(start))
-                continue;
-            if (!String.valueOf(next.getStop()).contains(stop))
-                continue;
-            if (!String.valueOf(next.getType()).contains(type))
-                continue;
-            if (!next.getPatternids().contains(pattern))
-                continue;
-//            if (!next.getSec().toString().toLowerCase().contains(sec))
-//                continue;
+
+            if (!next.getCurGene().getGeneId().contains(geneid)) continue;
+            if (!next.getI1().toLowerCase().contains(i1)) continue;
+            if (!next.getI2().toLowerCase().contains(i2)) continue;
+            if (!String.valueOf(next.getStart()).contains(start)) continue;
+            if (!String.valueOf(next.getStop()).contains(stop)) continue;
+            if (!String.valueOf(next.getType()).contains(type)) continue;
+            if (!next.getPatternids().contains(pattern)) continue;
+            if (!(String.valueOf(next.getSec()).contains(sec))) continue;
+            if (!(String.valueOf(next.getAcc()).contains(acc))) continue;
+
             events.add(next);
         }
 
@@ -203,51 +201,53 @@ public class DataImpl implements Data {
             Event e2 = it2.next();
 
             try {
-                if(e1.getType() != 'I')
-                    aa1_mod.append(aa1.substring(old1, e1.getStart()));
-                else
-                    aa1_mod.append(aa1.substring(old1, e1.getStart() - 1));
-
-                if(e2.getType() != 'I')
-                    aa2_mod.append(aa2.substring(old2, e2.getStart()));
-                else
-                    aa2_mod.append(aa2.substring(old2, e2.getStart() - 1));
+                aa1_mod.append(aa1.substring(old1, e1.getStart()));
+                aa2_mod.append(aa2.substring(old2, e2.getStart()));
+                if (Math.min(e1.getStart(), e2.getStart()) - Math.max(old1, old2) > 0)
+                    varsplic.append(new String(new char[Math.min(e1.getStart(), e2.getStart()) - Math.max(old1, old2)]).replace("\0", "*"));
             } catch (Exception e) {
                 //TODO spliceevent annotation repair
-                System.err.println("[calcSeqEntity]: " + "fucked up spliceannotation!");
+                System.err.printf("[calcSeqEntity]: fucked up spliceannotation!%n");
             }
-
+            int magnesium = 1;
+            int magnesium2 = 1;
+            if (e1.getStop() >= aa1.length())
+                magnesium = aa1.length() - e1.getStop();
+            if (e2.getStop() >= aa2.length())
+                magnesium2 = aa2.length() - e2.getStop();
             switch (e1.getType()) {
                 case 'D': //wenn in e1 deletion rest analog
-                    varsplic.append(new String(new char[e1.getStop() - e1.getStart() + 1]).replace("\0", "D"));
-                    aa1_mod.append(aa1.substring(e1.getStart(), e1.getStop() + 1));
-                    aa2_mod.append(new String(new char[e1.getStop() - e1.getStart() + 1]).replace("\0", " "));
+                    varsplic.append(new String(new char[e1.getStop() - e1.getStart() + magnesium]).replace("\0", "D"));
+                    aa1_mod.append(aa1.substring(e1.getStart(), e1.getStop() + magnesium));
+                    aa2_mod.append(new String(new char[e1.getStop() - e1.getStart() + magnesium]).replace("\0", "-"));
                     break;
                 case 'R':
                     if (e1.getStop() - e1.getStart() < e2.getStop() - e2.getStart()) {
-                        aa1_mod.append(new String(new char[(e2.getStop() - e2.getStart()) - (e1.getStop() - e1.getStart())]).replace("\0", " "));
-                        varsplic.append(new String(new char[e2.getStop() - e2.getStart() + 1]).replace("\0", "R"));
+                        aa1_mod.append(new String(new char[(e2.getStop() - e2.getStart()) - (e1.getStop() - e1.getStart())]).replace("\0", "-"));
+                        varsplic.append(new String(new char[e2.getStop() - e2.getStart() + magnesium2]).replace("\0", "R"));
                     } else {
-                        aa2_mod.append(new String(new char[(e1.getStop() - e1.getStart()) - (e2.getStop() - e2.getStart())]).replace("\0", " "));
-                        varsplic.append(new String(new char[e1.getStop() - e1.getStart() + 1]).replace("\0", "R"));
+                        aa2_mod.append(new String(new char[(e1.getStop() - e1.getStart()) - (e2.getStop() - e2.getStart())]).replace("\0", "-"));
+                        varsplic.append(new String(new char[e1.getStop() - e1.getStart() + magnesium]).replace("\0", "R"));
                     }
 
-                    aa1_mod.append(aa1.substring(e1.getStart(), e1.getStop() + 1));
-                    aa2_mod.append(aa2.substring(e2.getStart(), e2.getStop() + 1));
+                    aa1_mod.append(aa1.substring(e1.getStart(), e1.getStop() + magnesium));
+                    aa2_mod.append(aa2.substring(e2.getStart(), e2.getStop() + magnesium2));
                     break;
                 case 'I':
-                    varsplic.append(new String(new char[e2.getStop() - e2.getStart() + 1]).replace("\0", "I"));
-                    aa1_mod.append(new String(new char[e2.getStop() - e2.getStart() + 1]).replace("\0", " "));
-                    aa2_mod.append(aa2.substring(e2.getStart(), e2.getStop() + 1));
+                    varsplic.append(new String(new char[e2.getStop() - e2.getStart() + magnesium]).replace("\0", "I"));
+                    aa1_mod.append(new String(new char[e2.getStop() - e2.getStart() + magnesium]).replace("\0", "-"));
+                    aa2_mod.append(aa2.substring(e2.getStart(), e2.getStop() + magnesium2));
                     break;
             }
 
-            old1 = e1.getStop() + 1;
-            old2 = e2.getStop() + 1;
+            old1 = e1.getStop() + magnesium;
+            old2 = e2.getStop() + magnesium2;
         }
 
         aa1_mod.append(aa1.substring(old1, aa1.length()));
         aa2_mod.append(aa2.substring(old2, aa2.length()));
+        if (aa1.length() - Math.max(old1, old2) > 0)
+            varsplic.append(new String(new char[aa1.length() - old1]).replace("\0", "*"));
 
         //Prosite Pattern String
         String sec = null, acc = null;

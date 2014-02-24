@@ -30,7 +30,9 @@
 
     <target name="fill-database" depends="clean-database">
         <echo>=====InsertSpliceEvents=====</echo>
-        <java jar="${events.jar}" fork="true"/>
+        <java jar="${events.jar}" fork="true">
+            <arg line="event"/>
+        </java>
         <echo>=====InsertPatternEvents=====</echo>
         <java jar="${patternevents.jar}" fork="true">
             <arg value="${psscan.result.file}"/>
