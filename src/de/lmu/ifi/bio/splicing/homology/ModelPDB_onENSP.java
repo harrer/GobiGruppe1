@@ -186,6 +186,27 @@ public class ModelPDB_onENSP {
         ArrayList<String[]> alignments = alignPDBs_onENSP(enstId, pdbs, coverage, longerThan, seqIdentity);
         return modelAlignmentsOnProtein(alignments, enstId);
     }
+    
+    public int[] numberOfModels(double coverage, int longerThan, double seqIdentity) throws SQLException{
+        Object[] templates = Setting.dbq.db.select_oneColumn("select distinct transcriptid from transcript_has_pdbs");
+        int c = 0, templateCount = 0;
+        for (Object object : templates) {
+            templateCount++;
+            if(templateCount % 100 ==0){System.out.println(templateCount+" templates processed");}
+            String enst = "";
+            boolean outOfBounds = false;
+            try {
+                enst = (String) Setting.dbq.db.select_oneColumn("select transcriptid from Transcript where proteinid = '" + (String) object + "'")[0];
+            } catch (SQLException | ArrayIndexOutOfBoundsException exception) {
+                outOfBounds = true;
+            }
+                if (!outOfBounds) {
+                ArrayList<Model> models = getModelsForENST(enst, coverage, longerThan, seqIdentity);
+                c = (models.size() > 0) ? c + 1 : c;
+            }
+        }
+        return new int[]{c, templateCount};
+    }
 
     public String displayModels(String ENST_id, List<Event> events) {
         ArrayList<Model> models = getModelsForENST(ENST_id);
@@ -519,7 +540,7 @@ public class ModelPDB_onENSP {
 //        ArrayList<Overlap> overlaps = m.findOverlapForAllModels(models);
 //        //double[] sPose = m.superimposeOverlap(overlap);
 //        System.out.println("");
-        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
+//        m.run("/home/h/harrert/Desktop/GTD_TS_frequenciesSSSS.txt", 0.6, 60, 0.4);
 //        System.out.println(GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript("ENST00000308639")));
 //        ArrayList<Model> models = m.getModelsForENST("ENST00000412135");
 //        Overlap overlap = m.findModelOverlap(models.get(9), models.get(10));
@@ -527,7 +548,8 @@ public class ModelPDB_onENSP {
 //        Object[] sp1 = m.superimposeFullOverlap(overlap);
 //        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(9).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(10).getPdbId()+".pdb");
         //Object[] sp2 = m.superimposeOverlap(overlap2);
-        System.out.println("");
+        int[] numberOfModels = m.numberOfModels(0.6, 60, 0.4);
+        System.out.println(numberOfModels[0]+"models on "+numberOfModels[1] + "templates");
     }
 
 }
