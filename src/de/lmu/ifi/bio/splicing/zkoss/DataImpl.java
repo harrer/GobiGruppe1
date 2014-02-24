@@ -321,11 +321,13 @@ public class DataImpl implements Data {
             for (Map.Entry<String, Transcript> transcriptEntry : agene.getHashmap_transcriptid().entrySet()) {
                 String transcript2 = transcriptEntry.getKey();
                 if (transcript1.equals(transcript2)) continue;
-                EventDisplay tmpevent = dbq.getEventDisplay(transcript1, transcript2);
+                List<EventDisplay> tmpevent = dbq.getEventDisplay(transcript1, transcript2);
                 if (tmpevent == null)
                     continue;
-                tmpevent.setCurGene(agene);
-                tmp.add(tmpevent);
+                for (EventDisplay eventDisplay : tmpevent) {
+                    eventDisplay.setCurGene(agene);
+                }
+                tmp.addAll(tmpevent);
             }
         }
         return tmp;

@@ -64,7 +64,5 @@ public class DBQueryTest {
     public void testGetEventDisplay() throws Exception {
         String i1 = "ENST00000547791";
         String i2 = "ENST00000551103";
-        EventDisplay ev = dbq.getEventDisplay(i1, i2);
-        System.out.println(ev);
     }
 }
