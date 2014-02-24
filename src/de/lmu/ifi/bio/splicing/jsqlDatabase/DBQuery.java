@@ -34,11 +34,16 @@ public class DBQuery implements DatabaseQuery {
         //case-insensitivity
         keyword = keyword.toLowerCase();
 
+        String limit = "";
+
+        if (keyword.length() < 3)
+            limit = " LIMIT 0, 100";
+
         String query;
         Object[] result;
         List<String> liste = new LinkedList<>();
 
-        query = "SELECT geneid FROM Gene WHERE lower(geneid) REGEXP '" + keyword + "';";
+        query = "SELECT geneid FROM Gene WHERE lower(geneid) REGEXP '" + keyword + "'" + limit + ";";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -53,7 +58,7 @@ public class DBQuery implements DatabaseQuery {
         }
 
         db = new DB_Backend();
-        query = "SELECT transcriptid FROM Transcript WHERE lower(transcriptid) REGEXP '" + keyword + "';";
+        query = "SELECT transcriptid FROM Transcript WHERE lower(transcriptid) REGEXP '" + keyword + "'" + limit + ";";
         result = null;
         try {
             result = db.select_oneColumn(query);
@@ -67,7 +72,7 @@ public class DBQuery implements DatabaseQuery {
             }
         }
 
-        query = "SELECT proteinid FROM Transcript WHERE lower(proteinid) REGEXP '" + keyword + "';";
+        query = "SELECT proteinid FROM Transcript WHERE lower(proteinid) REGEXP '" + keyword + "'" + limit + ";";
         result = null;
         try {
             result = db.select_oneColumn(query);

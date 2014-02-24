@@ -1,5 +1,5 @@
 <window width="1280px" border="normal" apply="org.zkoss.bind.BindComposer"
-        title="ProSAS" height="800px" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
+        title="ProSAS" height="940px" contentStyle="overflow:auto" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hlayout id="main" hflex="1" vflex="1">
         <vlayout width="200px" vflex="1" id="left">
             <vlayout>
@@ -104,7 +104,9 @@
             </groupbox>
             <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="ExonView"/>
-                <image id="exonview" content="@load(vm.renderedImage)"/>
+                <div style="overflow:auto; max-height:450px;">
+                    <image id="exonview" content="@load(vm.renderedImage)"/>
+                </div>
             </groupbox>
 
             <zscript>
@@ -128,7 +130,8 @@
                     prositeseq.value = vm.getSeqEntity().getProsite();
                     
                     //modelsequence
-                    flower.value = getMseqEntity().getFlower();
+                    model1.value = vm.getMseqEntity().getModel1();
+                    model2.value = vm.getMseqEntity().getModel2();
 
 
                     //BindUtils.postNotifyChange(null, null, this, "*");
@@ -156,10 +159,13 @@
                 <label value="stub"/>
                 <applet codebase="lib/Jmol.jar" code="ticker" height="320" width="620"/>
             </groupbox>
+
             <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="Model in Sequence"/>
-                <label id="flower" value="@load(vm.mseqEntity.flower)"/>
-                <label value="stub"/>
+                <div style="overflow:auto;">
+                    <label id="model1" value="@load(vm.mseqEntity.model1)" style="font-family:Monospace; white-space:nowrap;" pre="true" multiline="true"/>
+                    <label id="model2" value="@load(vm.mseqEntity.model2)" style="font-family:Monospace; white-space:nowrap;" pre="true" multiline="true"/>
+                </div>
             </groupbox>
         </vlayout>
     </hlayout>

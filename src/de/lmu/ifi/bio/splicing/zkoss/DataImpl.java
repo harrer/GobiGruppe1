@@ -45,7 +45,7 @@ public class DataImpl implements Data {
     public List<String> search(String keyword) {
         return dbq.search(keyword);
     }
-    
+
     @Override
     public ModelSequenceEntity getModel(EventDisplay eventDisplay) {
         String enst1 = eventDisplay.getI1();
@@ -161,7 +161,11 @@ public class DataImpl implements Data {
             if (g == null || !g.hasTranscriptID(eventDisplay.getI1())) {
 //                g = dbq.getGeneForTranscriptID(eventDisplay.getI1()); //getI2 unnoetig da schon in Gene drinne ist (sonst kein SpliceEvent möglich)
                 g = eventDisplay.getCurGene();
-                ev = new ExonView(g, height, width);
+                int hei = g.getHashmap_transcriptid().size() * 60; //px
+
+                if (hei < height)
+                    hei = height;
+                ev = new ExonView(g, hei, width);
                 bi = ev.renderExonView();
             } else
                 selectedEvent = eventDisplay;
