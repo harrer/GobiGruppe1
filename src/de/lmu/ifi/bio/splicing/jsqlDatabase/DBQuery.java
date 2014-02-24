@@ -282,10 +282,12 @@ public class DBQuery implements DatabaseQuery {
             return null;
 
         List<EventDisplay> eventList = new LinkedList<>();
-        List<PatternEvent> patternList;
+        List<PatternEvent> pattern = null;
         EventDisplay cur = null;
         for (int i = 0; i < result.length; i++) {
             if (cur == null || cur.getStart() != (int) result[i][0]) {
+                if(cur != null)
+                    cur.setPattern(pattern);
                 cur = new EventDisplay(isoform1, isoform2, (int) result[i][0],
                         (int) result[i][1],
                         ((String) result[i][2]).charAt(0),
@@ -296,12 +298,12 @@ public class DBQuery implements DatabaseQuery {
                         result[i][7] != null ? ((String) result[i][7]).charAt(0) : 'N');
                 eventList.add(cur);
                 pattern = new LinkedList<>();
-                cur.setPattern(pattern);
                 pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
             } else {
                 pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
             }
         }
+        cur.setPattern(pattern);
         return eventList;
     }
 
