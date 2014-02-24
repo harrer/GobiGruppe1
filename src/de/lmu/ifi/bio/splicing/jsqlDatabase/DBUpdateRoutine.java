@@ -69,8 +69,8 @@ public class DBUpdateRoutine {
                                     used.getEnspStop() - used.getEnspStart() + 1);
                             double expAcc[] = DSSP.calcAccessibilityDistribution(dssp, used.getPdbStart(), used.getPdbStop(),
                                     used.getEnspStop() - used.getEnspStart() + 1);
-                            ssDistribution.put(event.getI1() + event.getStart() + "|" + event.getStop(), expSS);
-                            accDistribution.put(event.getI1() + event.getStart() + "|" + event.getStop(), expAcc);
+                            ssDistribution.put(event.getI1() + event.getStart() + "|" + event.getStop(), new double[] {event.getType(), expSS[0], expSS[1], expSS[2]});
+                            accDistribution.put(event.getI1() + event.getStart() + "|" + event.getStop(), new double[] {event.getType(), expAcc[0], expAcc[1], expAcc[2]});
 //                            System.out.printf("Isoform1: %s start: %d stop: %d, Expected: %d %d %d%n", event.getI1(),
 //                                    event.getStart(), event.getStop(), expSS[0], expSS[1], expSS[2]);
                         } catch (Exception e) {

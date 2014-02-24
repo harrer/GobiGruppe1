@@ -28,7 +28,7 @@ public class DSSPParser {
             error.join(3000);
             output.join(3000);
             exitVal = proc.waitFor();
-            if(error.message == null || error.message.length() > 0)
+            if (error.message == null || error.message.length() > 0)
                 return null;
             out = output.message;
         } catch (IOException e) {
@@ -71,14 +71,15 @@ public class DSSPParser {
                         secondaryStructure.add(line.charAt(16));
                         sequence.append(line.charAt(13));
                         String[] split = line.split("\\s+");
-                        c_alpha.add(new double[]{Double.parseDouble(split[split.length - 3]), Double.parseDouble(split[split.length - 2]), Double.parseDouble(split[split.length - 1])}); 
+                        c_alpha.add(new double[]{Double.parseDouble(split[split.length - 3]), Double.parseDouble(split[split.length - 2]), Double.parseDouble(split[split.length - 1])});
                     } else
                         break;
                 } else if (line.startsWith("  #")) {
                     acids = true;
                 }
             }
-        } catch (IOException | NumberFormatException | NullPointerException exception) {}
+        } catch (IOException | NumberFormatException | NullPointerException exception) {
+        }
 //        catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -103,7 +104,7 @@ public class DSSPParser {
         return null;
     }
 
-    public static void saveSSDistribution(int[] distribution){
+    public static void saveSSDistribution(int[] distribution) {
         FileWriter fstream = null;
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter("/home/sch/schmidtju/Dokumente/SSDistribution.txt"));
@@ -117,26 +118,54 @@ public class DSSPParser {
         }
     }
 
-    public static void saveExpectedSS(Collection<double[]> expSS, Collection<double[]> expAcc){
+    public static void saveExpectedSS(Collection<double[]> expSS, Collection<double[]> expAcc) {
         FileWriter fstream = null;
         try {
-            double[] expectedSS = new double[3];
-            for (double[] e : expSS) {
-                for(int i = 0; i < 3; i++)
-                    expectedSS[i] += e[i];
-            }
             BufferedWriter out = new BufferedWriter(new FileWriter("/home/sch/schmidtju/Dokumente/Expectations.txt"));
-            out.write("Helix: " + expectedSS[0] +
-                    "\nExtended: " + expectedSS[1]+
-                    "\nCoil: " + expectedSS[2]);
-            double[] expectedAcc = new double[3];
-            for (double[] e : expAcc) {
-                for(int i = 0; i < 3; i++)
-                    expectedAcc[i] += e[i];
+            double[] expectedSSD = new double[3], expectedSSI = new double[3], expectedSSR = new double[3];
+            for (double[] e : expSS) {
+                for (int i = 0; i < 3; i++)
+                    if (e[0] == 68)
+                        expectedSSD[i] += e[i + 1];
+                    else if (e[0] == 73)
+                        expectedSSI[i] += e[i + 1];
+                    else if (e[0] == 82)
+                        expectedSSR[i] += e[i + 1];
             }
-            out.write("\n\nBuried: " + expectedAcc[0] +
-                    "\nPartly buried: " + expectedAcc[1]+
-                    "\nExposed: " + expectedAcc[2]);
+            out.write("Deletions" +
+                    "\nHelix: " + expectedSSD[0] +
+                    "\nExtended: " + expectedSSD[1] +
+                    "\nCoil: " + expectedSSD[2] +
+                    "\n\nInsertions" +
+                    "\nHelis: " + expectedSSI[0] +
+                    "\nExtended: " + expectedSSI[1] +
+                    "\nCoil: " + expectedSSI[2] +
+                    "\n\nReplaces" +
+                    "\nHelix: " + expectedSSR[0] +
+                    "\nExtended: " + expectedSSR[1] +
+                    "\nCoil: " + expectedSSR[2]);
+            double[] expectedAccD = new double[3], expectedAccI = new double[3], expectedAccR = new double[3];
+            for (double[] e : expAcc) {
+                for (int i = 0; i < 3; i++)
+                    if (Math.abs(e[0] - 68) < 0.1)
+                        expectedAccD[i] += e[i + 1];
+                    else if (Math.abs(e[0] - 73) < 0.1)
+                        expectedAccI[i] += e[i + 1];
+                    else if (Math.abs(e[0] - 82) < 0.1)
+                        expectedAccR[i] += e[i + 1];
+            }
+            out.write("\n\nDeletions" +
+                    "\nBuried: " + expectedAccD[0] +
+                    "\nPartly buried: " + expectedAccD[1] +
+                    "\nExposed: " + expectedAccD[2] +
+                    "\n\nInsertions" +
+                    "\nBuried: " + expectedAccI[0] +
+                    "\nPartly buried: " + expectedAccI[1] +
+                    "\nExposed: " + expectedAccI[2] +
+                    "\n\nReplaces" +
+                    "\nBuried: " + expectedAccR[0] +
+                    "\nPartly buried: " + expectedAccR[1] +
+                    "\nExposed: " + expectedAccR[2]);
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
