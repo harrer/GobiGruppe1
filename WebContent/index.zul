@@ -156,21 +156,15 @@
                     <separator/>
                     <label id="aa2seq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
-                    <label id="varsplic" style="font-family:Monospace;" multiline="false" pre="true"/>
+                    <label id="varsplic" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
                     <label id="prositeseq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                 </div>
             </groupbox>
 
             <groupbox hflex="1" mold="3d" closable="true" open="false">
-                <caption label="3DView"/>
-                <label value="stub"/>
-                <applet codebase="lib/Jmol.jar" code="ticker" height="320" width="620"/>
-            </groupbox>
-
-            <groupbox hflex="1" mold="3d" closable="true" open="false">
                 <caption label="Model in Sequence"/>
-                <div style="overflow:auto;">
+                <div style="overflow:auto; max-height:450px;">
                     <label id="model1" value="@load(vm.mseqEntity.model1)" style="font-family:Monospace; white-space:nowrap;" pre="true" multiline="true"/>
                     <label id="model2" value="@load(vm.mseqEntity.model2)" style="font-family:Monospace; white-space:nowrap;" pre="true" multiline="true"/>
                 </div>
