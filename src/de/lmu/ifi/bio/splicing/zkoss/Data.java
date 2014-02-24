@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.splicing.zkoss;
 
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.ModelSequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 
@@ -25,4 +26,6 @@ public interface Data {
     public SequenceEntity prepareSequences(EventDisplay eventDisplay);
 
     public Gene getSelectedGene(EventDisplay eventDisplay);
+    
+    public ModelSequenceEntity getModel(EventDisplay eventDisplay);
 }

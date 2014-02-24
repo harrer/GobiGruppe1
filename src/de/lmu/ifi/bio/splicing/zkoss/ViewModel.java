@@ -2,6 +2,7 @@ package de.lmu.ifi.bio.splicing.zkoss;
 
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.ModelSequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
 import org.zkoss.bind.annotation.Command;
@@ -26,6 +27,15 @@ public class ViewModel {
     private int height_img_ri = 600, width_img_ri = 400;
     private Gene selectedGene;
     private SequenceEntity seqEntity;
+    private ModelSequenceEntity mseqEntity;
+
+    public ModelSequenceEntity getMseqEntity() {
+        return mseqEntity;
+    }
+
+    public void setMseqEntity(ModelSequenceEntity mseqEntity) {
+        this.mseqEntity = mseqEntity;
+    }
 
     public SequenceEntity getSeqEntity() {
         return seqEntity;
@@ -155,6 +165,7 @@ public class ViewModel {
 
         renderedImage = data.renderImage(ev, height_img_ri, width_img_ri);
         seqEntity = data.prepareSequences(ev);
+        mseqEntity = data.getModel(ev);
         selectedGene = data.getSelectedGene(ev);
     }
 

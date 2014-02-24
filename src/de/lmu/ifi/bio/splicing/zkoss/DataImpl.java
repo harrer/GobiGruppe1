@@ -3,9 +3,11 @@ package de.lmu.ifi.bio.splicing.zkoss;
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.genome.Gene;
 import de.lmu.ifi.bio.splicing.genome.Transcript;
+import de.lmu.ifi.bio.splicing.homology.ModelPDB_onENSP;
 import de.lmu.ifi.bio.splicing.io.GenomeSequenceExtractor;
 import de.lmu.ifi.bio.splicing.jsqlDatabase.DBQuery;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
+import de.lmu.ifi.bio.splicing.zkoss.entity.ModelSequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.PatternEvent;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SequenceEntity;
 import de.lmu.ifi.bio.splicing.zkoss.entity.SpliceEventFilter;
@@ -42,6 +44,14 @@ public class DataImpl implements Data {
     @Override
     public List<String> search(String keyword) {
         return dbq.search(keyword);
+    }
+    
+    @Override
+    public ModelSequenceEntity getModel(EventDisplay eventDisplay) {
+        String enst1 = eventDisplay.getI1();
+        String enst2 = eventDisplay.getI2();
+        ModelPDB_onENSP model = new ModelPDB_onENSP(true);
+        return new ModelSequenceEntity(model.displayModels(enst1), model.displayModels(enst2));
     }
 
     @Override

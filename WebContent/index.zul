@@ -126,6 +126,9 @@
 
                     //prosite
                     prositeseq.value = vm.getSeqEntity().getProsite();
+                    
+                    //modelsequence
+                    flower.value = getMseqEntity().getFlower();
 
 
                     //BindUtils.postNotifyChange(null, null, this, "*");
@@ -154,7 +157,8 @@
                 <applet codebase="lib/Jmol.jar" code="ticker" height="320" width="620"/>
             </groupbox>
             <groupbox hflex="1" mold="3d" closable="true" open="false">
-                <caption label="Statistiken"/>
+                <caption label="Model in Sequence"/>
+                <label id="flower" value="@load(vm.mseqEntity.flower)"/>
                 <label value="stub"/>
             </groupbox>
         </vlayout>

@@ -49,6 +49,15 @@ public class ModelPDB_onENSP {
             Logger.getLogger(ModelPDB_onENSP.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public ModelPDB_onENSP(boolean noPDB_CATH_mapping){
+        pdbSequences = new HashMap<>();//readPDBseqlib("/home/proj/biosoft/PROTEINS/PDB_REP_CHAINS/pdb.seqlib");
+        enstSequnces = new HashMap<>();
+        this.gotoh = new SingleGotoh();
+        superposition = new Superposition();
+        gtdts_frequencies = new int[101];
+        pdb_cath_map = new HashMap<>();
+    }
 
     private HashMap<String, String> readPDBseqlib(String file) throws IOException {
         HashMap<String, String> map = new HashMap<>();
@@ -174,7 +183,7 @@ public class ModelPDB_onENSP {
     public String displayModels(String ENST_id) {
         ArrayList<Model> models = getModelsForENST(ENST_id);
         String proteinSeq = GenomeSequenceExtractor.getProteinSequence(Setting.dbq.getTranscript(ENST_id));
-        StringBuilder sb = new StringBuilder("        " + proteinSeq + "\n\n");
+        StringBuilder sb = new StringBuilder(ENST_id+"\n        " + proteinSeq + "\n\n");
         for (Model model : models) {
             sb.append(model.getPdbId()).append(": ");
             HashMap<Integer, Integer> aligned = model.getAligned();
