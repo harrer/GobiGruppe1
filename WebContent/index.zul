@@ -23,6 +23,10 @@
                     <auxhead sclass="category-center">
                         <auxheader colspan="1">
                             <textbox instant="true" hflex="1"
+                                     value="@bind(vm.filter.geneid)" onChange="@command('changeFilter')"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <textbox instant="true" hflex="1"
                                      value="@bind(vm.filter.i1)" onChange="@command('changeFilter')"/>
                         </auxheader>
                         <auxheader colspan="1">
@@ -55,6 +59,7 @@
                         </auxheader>
                     </auxhead>
                     <listhead>
+                        <listheader hflex="3">Geneid</listheader>
                         <listheader hflex="3">Isoform 1</listheader>
                         <listheader hflex="3">Isoform 2</listheader>
                         <listheader hflex="1">Start</listheader>
@@ -66,6 +71,9 @@
                     </listhead>
                     <template name="model">
                         <listitem>
+                            <listcell>
+                                <label value="${each.curGene.geneId}"/>
+                            </listcell>
                             <listcell>
                                 <label value="${each.i1}"/>
                             </listcell>
@@ -119,9 +127,6 @@
                     //prosite
                     prositeseq.value = vm.getSeqEntity().getProsite();
 
-                    //dssp
-                    accseq.value = vm.getSeqEntity().getAcc();
-                    secseq.value = vm.getSeqEntity().getSec();
 
                     //BindUtils.postNotifyChange(null, null, this, "*");
                     }
@@ -133,17 +138,13 @@
                 <div style="overflow:auto;">
                     <label id="transcriptid" pre="true" style="font-weight:bold;"/>
                     <separator/>
-                    <label id="aa1seq" style="font-family:Monospace; white-space:nowrap;" multiline="false"/>
+                    <label id="aa1seq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
-                    <label id="aa2seq" style="font-family:Monospace; white-space:nowrap;" multiline="false"/>
+                    <label id="aa2seq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
-                    <label id="varsplic" style="font-family:Monospace;" multiline="false"/>
+                    <label id="varsplic" style="font-family:Monospace;" multiline="false" pre="true"/>
                     <separator/>
                     <label id="prositeseq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
-                    <separator/>
-                    <label id="accseq" style="font-family:Monospace;" multiline="false"/>
-                    <separator/>
-                    <label id="secseq" style="font-family:Monospace;" multiline="false"/>
                 </div>
             </groupbox>
 

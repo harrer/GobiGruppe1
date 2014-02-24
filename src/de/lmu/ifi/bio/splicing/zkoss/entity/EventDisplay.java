@@ -65,6 +65,9 @@ public class EventDisplay extends Event {
                 dada.add(patternEvent.getId());
         }
 
+        if (dada.size() > 1)
+            System.out.println(dada);
+
         StringBuilder sb = new StringBuilder();
         String prefix = "";
         for (String s : dada) {

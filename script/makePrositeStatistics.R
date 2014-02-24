@@ -1,0 +1,26 @@
+setwd("/home/u/uhligc/git/gobi2/res/")
+all <- read.table("all_out.txt",header=T)
+all_partly <- read.table("partlynot_out.txt",header=T)
+all_complete <- read.table("completenot_out.txt",header=T)
+partly <- read.table("partly_out.txt",header=T)
+complete <- read.table("complete_out.txt",header=T)
+combined <- merge(all_complete,complete,all=T)
+combined <- merge(combined,all_partly,all=T)
+combined <- merge(combined,partly,all=T)
+combined <- merge(combined,all,all=T)
+combined$per_partly <- combined$partly / (combined$partly + combined$all_partly)
+combined$per_complete <- combined$complete / (combined$complete + combined$all_complete)
+
+require(ggplot2)
+
+png("all.png",width=1280,height=800)
+ggplot(combined,aes(x=length,y=all)) + geom_point() + scale_y_log10() + scale_x_log10()
+dev.off()
+
+png("partly.png",width=1280,height=800)
+ggplot(combined,aes(x=length,y=per_partly)) + geom_point() + scale_y_log10() + scale_x_log10()
+dev.off()
+
+png("complete.png",width=1280,height=800)
+ggplot(combined,aes(x=length,y=per_complete)) + geom_point() + scale_y_log10() + scale_x_log10()
+dev.off()

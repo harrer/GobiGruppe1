@@ -6,7 +6,15 @@ package de.lmu.ifi.bio.splicing.zkoss.entity;
  * Ist als Objekt für den Datenfilter der detailed View zuständig.
  */
 public class SpliceEventFilter {
-    private String i1 = "", i2 = "", start = "", stop = "", type = "", sec = "", pattern = "", acc = "";
+    private String i1 = "", i2 = "", start = "", stop = "", type = "", sec = "", pattern = "", acc = "", geneid = "";
+
+    public String getGeneid() {
+        return geneid;
+    }
+
+    public void setGeneid(String geneid) {
+        this.geneid = geneid;
+    }
 
     public String getI1() {
         return i1;

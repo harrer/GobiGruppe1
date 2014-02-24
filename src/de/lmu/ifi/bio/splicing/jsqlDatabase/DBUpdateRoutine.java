@@ -95,9 +95,20 @@ public class DBUpdateRoutine {
 
     public static void insertEventSets() {
         List<String> thebiglist = dbq.findAllGenes();
+        int size = thebiglist.size();
+        int counter = 0;
+        long start = System.currentTimeMillis();
         for (String s : thebiglist) {
+
+            try {
+                if ((counter % (size / 100)) == 0)
+                    System.out.printf("Bereits %.1fProzent und noch %d sec %n", size / (float) counter, (((System.currentTimeMillis() - start) / counter) * (size - counter)) / 1000);
+            } catch (ArithmeticException e) {
+                System.out.println("da legst di nida");
+            }
             Set<Event> eventSet = EventDetector.getEvents(dbq.getGene(s));
             dbu.insertEventSet(eventSet);
+            counter++;
         }
     }
 

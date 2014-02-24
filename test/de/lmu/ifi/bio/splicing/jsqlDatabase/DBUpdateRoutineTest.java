@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.zkoss.ExonView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert.*;
