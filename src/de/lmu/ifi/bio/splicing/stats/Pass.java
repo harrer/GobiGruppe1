@@ -44,18 +44,30 @@ public class Pass {
             br.close();
 
             BufferedWriter wr = Files.newBufferedWriter(p2, StandardCharsets.UTF_8);
+            wr.write("pattern totaltr inctr rel relw\n");
             for (String s : patternset) {
                 int total = 0;
                 int partly = 0;
-
+                double result = 0.0;
+                double result2 = 0.0;
+                int counter2 = 0;
+                int counter = 0;
                 for (Geneprosite geneprosite: genes.values()) {
                     if (!geneprosite.hasPrositeid(s))
                         continue;
                     total += geneprosite.getTotal();
                     partly += geneprosite.getParts(s);
+                    counter++;
+                    result += geneprosite.getParts(s)/(double)geneprosite.getTotal();
+                    if (geneprosite.getTotal() > 5){
+                        result2 += geneprosite.getParts(s)/(double)geneprosite.getTotal();
+                        counter2++;
+                    }
+
+
                 }
 
-                wr.write(String.format("%s %d %d%n", s, total, partly));
+                wr.write(String.format("%s %d %d %.3f %.3f%n", s, total, partly, result / counter, result2 / counter2));
             }
             wr.close();
         } catch (IOException e) {

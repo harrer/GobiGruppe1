@@ -55,6 +55,7 @@ public class EventDisplay extends Event {
     }
 
     public String getPatternids() {
+        calcpatternids();
         return patternids;
     }
 

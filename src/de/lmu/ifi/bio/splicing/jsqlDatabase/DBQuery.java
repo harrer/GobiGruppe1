@@ -343,6 +343,7 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
+
         String protId_query = "select proteinid from Transcript where transcriptid = '" + transcriptid + "'";
         Object[] prot_result = null;
         try {
@@ -351,11 +352,13 @@ public class DBQuery implements DatabaseQuery {
             e.printStackTrace();
             return null;
         }
+
         Transcript transcript = new Transcript(transcriptid, (String) prot_result[0]);
         for (int i = 0; i < result.length; i++) {
             Exon ex = new Exon((long) result[i][0], (long) result[i][1], (int) result[i][2]);
             transcript.addExon(ex);
         }
+
         return transcript;
     }
 

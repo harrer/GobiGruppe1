@@ -92,7 +92,7 @@
                                 <label value="${each.type}"/>
                             </listcell>
                             <listcell>
-                                <label value="${each.patternids}" onSelect="alert('flash')"/>
+                                <label value="${each.patternids}"/>
                             </listcell>
                             <listcell>
                                 <label value="${each.startSS}"/>

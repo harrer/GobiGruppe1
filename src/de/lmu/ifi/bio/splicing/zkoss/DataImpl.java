@@ -325,7 +325,7 @@ public class DataImpl implements Data {
                 String transcript2 = transcriptEntry.getKey();
                 if (transcript1.equals(transcript2)) continue;
                 List<EventDisplay> tmpevent = dbq.getEventDisplay(transcript1, transcript2);
-                if (tmpevent == null)
+                if (tmpevent.isEmpty())
                     continue;
                 for (EventDisplay eventDisplay : tmpevent) {
                     eventDisplay.setCurGene(agene);
