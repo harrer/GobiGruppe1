@@ -546,10 +546,10 @@ public class ModelPDB_onENSP {
 //        Overlap overlap = m.findModelOverlap(models.get(9), models.get(10));
         // ### superimposeOverlap() ###
 //        Object[] sp1 = m.superimposeFullOverlap(overlap);
-//        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR + models.get(9).getPdbId()+".pdb", Setting.PDBREPCCHAINSDIR + models.get(10).getPdbId()+".pdb");
-        //Object[] sp2 = m.superimposeOverlap(overlap2);
-        int[] numberOfModels = m.numberOfModels(0.6, 60, 0.4);
-        System.out.println(numberOfModels[0]+"models on "+numberOfModels[1] + "templates");
+        de.lmu.ifi.bio.splicing.superimpose.PDBParser.superimpose(Setting.PDBREPCCHAINSDIR +"2kaw.A.pdb", Setting.PDBREPCCHAINSDIR + "2qbw.A.pdb");
+       // Object[] sp2 = m.superimposeOverlap(overlap2);
+//        int[] numberOfModels = m.numberOfModels(0.6, 60, 0.4);
+//        System.out.println(numberOfModels[0]+"models on "+numberOfModels[1] + "templates");
     }
 
 }
