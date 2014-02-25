@@ -50,7 +50,7 @@ public class EventDisplay extends Event {
     }
 
     public EventDisplay(String i1, String i2, int start, int stop, char type, char acc, char startSS, char stopSS, char startAcc, char stopAcc) {
-        super(i1, i2, start, stop, type, acc, startSS, stopSS, startAcc, stopAcc);
+        super(i1, i2, start, stop, type, startSS, stopSS, startAcc, stopAcc, acc);
         this.pattern = pattern;
     }
 

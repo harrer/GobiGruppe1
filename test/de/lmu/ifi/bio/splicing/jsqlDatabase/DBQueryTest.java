@@ -1,5 +1,6 @@
 package de.lmu.ifi.bio.splicing.jsqlDatabase;
 
+import de.lmu.ifi.bio.splicing.config.Setting;
 import de.lmu.ifi.bio.splicing.genome.Event;
 import de.lmu.ifi.bio.splicing.zkoss.entity.EventDisplay;
 import org.junit.Before;
@@ -62,7 +63,8 @@ public class DBQueryTest {
 
     @Test
     public void testGetEventDisplay() throws Exception {
-        String i1 = "ENST00000547791";
-        String i2 = "ENST00000551103";
+        String i1 = "ENST00000379123";
+        String i2 = "ENST00000379107";
+        Setting.dbq.getEventDisplay(i1, i2);
     }
 }
