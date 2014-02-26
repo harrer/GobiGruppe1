@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by uhligc on 13.02.14.
+ * Created by Carsten Uhlig on 13.02.14.
  */
 public class EventDisplay extends Event {
     public void setPattern(List<PatternEvent> pattern) {
@@ -69,9 +69,6 @@ public class EventDisplay extends Event {
             if (!dada.contains(patternEvent.getId()))
                 dada.add(patternEvent.getId());
         }
-
-        if (dada.size() > 1)
-            System.out.println(dada);
 
         StringBuilder sb = new StringBuilder();
         String prefix = "";

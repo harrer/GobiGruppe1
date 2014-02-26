@@ -135,8 +135,9 @@ public class DataImpl implements Data {
         String stop = sef.getStop().toLowerCase();
         String type = sef.getType().toUpperCase();
         String pattern = sef.getPattern().toUpperCase();
-        String sec = sef.getSec().toLowerCase();
-        String acc = sef.getAcc().toLowerCase();
+        String sec = sef.getSec().toUpperCase();
+        String acc = sef.getAcc().toUpperCase();
+        System.out.println(sec + " " + acc);
 
         Iterator<EventDisplay> evit = eventlist.iterator();
 
@@ -150,8 +151,10 @@ public class DataImpl implements Data {
             if (!String.valueOf(next.getStop()).contains(stop)) continue;
             if (!String.valueOf(next.getType()).contains(type)) continue;
             if (!next.getPatternids().contains(pattern)) continue;
-            if (!(String.valueOf(next.getSecondaryStructure()).contains(sec))) continue;
-            if (!(String.valueOf(next.getAccessibility()).contains(acc))) continue;
+            if (!(String.valueOf(next.getStartSS()).contains(sec))) continue;
+            if (!(String.valueOf(next.getStopSS()).contains(sec))) continue;
+            if (!(String.valueOf(next.getStopAcc()).contains(acc))) continue;
+            if (!(String.valueOf(next.getStartAcc()).contains(acc))) continue;
 
             events.add(next);
         }
