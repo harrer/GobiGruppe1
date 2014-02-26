@@ -268,15 +268,17 @@ public class DataImpl implements Data {
         String sec = null, acc = null;
         StringBuilder prosite = new StringBuilder();
         List<PatternEvent> pelist = dbq.getPatternEventForTranscriptID(i1); //ist sortiert nach startpos
-        int end = 0;
+        int end;
         for (PatternEvent patternEvent : pelist) {
-            //if (patternEvent.getStart() - prosite.length() > 0)
+            prosite.append(String.format("%s\n", patternEvent.getId()));
+            end = 0;
             if (patternEvent.getStart() - end - 1 > 0)
                 prosite.append(new String(new char[patternEvent.getStart() - end - 1]).replace("\0", "-"));
             prosite.append(new String(new char[patternEvent.getStop() - patternEvent.getStart() + 1]).replace("\0", "P"));
             end = patternEvent.getStop();
+            prosite.append(new String(new char[aa1.length() - end]).replace("\0", "-"));
+            prosite.append("\n");
         }
-        prosite.append(new String(new char[aa1.length() - end]).replace("\0", "-"));
 
         //TODO implement SECStructure Chars in String
         if (selectedEvent.getSecondaryStructure() != '\0')

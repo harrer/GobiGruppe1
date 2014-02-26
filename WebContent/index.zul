@@ -162,7 +162,7 @@
                     <separator/>
                     <label id="aa1raw" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
-                    <label id="prositeseq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
+                    <label id="prositeseq" style="font-family:Monospace; white-space:nowrap;" multiline="true" pre="true"/>
                 </div>
             </groupbox>
 
