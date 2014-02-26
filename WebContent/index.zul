@@ -135,6 +135,7 @@
                     varsplic.value = vm.getSeqEntity().getVarsplic();
 
                     //prosite
+                    aa1raw.value = vm.getSeqEntity().getAa1raw();
                     prositeseq.value = vm.getSeqEntity().getProsite();
                     
                     //modelsequence
@@ -156,6 +157,10 @@
                     <label id="aa2seq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
                     <label id="varsplic" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
+                    <separator/>
+                    Transcript1 - Prosite:
+                    <separator/>
+                    <label id="aa1raw" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                     <separator/>
                     <label id="prositeseq" style="font-family:Monospace; white-space:nowrap;" multiline="false" pre="true"/>
                 </div>

@@ -202,11 +202,6 @@ public class DataImpl implements Data {
         String aa1 = GenomeSequenceExtractor.getProteinSequence(t1, g.getChromosome(), g.getStrand());
         String aa2 = GenomeSequenceExtractor.getProteinSequence(t2, g.getChromosome(), g.getStrand());
 
-
-        //TODO VARSPLIC sequence implementation
-        //TODO AA2 sequence implementation
-
-
         //modified Strings ( with events included )
         StringBuilder aa1_mod = new StringBuilder(), aa2_mod = new StringBuilder(), varsplic = new StringBuilder();
         selectedEventlist1 = dbq.getEvent(i1, i2);
@@ -272,11 +267,12 @@ public class DataImpl implements Data {
         //Prosite Pattern String
         String sec = null, acc = null;
         StringBuilder prosite = new StringBuilder();
-        List<PatternEvent> pelist = dbq.getPatternEventForTranscriptID(i1);
+        List<PatternEvent> pelist = dbq.getPatternEventForTranscriptID(i1); //ist sortiert nach startpos
         int end = 0;
         for (PatternEvent patternEvent : pelist) {
-            if (patternEvent.getStart() - prosite.length() > 0)
-                prosite.append(new String(new char[patternEvent.getStart() - prosite.length() - 1]).replace("\0", "-"));
+            //if (patternEvent.getStart() - prosite.length() > 0)
+            if (patternEvent.getStart() - end - 1 > 0)
+                prosite.append(new String(new char[patternEvent.getStart() - end - 1]).replace("\0", "-"));
             prosite.append(new String(new char[patternEvent.getStop() - patternEvent.getStart() + 1]).replace("\0", "P"));
             end = patternEvent.getStop();
         }
@@ -301,6 +297,7 @@ public class DataImpl implements Data {
         if (acc != null) {
             seqEntity.setAcc(acc);
         }
+        seqEntity.setAa1raw(aa1);
     }
 
     @Override
