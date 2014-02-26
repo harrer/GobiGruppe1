@@ -1,4 +1,4 @@
-<window width="1280px" border="normal" apply="org.zkoss.bind.BindComposer"
+<window hflex="1" border="normal" apply="org.zkoss.bind.BindComposer"
         title="ProSAS" height="940px" contentStyle="overflow:auto" viewModel="@id('vm') @init('de.lmu.ifi.bio.splicing.zkoss.ViewModel')">
     <hlayout id="main" hflex="1" vflex="1">
         <vlayout width="200px" vflex="1" id="left">

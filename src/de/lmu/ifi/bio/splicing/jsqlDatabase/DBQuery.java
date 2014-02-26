@@ -260,10 +260,10 @@ public class DBQuery implements DatabaseQuery {
                 "  stopSS,\n" +
                 "  startAcc,\n" +
                 "  stopAcc,\n" +
-                "  pattern,\n" +
+                "  fk_pattern_id,\n" +
                 "  pe.start,\n" +
                 "  pe.stop\n" +
-                "FROM Event se LEFT OUTER JOIN PatternEvent pe ON isoform1 = fk_pattern_id\n" +
+                "FROM Event se LEFT OUTER JOIN PatternEvent pe ON isoform1 = transcriptid\n" +
                 "  LEFT OUTER JOIN Pattern p ON fk_pattern_id = p.id\n" +
                 "WHERE isoform1 = '" + isoform1 + "' AND isoform2 = '" + isoform2 + "' AND (pe.fk_pattern_id IS NULL OR\n" +
                 "       (se.start < pe.start AND pe.start < se.stop) OR (se.start < pe.stop AND pe.stop < se.stop))";
@@ -283,7 +283,7 @@ public class DBQuery implements DatabaseQuery {
         EventDisplay cur = null;
         for (int i = 0; i < result.length; i++) {
             if (cur == null || cur.getStart() != (int) result[i][0]) {
-                if(cur != null)
+                if (cur != null)
                     cur.setPattern(pattern);
                 cur = new EventDisplay(isoform1, isoform2, (int) result[i][0],
                         (int) result[i][1],
@@ -296,11 +296,11 @@ public class DBQuery implements DatabaseQuery {
                 eventList.add(cur);
                 pattern = new LinkedList<>();
                 if (result[i][8] != null) {
-                    pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
+                    pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) (long) result[i][9], (int) (long) result[i][10]));
                 }
             } else {
                 if (result[i][8] != null) {
-                    pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) result[i][9], (int) result[i][10]));
+                    pattern.add(new PatternEvent((String) result[i][8], isoform1, (int) (long) result[i][9], (int) (long) result[i][10]));
                 }
             }
         }
